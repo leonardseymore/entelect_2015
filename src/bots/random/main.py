@@ -1,6 +1,6 @@
 import random
 import sys
-import .. ai.io
+import ai.io
 
 MOVES = [
             'Nothing',
