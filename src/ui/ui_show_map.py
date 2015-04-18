@@ -37,7 +37,7 @@ class Application(Frame):
         menu.add_cascade(label='File', menu=file_menu)
         self.master.config(menu=menu)
 
-        self.game_cells_frame = GameCellsFrame(self.master, self.cell_selected_handler)
+        self.game_cells_frame = GameCellsFrame(self.master, CellDecorator(), self.cell_selected_handler)
         self.game_cells_frame.grid(row=0, rowspan=2, sticky=NSEW)
         self.game_info_frame = GameInfoFrame(self.master)
         self.game_info_frame.grid(row=0, column=1, sticky=NSEW)
@@ -45,12 +45,35 @@ class Application(Frame):
         self.cell_info_frame.grid(row=1, column=1, sticky=NSEW)
 
 
+class CellDecorator():
+    def __init__(self):
+        return
+
+    def update_rect(self, game_state, cell, canvas, rect):
+        if not cell:
+            canvas.itemconfig(rect, fill='lightgrey')
+            return
+
+        if cell['Type'] == ai.entelect.WALL:
+            canvas.itemconfig(rect, fill='grey')
+
+        if cell['PlayerNumber'] == 1:
+            canvas.itemconfig(rect, fill='blue')
+
+        if cell['PlayerNumber'] == 2:
+            canvas.itemconfig(rect, fill='red')
+
+    def update_text(self, game_state, cell, canvas, text):
+        return
+
 class GameCellsFrame(Canvas):
     callback = None
     game_state = None
+    cell_modifier = None
 
-    def __init__(self, master, callback):
+    def __init__(self, master, cell_modifier, callback):
         Canvas.__init__(self, master, width=ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, height=ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
+        self.cell_modifier = cell_modifier
         self.callback = callback
         self.bind('<ButtonPress-1>', self.button_click)
 
@@ -69,8 +92,10 @@ class GameCellsFrame(Canvas):
         for row_index, row in enumerate(game_map['Rows']):
             for column_index, cell in enumerate(row):
                 symbol = ai.entelect.cell_to_symbol(cell)
-                self.create_rectangle(column_index * RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR, column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR)
-                self.create_text(column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR / 2, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR / 2, text=symbol)
+                rect = self.create_rectangle(column_index * RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR, column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR, activewidth=2)
+                self.cell_modifier.update_rect(game_state, cell, self, rect)
+                text = self.create_text(column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR / 2, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
+                self.cell_modifier.update_text(game_state, cell, self, text)
 
 
 class GameInfoFrame(Frame):
