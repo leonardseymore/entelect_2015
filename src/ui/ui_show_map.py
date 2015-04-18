@@ -112,6 +112,7 @@ class CellInfoFrame(Frame):
         if not cell.has_key('Command'):
             self.labels['Command'].set('')
             self.labels['CommandFeedback'].set('')
+            self.labels['LivesCost'].set('')
 
 root = Tk()
 app = Application(master=root)
