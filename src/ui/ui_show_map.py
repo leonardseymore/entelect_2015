@@ -4,6 +4,9 @@ import ai.io
 import ai.entelect
 
 
+RENDER_SCALE_FACTOR = 20
+
+
 class Application(Frame):
     game_cells_frame = None
     game_info_frame = None
@@ -13,7 +16,7 @@ class Application(Frame):
         Frame.__init__(self, master)
         master.wm_title('Entelect 2015 UI Toolkit')
         master.iconbitmap('resources/invader.ico')
-        master.geometry("640x480")
+        master.geometry("640x640")
         self.create_widgets()
 
     def open_state_file(self):
@@ -42,36 +45,32 @@ class Application(Frame):
         self.cell_info_frame.grid(row=1, column=1, sticky=NSEW)
 
 
-class GameCellsFrame(Frame):
+class GameCellsFrame(Canvas):
     callback = None
-    labels = [[0 for x in range(19)] for x in range(25)]
     game_state = None
 
     def __init__(self, master, callback):
-        Frame.__init__(self, master, bd=1, relief=SUNKEN)
+        Canvas.__init__(self, master, width=ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, height=ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
         self.callback = callback
-        self.create_widgets()
+        self.bind('<ButtonPress-1>', self.button_click)
 
-    def button_click(self, row, column):
+    def button_click(self, event):
         if not self.game_state:
             return
+        column = event.x / RENDER_SCALE_FACTOR
+        row = event.y / RENDER_SCALE_FACTOR
+        print (row, column)
         self.callback(self.game_state['Map']['Rows'][row][column])
 
-    def create_widgets(self):
-        for row_index in range(0, 25):
-            for column_index in range(19):
-                label_var = StringVar()
-                self.labels[row_index][column_index] = label_var
-                button = Button(self, width=1, textvariable=label_var, command=lambda row=row_index, column=column_index: self.button_click(row, column))
-                button.grid(sticky=NSEW, row=row_index, column=column_index)
-
     def load_game_state(self, game_state):
+        self.delete(ALL)
         self.game_state = game_state
         game_map = game_state['Map']
         for row_index, row in enumerate(game_map['Rows']):
             for column_index, cell in enumerate(row):
                 symbol = ai.entelect.cell_to_symbol(cell)
-                self.labels[row_index][column_index].set(symbol)
+                self.create_rectangle(column_index * RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR, column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR)
+                self.create_text(column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR / 2, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR / 2, text=symbol)
 
 
 class GameInfoFrame(Frame):
