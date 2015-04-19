@@ -23,6 +23,8 @@ class Application(Frame):
     cell_info_grid = None
 
     labels = {}
+    layers = []
+    canvas = None
 
     def __init__(self, master=None):
         Frame.__init__(self, master)
@@ -41,7 +43,9 @@ class Application(Frame):
     def load_state_file(self, filename):
         self.game_state_file = filename
         self.game_state = ai.io.load_state(filename)
-        self.game_cells_frame.load_game_state(self.game_state)
+        self.canvas.delete(ALL)
+        for layer in self.layers:
+            layer.load_game_state(self.game_state)
         self.labels['RoundNumber'].set('Round: %d/%d' % (self.game_state['RoundNumber'], self.game_state['RoundLimit']))
 
     # tries to load a specific state
@@ -122,8 +126,13 @@ class Application(Frame):
         frame = Frame(self.master)
         frame.grid(sticky=NSEW)
 
-        self.game_cells_frame = GameCellsFrame(frame, CellDecorator(), self.cell_selected_handler)
-        self.game_cells_frame.grid(row=0, sticky=EW)
+        canvas = Canvas(frame, width=ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, height=ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
+        self.canvas = canvas
+        canvas.grid(row=0, sticky=EW)
+        layer_base = LayerBase(canvas, self.cell_selected_handler)
+        self.layers.append(layer_base)
+        layer_labels = LayerLabels(canvas)
+        self.layers.append(layer_labels)
 
         nav_frame = Frame(frame)
         nav_frame.grid(sticky=EW, row=1)
@@ -133,64 +142,60 @@ class Application(Frame):
         self.master.bind('<Left>', lambda event: self.load_prev_state())
         self.master.bind('<Right>', lambda event: self.load_next_state())
 
-# modify cells
-class CellDecorator():
-    def __init__(self):
-        return
-
-    # custom background rendering logic
-    def update_rect(self, game_state, cell, canvas, rect):
-        if not cell:
-            canvas.itemconfig(rect, fill='lightgrey')
-            return
-
-        if cell['Type'] == ai.entelect.WALL:
-            canvas.itemconfig(rect, fill='grey')
-
-        if cell['PlayerNumber'] == 1:
-            canvas.itemconfig(rect, fill='blue')
-
-        if cell['PlayerNumber'] == 2:
-            canvas.itemconfig(rect, fill='red')
-
-    # custom label rendering logic
-    def update_text(self, game_state, cell, canvas, text):
-        return
-
-# frame to render game cells
-class GameCellsFrame(Canvas):
+# frame to render on a canvas layer
+class Layer():
+    canvas = None
     callback = None
     game_state = None
-    cell_modifier = None
+    width = 0
+    height = 0
 
-    def __init__(self, master, cell_modifier, callback):
-        Canvas.__init__(self, master, width=ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, height=ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
-        self.cell_modifier = cell_modifier
-        self.callback = callback
-        self.bind('<ButtonPress-1>', self.button_click)
-        self.create_line(0, 0, ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR)
-        self.create_line(0, ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR, ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, 0)
-
-    # handler when cell is clicked
-    def button_click(self, event):
-        if not self.game_state:
-            return
-        column = event.x / RENDER_SCALE_FACTOR
-        row = event.y / RENDER_SCALE_FACTOR
-        self.callback(self.game_state['Map']['Rows'][row][column])
+    def __init__(self, canvas):
+        self.canvas = canvas
+        self.width = ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR
+        self.height = ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR
 
     # reload canvas with new game state
     def load_game_state(self, game_state):
-        self.delete(ALL)
         self.game_state = game_state
         game_map = game_state['Map']
         for row_index, row in enumerate(game_map['Rows']):
             for column_index, cell in enumerate(row):
-                symbol = ai.entelect.cell_to_symbol(cell)
-                rect = self.create_rectangle(column_index * RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR, column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR, activewidth=2)
-                self.cell_modifier.update_rect(game_state, cell, self, rect)
-                text = self.create_text(column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR / 2, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
-                self.cell_modifier.update_text(game_state, cell, self, text)
+                self.render_cell(self.canvas, cell, column_index, row_index, column_index * RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR, column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR)
+
+    # base class to implement layer specific
+    def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
+        return
+
+# frame to render game cells
+class LayerBase(Layer):
+    callback = None
+
+    def __init__(self, canvas, callback):
+        Layer.__init__(self, canvas)
+        self.callback = callback
+        canvas.create_line(0, 0, self.width, self.height)
+        canvas.create_line(0, self.height, self.width, 0)
+
+    # reload canvas with new game state
+    def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
+        rect = canvas.create_rectangle(left, top, right, bottom, activewidth=2)
+        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index:self.callback(self.game_state['Map']['Rows'][row][column]))
+        if not cell:
+            canvas.itemconfig(rect, fill='lightgrey')
+            return
+        if cell['Type'] == ai.entelect.WALL:
+            canvas.itemconfig(rect, fill='grey')
+        if cell['PlayerNumber'] == 1:
+            canvas.itemconfig(rect, fill='blue')
+        if cell['PlayerNumber'] == 2:
+            canvas.itemconfig(rect, fill='red')
+
+# frame to labels
+class LayerLabels(Layer):
+    def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
+        symbol = ai.entelect.cell_to_symbol(cell)
+        canvas.create_text(left + RENDER_SCALE_FACTOR / 2, top + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
 
 # boostrap application
 root = Tk()
