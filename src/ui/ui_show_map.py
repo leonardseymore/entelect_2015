@@ -22,10 +22,13 @@ class Application(Frame):
     cell_info_window = None
     cell_info_grid = None
 
+    labels = {}
+
     def __init__(self, master=None):
         Frame.__init__(self, master)
         master.wm_title('Entelect 2015 UI Toolkit')
         master.iconbitmap('resources/invader.ico')
+        self.labels['RoundNumber'] = StringVar()
         self.create_widgets()
 
     # file dialog to load game state file
@@ -39,10 +42,11 @@ class Application(Frame):
         self.game_state_file = filename
         self.game_state = ai.io.load_state(filename)
         self.game_cells_frame.load_game_state(self.game_state)
+        self.labels['RoundNumber'].set('Round: %d/%d' % (self.game_state['RoundNumber'], self.game_state['RoundLimit']))
 
     # tries to load a specific state
     def load_specific_state(self, round_number):
-        if not self.game_state or not (round_number > 0 and round_number < self.game_state['RoundLimit']):
+        if not self.game_state or not (round_number >= 0 and round_number <= self.game_state['RoundLimit']):
             return
         file_to_load = dirname(dirname(self.game_state_file))
         file_to_load = join(file_to_load, str(round_number).zfill(3), 'state.json')
@@ -121,10 +125,13 @@ class Application(Frame):
         self.game_cells_frame = GameCellsFrame(frame, CellDecorator(), self.cell_selected_handler)
         self.game_cells_frame.grid(row=0, sticky=EW)
 
-        nav_frame = Frame(frame, bg='blue')
+        nav_frame = Frame(frame)
         nav_frame.grid(sticky=EW, row=1)
         Button(nav_frame, text='<', command=self.load_prev_state).grid(row=0, sticky=W)
         Button(nav_frame, text='>', command=self.load_next_state).grid(row=0, column=1, sticky=E)
+        Label(nav_frame, textvariable=self.labels['RoundNumber']).grid(row=0, column=2, sticky=W)
+        self.master.bind('<Left>', lambda event: self.load_prev_state())
+        self.master.bind('<Right>', lambda event: self.load_next_state())
 
 # modify cells
 class CellDecorator():
