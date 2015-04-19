@@ -199,5 +199,6 @@ class LayerLabels(Layer):
 
 # boostrap application
 root = Tk()
+root.resizable(0,0)
 app = Application(master=root)
 root.mainloop()
