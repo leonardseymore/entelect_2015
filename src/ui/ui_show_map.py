@@ -3,7 +3,9 @@ import tkFileDialog
 import ai.io
 import ai.entelect
 from ui.widgets import KeyValueGrid
-
+from os.path import dirname
+from os.path import join
+from os.path import exists
 
 # scale up the renderer
 RENDER_SCALE_FACTOR = 20
@@ -30,9 +32,36 @@ class Application(Frame):
     def open_state_file(self):
         filename = tkFileDialog.askopenfilename(filetypes=[("State files", "state.json")])
         if filename:
-            self.game_state_file = filename
-            self.game_state = ai.io.load_state(filename)
-            self.game_cells_frame.load_game_state(self.game_state)
+            self.load_state_file(filename)
+
+    # file dialog to load game state file
+    def load_state_file(self, filename):
+        self.game_state_file = filename
+        self.game_state = ai.io.load_state(filename)
+        self.game_cells_frame.load_game_state(self.game_state)
+
+    # tries to load a specific state
+    def load_specific_state(self, round_number):
+        if not self.game_state or not (round_number > 0 and round_number < self.game_state['RoundLimit']):
+            return
+        file_to_load = dirname(dirname(self.game_state_file))
+        file_to_load = join(file_to_load, str(round_number).zfill(3), 'state.json')
+        if exists(file_to_load):
+            self.load_state_file(file_to_load)
+
+    # tries to load the previous state
+    def load_prev_state(self):
+        if not self.game_state :
+            return
+        round_number = self.game_state['RoundNumber']
+        self.load_specific_state(round_number - 1)
+
+    # tries to load the next state
+    def load_next_state(self):
+        if not self.game_state:
+            return
+        round_number = self.game_state['RoundNumber']
+        self.load_specific_state(round_number + 1)
 
     # show game info window
     def open_game_info_window(self):
@@ -94,8 +123,8 @@ class Application(Frame):
 
         nav_frame = Frame(frame, bg='blue')
         nav_frame.grid(sticky=EW, row=1)
-        Button(nav_frame, text='<', command=None).grid(row=0, sticky=W)
-        Button(nav_frame, text='>', command=None).grid(row=0, column=1, sticky=E)
+        Button(nav_frame, text='<', command=self.load_prev_state).grid(row=0, sticky=W)
+        Button(nav_frame, text='>', command=self.load_next_state).grid(row=0, column=1, sticky=E)
 
 # modify cells
 class CellDecorator():
