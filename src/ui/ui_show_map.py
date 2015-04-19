@@ -57,7 +57,7 @@ class Application(Frame):
         window = self.cell_info_window
         if not window or not window.winfo_exists():
             window = Toplevel()
-            window.config(width=400)
+            window.geometry('400x300')
             self.cell_info_window = window
             window.title("Cell Information")
             window.iconbitmap('resources/invader.ico')
@@ -90,7 +90,12 @@ class Application(Frame):
         frame.grid(sticky=NSEW)
 
         self.game_cells_frame = GameCellsFrame(frame, CellDecorator(), self.cell_selected_handler)
-        self.game_cells_frame.grid(row=0, rowspan=2, sticky=W)
+        self.game_cells_frame.grid(row=0, sticky=EW)
+
+        nav_frame = Frame(frame, bg='blue')
+        nav_frame.grid(sticky=EW, row=1)
+        Button(nav_frame, text='<', command=None).grid(row=0, sticky=W)
+        Button(nav_frame, text='>', command=None).grid(row=0, column=1, sticky=E)
 
 # modify cells
 class CellDecorator():
