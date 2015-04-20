@@ -61,7 +61,6 @@ class Application(Frame):
 
     # tries to load the previous state
     def load_prev_state(self):
-        print 'load_prev_state'
         if not self.game_state:
             return
         round_number = self.game_state['RoundNumber']
@@ -112,10 +111,9 @@ class Application(Frame):
         canvas = Canvas(frame, width=ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, height=ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
         self.canvas = canvas
         canvas.grid(row=0, sticky=EW)
-        layer_base = LayerBase(canvas)
-        self.layers.append(layer_base)
-        layer_labels = LayerLabels(canvas)
-        self.layers.append(layer_labels)
+        self.layers.append(LayerBase(canvas))
+        self.layers.append(LayerEntities(canvas))
+        self.layers.append(LayerLabels(canvas))
 
         nav_frame = Frame(frame)
         nav_frame.grid(sticky=EW, row=1)
@@ -161,16 +159,29 @@ class LayerBase(Layer):
 
     # reload canvas with new game state
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
-        rect = canvas.create_rectangle(left, top, right, bottom, activewidth=2)
-        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index: ai.event.dispatch(ai.event.Event('cell_clicked', {'row': row, 'column': column})))
+        rect = canvas.create_rectangle(left, top, right, bottom, state=DISABLED)
         if not cell:
             canvas.itemconfig(rect, fill='lightgrey')
             return
         if cell['Type'] == ai.entelect.WALL:
             canvas.itemconfig(rect, fill='grey')
+
+
+# entities layer
+class LayerEntities(Layer):
+    def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
+        if not cell:
+            return
+
+        player_number = cell['PlayerNumber']
+        if not player_number > 0:
+            return
+
+        rect = canvas.create_rectangle(left, top, right, bottom, activewidth=2)
+        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index: ai.event.dispatch(ai.event.Event('cell_clicked', {'row': row, 'column': column})))
         if cell['PlayerNumber'] == 1:
             canvas.itemconfig(rect, fill='blue')
-        if cell['PlayerNumber'] == 2:
+        elif cell['PlayerNumber'] == 2:
             canvas.itemconfig(rect, fill='red')
 
 # frame to labels
