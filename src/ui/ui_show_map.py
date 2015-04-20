@@ -29,6 +29,7 @@ class Application(Frame):
         master.iconbitmap('resources/invader.ico')
         self.labels['RoundNumber'] = StringVar()
         self.create_widgets()
+        self.create_menu()
         self.windows['game_info'] = KeyValueWindow(master, 'Game Information', lambda: self.game_state)
         self.windows['cell_info'] = KeyValueWindow(master, 'Cell Information', None, '400x300')
         self.windows['player1_info'] = KeyValueWindow(master, 'Player 1 Information', lambda: self.game_state['Players'][0])
@@ -45,10 +46,18 @@ class Application(Frame):
     def load_state_file(self, filename):
         self.game_state_file = filename
         self.game_state = ai.io.load_state(filename)
+        self.labels['RoundNumber'].set('Round: %d/%d' % (self.game_state['RoundNumber'], self.game_state['RoundLimit']))
+        self.redraw_canvas()
+
+    # redraw canvas
+    def redraw_canvas(self):
+        if not self.game_state:
+            return
+
         self.canvas.delete(ALL)
         for layer in self.layers:
-            layer.load_game_state(self.game_state)
-        self.labels['RoundNumber'].set('Round: %d/%d' % (self.game_state['RoundNumber'], self.game_state['RoundLimit']))
+            if layer.enabled.get():
+                layer.load_game_state(self.game_state)
 
     # tries to load a specific state
     def load_specific_state(self, round_number):
@@ -90,21 +99,6 @@ class Application(Frame):
 
     # initialize application widgets
     def create_widgets(self):
-        menu = Menu(self.master)
-
-        file_menu = Menu(menu, tearoff=0)
-        file_menu.add_command(label="Load State File", command=self.open_state_file)
-        file_menu.add_command(label="Exit", command=self.master.quit)
-        menu.add_cascade(label='File', menu=file_menu)
-
-        state_menu = Menu(menu, tearoff=0)
-        state_menu.add_command(label="Show Game Info", command=lambda: self.windows['game_info'].show(self.game_state))
-        state_menu.add_command(label="Show Player 1 Info", command=lambda: self.windows['player1_info'].show(self.game_state['Players'][0]))
-        state_menu.add_command(label="Show Player 2 Info", command=lambda: self.windows['player2_info'].show(self.game_state['Players'][1]))
-        menu.add_cascade(label='State', menu=state_menu)
-
-        self.master.config(menu=menu)
-
         frame = Frame(self.master)
         frame.grid(sticky=NSEW)
 
@@ -124,16 +118,42 @@ class Application(Frame):
         self.master.bind('<Right>', lambda event: self.load_next_state())
         self.master.bind('<Control-r>', lambda event: self.reload_all_windows())
 
+    def create_menu(self):
+        menu = Menu(self.master)
+
+        file_menu = Menu(menu, tearoff=0)
+        file_menu.add_command(label="Load State File", command=self.open_state_file)
+        file_menu.add_command(label="Exit", command=self.master.quit)
+        menu.add_cascade(label='File', menu=file_menu)
+
+        state_menu = Menu(menu, tearoff=0)
+        state_menu.add_command(label="Show Game Info", command=lambda: self.windows['game_info'].show(self.game_state))
+        state_menu.add_command(label="Show Player 1 Info", command=lambda: self.windows['player1_info'].show(self.game_state['Players'][0]))
+        state_menu.add_command(label="Show Player 2 Info", command=lambda: self.windows['player2_info'].show(self.game_state['Players'][1]))
+        menu.add_cascade(label='State', menu=state_menu)
+
+        layer_menu = Menu(menu, tearoff=0)
+        for layer in self.layers:
+            layer_menu.add_checkbutton(label=layer.name, variable=layer.enabled, command=self.redraw_canvas)
+        menu.add_cascade(label='Layers', menu=layer_menu)
+
+        self.master.config(menu=menu)
+
 # frame to render on a canvas layer
 class Layer():
+    name = None
+    enabled = None
     canvas = None
     callback = None
     game_state = None
     width = 0
     height = 0
 
-    def __init__(self, canvas):
+    def __init__(self, canvas, name, enabled=True):
+        self.enabled = BooleanVar(canvas)
+        self.enabled.set(enabled)
         self.canvas = canvas
+        self.name = name
         self.width = ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR
         self.height = ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR
 
@@ -153,7 +173,7 @@ class Layer():
 class LayerBase(Layer):
 
     def __init__(self, canvas):
-        Layer.__init__(self, canvas)
+        Layer.__init__(self, canvas, 'Base')
         canvas.create_line(0, 0, self.width, self.height)
         canvas.create_line(0, self.height, self.width, 0)
 
@@ -169,6 +189,10 @@ class LayerBase(Layer):
 
 # entities layer
 class LayerEntities(Layer):
+
+    def __init__(self, canvas):
+        Layer.__init__(self, canvas, 'Entities')
+
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
         if not cell:
             return
@@ -186,6 +210,9 @@ class LayerEntities(Layer):
 
 # frame to labels
 class LayerLabels(Layer):
+    def __init__(self, canvas):
+        Layer.__init__(self, canvas, 'Labels')
+
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
         symbol = ai.entelect.cell_to_symbol(cell)
         canvas.create_text(left + RENDER_SCALE_FACTOR / 2, top + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
