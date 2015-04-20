@@ -3,7 +3,9 @@ import tkFileDialog
 import ai.io
 import ai.entelect
 import ai.event
-from ui.widgets import KeyValueWindow
+from ai.blackboard import Blackboard
+import ai.expert
+from ui.widgets import *
 from os.path import dirname
 from os.path import join
 from os.path import exists
@@ -16,6 +18,7 @@ RENDER_SCALE_FACTOR = 20
 class Application(Frame):
     game_state_file = None
     game_state = None
+    blackboard = None
 
     windows = {}
 
@@ -34,6 +37,8 @@ class Application(Frame):
         self.windows['cell_info'] = KeyValueWindow(master, 'Cell Information', None, '400x300')
         self.windows['player1_info'] = KeyValueWindow(master, 'Player 1 Information', lambda: self.game_state['Players'][0])
         self.windows['player2_info'] = KeyValueWindow(master, 'Player 2 Information', lambda: self.game_state['Players'][1])
+        self.windows['blackboard'] = BlackboardWindow(master, 'Blackboard', lambda: self.blackboard)
+
         ai.event.register('cell_clicked', self)
 
     # file dialog to load game state file
@@ -46,6 +51,8 @@ class Application(Frame):
     def load_state_file(self, filename):
         self.game_state_file = filename
         self.game_state = ai.io.load_state(filename)
+        self.blackboard = Blackboard()
+        self.blackboard.set('game_state', self.game_state)
         self.labels['RoundNumber'].set('Round: %d/%d' % (self.game_state['RoundNumber'], self.game_state['RoundLimit']))
         self.redraw_canvas()
 
@@ -136,6 +143,10 @@ class Application(Frame):
         for layer in self.layers:
             layer_menu.add_checkbutton(label=layer.name, variable=layer.enabled, command=self.redraw_canvas)
         menu.add_cascade(label='Layers', menu=layer_menu)
+
+        expert_menu = Menu(menu, tearoff=0)
+        expert_menu.add_command(label='Show Blackboard', command=lambda: self.windows['blackboard'].show(self.blackboard))
+        menu.add_cascade(label='Blackboard', menu=expert_menu)
 
         self.master.config(menu=menu)
 

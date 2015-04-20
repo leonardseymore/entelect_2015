@@ -18,3 +18,17 @@ class Blackboard():
             return self.parent.get(key)
         else:
             return None
+
+    # gets entire shadowed tree
+    def get_obj(self, tree=None):
+        if not tree:
+            tree = {}
+
+        for key in self.data:
+            if not tree.has_key(key):
+                tree[key] = self.data[key]
+
+        if self.parent:
+            self.parent.get_obj(tree)
+
+        return tree

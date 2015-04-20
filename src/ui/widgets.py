@@ -1,7 +1,10 @@
 from Tkinter import *
-
+import ai.expert
 
 class KeyValueGrid(Frame):
+
+    visible = False
+    frame = None
 
     def __init__(self, master):
         Frame.__init__(self, master, bd=1, relief=SUNKEN)
@@ -9,7 +12,12 @@ class KeyValueGrid(Frame):
     # creates a new grid from the supplied object into its own frame
     def load(self, obj):
         frame = Frame(self)
+        self.frame = frame
+        self.visible = True
         frame.grid(columnspan=2, sticky=NSEW)
+
+        if type(obj).__name__ == 'instance':
+            obj = obj.get_obj()
 
         rowspan = 1
         if isinstance(obj, dict):
@@ -19,7 +27,9 @@ class KeyValueGrid(Frame):
                 child_grid = KeyValueGrid(frame)
                 child_rowspan = child_grid.load(value)
                 child_grid.grid(row=row, column=1, sticky=W)
-                Label(frame, text='%s :' % key).grid(rowspan=child_rowspan, row=row, sticky=NE)
+                label = Label(frame, text='%s :' % key)
+                label.grid(rowspan=child_rowspan, row=row, sticky=NE)
+                label.bind("<Button-1>", lambda e, row_label=label, row_index=row, row_label_span=child_rowspan, toggle_grid=child_grid: toggle_grid.toggle_visibility(row_index, row_label, row_label_span))
                 row += 1
             rowspan = row
         elif isinstance(obj, list):
@@ -42,8 +52,18 @@ class KeyValueGrid(Frame):
             child_grid.load(item)
             child_grid.grid(row=row, column=1, sticky=W)
 
+    def toggle_visibility(self, row, row_label, row_label_span):
+        self.visible = not self.visible
+        if self.visible:
+            row_label.grid(rowspan=row_label_span, row=row, sticky=NE)
+            self.grid(row=row, column=1, sticky=W)
+        else:
+            row_label.grid(rowspan=1, row=row, sticky=NE)
+            self.grid_forget()
+
     # handler called when clicking on a cell
 class KeyValueWindow():
+    menu = None
     parent = None
     title = None
     get_value = None
@@ -59,19 +79,23 @@ class KeyValueWindow():
 
     def validate_window(self):
         if not self.window or not self.window.winfo_exists():
-            self.window = Toplevel(self.parent)
-            self.window.bind('<Control-r>', lambda event: self.reload())
-            self.window.geometry(self.geometry)
-            self.window.title(self.title)
-            self.window.iconbitmap('resources/invader.ico')
+            self.build_window()
 
-            menu = Menu(self.window)
+    def build_window(self):
+        self.window = Toplevel(self.parent)
+        self.window.bind('<Control-r>', lambda event: self.reload())
+        self.window.geometry(self.geometry)
+        self.window.title(self.title)
+        self.window.iconbitmap('resources/invader.ico')
 
-            object_menu = Menu(menu, tearoff=0)
-            object_menu.add_command(label="Reload", command=self.reload)
-            menu.add_cascade(label='Object', menu=object_menu)
+        menu = Menu(self.window)
+        self.menu = menu
 
-            self.window.config(menu=menu)
+        object_menu = Menu(menu, tearoff=0)
+        object_menu.add_command(label="Reload", command=self.reload)
+        menu.add_cascade(label='Object', menu=object_menu)
+
+        self.window.config(menu=menu)
 
     def show(self, obj):
         self.validate_window()
@@ -86,6 +110,19 @@ class KeyValueWindow():
     def reload(self):
         if self.window and self.window.winfo_exists():
             self.show(self.get_value())
+
+class BlackboardWindow(KeyValueWindow):
+    def build_window(self):
+        KeyValueWindow.build_window(self)
+        menu = self.menu
+        experts_menu = Menu(menu, tearoff=0)
+        for expert in ai.expert.experts:
+            experts_menu.add_command(label=expert.name, command=lambda expert_to_run=expert: self.run_expert(expert_to_run))
+        menu.add_cascade(label='Run Expert', menu=experts_menu)
+
+    def run_expert(self, expert):
+        expert.run(self.get_value())
+        self.reload()
 
 class ListExpandControl(Frame):
     master = None
