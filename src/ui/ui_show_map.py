@@ -3,6 +3,7 @@ import tkFileDialog
 import ai.io
 import ai.entelect
 from ui.widgets import KeyValueGrid
+from ui.widgets import KeyValueWindow
 from os.path import dirname
 from os.path import join
 from os.path import exists
@@ -16,11 +17,7 @@ class Application(Frame):
     game_state_file = None
     game_state = None
 
-    game_cells_frame = None
-    game_info_window = None
-    game_info_grid = None
-    cell_info_window = None
-    cell_info_grid = None
+    windows = {}
 
     labels = {}
     layers = []
@@ -32,6 +29,10 @@ class Application(Frame):
         master.iconbitmap('resources/invader.ico')
         self.labels['RoundNumber'] = StringVar()
         self.create_widgets()
+        self.windows['game_info'] = KeyValueWindow(master, 'Game Information', lambda: self.game_state)
+        self.windows['cell_info'] = KeyValueWindow(master, 'Cell Information', None, '400x300')
+        self.windows['player1_info'] = KeyValueWindow(master, 'Player 1 Information', lambda: self.game_state['Players'][0])
+        self.windows['player2_info'] = KeyValueWindow(master, 'Player 2 Information', lambda: self.game_state['Players'][1])
 
     # file dialog to load game state file
     def open_state_file(self):
@@ -59,7 +60,8 @@ class Application(Frame):
 
     # tries to load the previous state
     def load_prev_state(self):
-        if not self.game_state :
+        print 'load_prev_state'
+        if not self.game_state:
             return
         round_number = self.game_state['RoundNumber']
         self.load_specific_state(round_number - 1)
@@ -71,42 +73,17 @@ class Application(Frame):
         round_number = self.game_state['RoundNumber']
         self.load_specific_state(round_number + 1)
 
-    # show game info window
-    def open_game_info_window(self):
-        window = self.game_info_window
-        if not window or not window.winfo_exists():
-            window = Toplevel()
-            self.game_info_window = window
-            window.title("Game Information")
-            window.iconbitmap('resources/invader.ico')
-
-        grid = self.game_info_grid
-        if grid:
-            grid.destroy()
-
-        self.game_info_grid = KeyValueGrid(window)
-        grid = self.game_info_grid
-        grid.load(self.game_state)
-        grid.grid(sticky=NSEW)
-
     # handler called when clicking on a cell
-    def cell_selected_handler(self, cell):
-        window = self.cell_info_window
-        if not window or not window.winfo_exists():
-            window = Toplevel()
-            window.geometry('400x300')
-            self.cell_info_window = window
-            window.title("Cell Information")
-            window.iconbitmap('resources/invader.ico')
+    def cell_selected_handler(self, row, column, cell):
+        self.windows['cell_info'].show(cell)
+        self.windows['cell_info'].get_value = lambda : self.game_state['Map']['Rows'][row][column]
 
-        grid = self.cell_info_grid
-        if grid:
-            grid.destroy()
-        print cell
-        self.cell_info_grid = KeyValueGrid(window)
-        grid = self.cell_info_grid
-        grid.load(cell)
-        grid.grid(sticky=NSEW)
+    def reload_all_windows(self):
+        if not self.game_state:
+            return
+        for key in self.windows:
+            window = self.windows[key]
+            window.reload()
 
     # initialize application widgets
     def create_widgets(self):
@@ -118,7 +95,9 @@ class Application(Frame):
         menu.add_cascade(label='File', menu=file_menu)
 
         state_menu = Menu(menu, tearoff=0)
-        state_menu.add_command(label="Show Game Info", command=self.open_game_info_window)
+        state_menu.add_command(label="Show Game Info", command=lambda: self.windows['game_info'].show(self.game_state))
+        state_menu.add_command(label="Show Player 1 Info", command=lambda: self.windows['player1_info'].show(self.game_state['Players'][0]))
+        state_menu.add_command(label="Show Player 2 Info", command=lambda: self.windows['player2_info'].show(self.game_state['Players'][1]))
         menu.add_cascade(label='State', menu=state_menu)
 
         self.master.config(menu=menu)
@@ -141,6 +120,7 @@ class Application(Frame):
         Label(nav_frame, textvariable=self.labels['RoundNumber']).grid(row=0, column=2, sticky=W)
         self.master.bind('<Left>', lambda event: self.load_prev_state())
         self.master.bind('<Right>', lambda event: self.load_next_state())
+        self.master.bind('<Control-r>', lambda event: self.reload_all_windows())
 
 # frame to render on a canvas layer
 class Layer():
@@ -180,7 +160,7 @@ class LayerBase(Layer):
     # reload canvas with new game state
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
         rect = canvas.create_rectangle(left, top, right, bottom, activewidth=2)
-        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index:self.callback(self.game_state['Map']['Rows'][row][column]))
+        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index:self.callback(row, column, self.game_state['Map']['Rows'][row][column]))
         if not cell:
             canvas.itemconfig(rect, fill='lightgrey')
             return

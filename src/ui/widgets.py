@@ -44,6 +44,51 @@ class KeyValueGrid(Frame):
             child_grid.grid(row=row, column=1, sticky=W)
             row += 1
 
+    # handler called when clicking on a cell
+class KeyValueWindow():
+    parent = None
+    title = None
+    get_value = None
+    geometry = None
+    window = None
+    grid = None
+
+    def __init__(self, parent, title, get_value, geometry=None):
+        self.parent = parent
+        self.title = title
+        self.geometry = geometry
+        self.get_value = get_value
+
+    def validate_window(self):
+        if not self.window or not self.window.winfo_exists():
+            self.window = Toplevel(self.parent)
+            self.window.bind('<Control-r>', lambda event: self.reload())
+            self.window.geometry(self.geometry)
+            self.window.title(self.title)
+            self.window.iconbitmap('resources/invader.ico')
+
+            menu = Menu(self.window)
+
+            object_menu = Menu(menu, tearoff=0)
+            object_menu.add_command(label="Reload", command=self.reload)
+            menu.add_cascade(label='Object', menu=object_menu)
+
+            self.window.config(menu=menu)
+
+    def show(self, obj):
+        self.validate_window()
+
+        if self.grid:
+            self.grid.destroy()
+
+        self.grid = KeyValueGrid(self.window)
+        self.grid.load(obj)
+        self.grid.grid(sticky=NSEW)
+
+    def reload(self):
+        if self.window and self.window.winfo_exists():
+            self.show(self.get_value())
+
 class ListExpandControl(Frame):
     master = None
     obj = None
