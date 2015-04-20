@@ -34,15 +34,13 @@ class KeyValueGrid(Frame):
 
         return rowspan
 
-    def load_subframe(self, parent, obj, row):
-        row = 0
-        for item in obj:
+    def load_subframe(self, parent, obj):
+        for row, item in enumerate(obj):
             list_frame = Frame(parent)
             list_frame.grid(columnspan=2, sticky=NSEW)
             child_grid = KeyValueGrid(list_frame)
-            child_rowspan = child_grid.load(item)
+            child_grid.load(item)
             child_grid.grid(row=row, column=1, sticky=W)
-            row += 1
 
     # handler called when clicking on a cell
 class KeyValueWindow():

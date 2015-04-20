@@ -2,7 +2,7 @@ from Tkinter import *
 import tkFileDialog
 import ai.io
 import ai.entelect
-from ui.widgets import KeyValueGrid
+import ai.event
 from ui.widgets import KeyValueWindow
 from os.path import dirname
 from os.path import join
@@ -33,6 +33,7 @@ class Application(Frame):
         self.windows['cell_info'] = KeyValueWindow(master, 'Cell Information', None, '400x300')
         self.windows['player1_info'] = KeyValueWindow(master, 'Player 1 Information', lambda: self.game_state['Players'][0])
         self.windows['player2_info'] = KeyValueWindow(master, 'Player 2 Information', lambda: self.game_state['Players'][1])
+        ai.event.register('cell_clicked', self)
 
     # file dialog to load game state file
     def open_state_file(self):
@@ -74,7 +75,10 @@ class Application(Frame):
         self.load_specific_state(round_number + 1)
 
     # handler called when clicking on a cell
-    def cell_selected_handler(self, row, column, cell):
+    def handle_cell_clicked(self, event):
+        row = event.payload['row']
+        column = event.payload['column']
+        cell = self.game_state['Map']['Rows'][row][column]
         self.windows['cell_info'].show(cell)
         self.windows['cell_info'].get_value = lambda : self.game_state['Map']['Rows'][row][column]
 
@@ -108,7 +112,7 @@ class Application(Frame):
         canvas = Canvas(frame, width=ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, height=ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
         self.canvas = canvas
         canvas.grid(row=0, sticky=EW)
-        layer_base = LayerBase(canvas, self.cell_selected_handler)
+        layer_base = LayerBase(canvas)
         self.layers.append(layer_base)
         layer_labels = LayerLabels(canvas)
         self.layers.append(layer_labels)
@@ -149,18 +153,16 @@ class Layer():
 
 # frame to render game cells
 class LayerBase(Layer):
-    callback = None
 
-    def __init__(self, canvas, callback):
+    def __init__(self, canvas):
         Layer.__init__(self, canvas)
-        self.callback = callback
         canvas.create_line(0, 0, self.width, self.height)
         canvas.create_line(0, self.height, self.width, 0)
 
     # reload canvas with new game state
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
         rect = canvas.create_rectangle(left, top, right, bottom, activewidth=2)
-        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index:self.callback(row, column, self.game_state['Map']['Rows'][row][column]))
+        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index: ai.event.dispatch(ai.event.Event('cell_clicked', {'row': row, 'column': column})))
         if not cell:
             canvas.itemconfig(rect, fill='lightgrey')
             return
