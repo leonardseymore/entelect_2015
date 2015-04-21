@@ -68,7 +68,7 @@ class ExpertFieldAnalyst(Expert):
                         your_alien_bbox['top'] = row_index
                     if your_alien_bbox['bottom'] == -1 or your_alien_bbox['bottom'] < row_index:
                         your_alien_bbox['bottom'] = row_index
-                    if your_alien_bbox['left'] == -1:
+                    if your_alien_bbox['left'] == -1 or your_alien_bbox['left'] > column_index:
                         your_alien_bbox['left'] = column_index
                     if your_alien_bbox['right'] == -1 or your_alien_bbox['right'] < column_index:
                         your_alien_bbox['right'] = column_index
