@@ -114,6 +114,7 @@ class Application(Frame):
         canvas.grid(row=0, sticky=EW)
         self.layers.append(LayerBase(canvas))
         self.layers.append(LayerEntities(canvas))
+        self.layers.append(LayerAlienBBox(canvas))
         self.layers.append(LayerLabels(canvas))
 
         nav_frame = Frame(frame)
@@ -171,7 +172,19 @@ class Layer():
     # reload canvas with new game state
     def load_game_state(self, game_state):
         self.game_state = game_state
-        game_map = game_state['Map']
+        self.render(self.canvas)
+
+    # base class to implement layer specific
+    def render(self, canvas):
+        return
+
+
+# frame to render game cells
+class LayerCellBase(Layer):
+
+    # reload canvas with new game state
+    def render(self, canvas):
+        game_map = self.game_state['Map']
         for row_index, row in enumerate(game_map['Rows']):
             for column_index, cell in enumerate(row):
                 self.render_cell(self.canvas, cell, column_index, row_index, column_index * RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR, column_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR, row_index * RENDER_SCALE_FACTOR + RENDER_SCALE_FACTOR)
@@ -181,7 +194,7 @@ class Layer():
         return
 
 # frame to render game cells
-class LayerBase(Layer):
+class LayerBase(LayerCellBase):
 
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Base')
@@ -199,7 +212,7 @@ class LayerBase(Layer):
 
 
 # entities layer
-class LayerEntities(Layer):
+class LayerEntities(LayerCellBase):
 
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Entities')
@@ -220,13 +233,29 @@ class LayerEntities(Layer):
             canvas.itemconfig(rect, fill='red')
 
 # frame to labels
-class LayerLabels(Layer):
+class LayerLabels(LayerCellBase):
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Labels')
 
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
         symbol = ai.entelect.cell_to_symbol(cell)
         canvas.create_text(left + RENDER_SCALE_FACTOR / 2, top + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
+
+# draw bounding box around aliens
+class LayerAlienBBox(Layer):
+
+    def __init__(self, canvas):
+        Layer.__init__(self, canvas, 'Alien BBox')
+
+    def render(self, canvas):
+        blackboard = Blackboard()
+        blackboard.set('game_state', self.game_state)
+        ai.expert.field_analyst.run(blackboard)
+        bbox = blackboard.get('your_alien_bbox')
+        canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='blue', width=2, state=DISABLED)
+        bbox = blackboard.get('enemy_alien_bbox')
+        canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='red', width=2, state=DISABLED)
+
 
 # boostrap application
 root = Tk()

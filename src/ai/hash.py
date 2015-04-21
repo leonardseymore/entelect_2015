@@ -1,7 +1,7 @@
 import ai.entelect
 
 
-def hash_game_state(game_state):
+def hash_game_encode(game_state):
     game_map = game_state['Map']
     hash_str = ''
     running_length = 0

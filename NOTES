@@ -1,0 +1,96 @@
+------------------------------------------------------------------------------------------------------------------------
+PLAYING FIELD
+------------------------------------------------------------------------------------------------------------------------
+
+#                 # <-- Opponent's building row
+#       VVV       #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#          x  x  x# <-- Your aliens spawn here and move up
+#                 # <-- Middle row
+#          x  x  x# <-- Your opponent's aliens spawn here and move down
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#       AAA       #
+#                 # <-- Your building row
+
+------------------------------------------------------------------------------------------------------------------------
+YOUR PLAYING FIELD
+------------------------------------------------------------------------------------------------------------------------
+
+#          x  x  x# <-- Your opponent's aliens spawn here and move down
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#       AAA       #
+#                 # <-- Your building row
+
+------------------------------------------------------------------------------------------------------------------------
+MAP
+------------------------------------------------------------------------------------------------------------------------
+
+###################
+# {OpponentName}  #
+# Round:   0      #
+# Kills: 0        #
+# Lives: 3        #
+# Missiles: 0/1   #
+################### <-- If an alien reaches this row your opponent loses
+#                 # <-- Opponent's building row
+#       VVV       #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#          x  x  x# <-- Your aliens spawn here and move up
+#                 # <-- Middle row
+#          x  x  x# <-- Your opponent's aliens spawn here and move down
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#       AAA       #
+#                 # <-- Your building row
+################### <-- If an alien reaches this row you lose
+# Missiles: 0/1   #
+# Lives: 3        #
+# Kills: 0        #
+# Round:   0      #
+# {YourName}      #
+###################
+
+AAA: Your Ship
+VVV: Opponent's Ship
+XXX: Alien Factory
+MMM: Missile Controller
+#: Wall
+-: Shield
+x: Alien
+|: Alien Bullet
+!: Your Missiles
+i: Opponent's Missiles

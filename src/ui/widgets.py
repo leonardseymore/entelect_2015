@@ -39,6 +39,8 @@ class KeyValueGrid(Frame):
             display_value = 'Unsupported %s' % type(obj)
             if isinstance(obj, int) or isinstance(obj, unicode):
                 display_value = str(obj)
+            if isinstance(obj, str):
+                display_value = obj
             if obj:
                 Label(frame, text=display_value).grid(columnspan=2, sticky=NSEW)
 
@@ -116,7 +118,9 @@ class BlackboardWindow(KeyValueWindow):
         KeyValueWindow.build_window(self)
         menu = self.menu
         experts_menu = Menu(menu, tearoff=0)
-        for expert in ai.expert.experts:
+        for key in ai.expert.experts:
+            print key
+            expert = ai.expert.experts[key]
             experts_menu.add_command(label=expert.name, command=lambda expert_to_run=expert: self.run_expert(expert_to_run))
         menu.add_cascade(label='Run Expert', menu=experts_menu)
 
