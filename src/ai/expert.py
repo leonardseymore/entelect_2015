@@ -1,4 +1,5 @@
 import ai.entelect
+import ai.movement
 
 # expert base class
 class Expert():
@@ -12,9 +13,9 @@ class Expert():
         pass
 
 # analyses game state and gets most important information
-class ExpertFieldAnalyst(Expert):
+class FieldAnalystExpert(Expert):
     def __init__(self):
-        Expert.__init__(self, 'Field Analyst')
+        Expert.__init__(self, 'Field Analyst Expert')
 
     def run(self, blackboard):
         game_state = blackboard.get('game_state')
@@ -75,5 +76,17 @@ class ExpertFieldAnalyst(Expert):
                         your_alien_bbox['right'] = column_index
         blackboard.set('%s_alien_bbox' % player_context, your_alien_bbox)
 
-field_analyst = ExpertFieldAnalyst()
-experts = {'field_analyst': field_analyst}
+# expert in alien movement prediction
+# depends on Field Analyst Expert
+class AlienExpert(Expert):
+    def __init__(self):
+        Expert.__init__(self, 'Alien Expert')
+
+    def run(self, blackboard):
+        blackboard.set('your_bbox_predictions', ai.movement.predict_bbox(blackboard, 'your', 20))
+        blackboard.set('enemy_bbox_predictions', ai.movement.predict_bbox(blackboard, 'enemy', 20))
+
+
+field_analyst = FieldAnalystExpert()
+alien_expert = AlienExpert()
+experts = {'field_analyst': field_analyst, 'alien': alien_expert}

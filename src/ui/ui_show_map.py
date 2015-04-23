@@ -115,6 +115,7 @@ class Application(Frame):
         self.layers.append(LayerBase(canvas))
         self.layers.append(LayerEntities(canvas))
         self.layers.append(LayerAlienBBox(canvas))
+        self.layers.append(LayerAlienBBoxPredictions(canvas))
         self.layers.append(LayerLabels(canvas))
 
         nav_frame = Frame(frame)
@@ -255,6 +256,25 @@ class LayerAlienBBox(Layer):
         canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='blue', width=2, state=DISABLED)
         bbox = blackboard.get('enemy_alien_bbox')
         canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='red', width=2, state=DISABLED)
+
+# draw bounding box around aliens
+class LayerAlienBBoxPredictions(Layer):
+
+    def __init__(self, canvas):
+        Layer.__init__(self, canvas, 'Alien BBox Predictions')
+
+    def render(self, canvas):
+        blackboard = Blackboard()
+        blackboard.set('game_state', self.game_state)
+        ai.expert.field_analyst.run(blackboard)
+        ai.expert.alien_expert.run(blackboard)
+        your_bbox_predictions = blackboard.get('your_bbox_predictions')
+        for bbox in your_bbox_predictions:
+            canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='blue', width=2, state=DISABLED)
+
+        enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
+        for bbox in enemy_bbox_predictions:
+            canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='red', width=2, state=DISABLED)
 
 
 # boostrap application
