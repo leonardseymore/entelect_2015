@@ -33,8 +33,8 @@ def predict_bbox(blackboard, player_context, t):
     wave_size = blackboard.get('%s_alien_wave_size' % player_context)
     round_number = blackboard.get('round_number')
 
-    spawn_location = YOUR_SPAWN_LOCATION if player_context == 'your' else ENEMY_SPAWN_LOCATION
-    spawn_threshold = YOUR_SPAWN_THRESHOLD if player_context == 'your' else ENEMY_SPAWN_THRESHOLD
+    spawn_location = YOUR_SPAWN_LOCATION if player_context == 'enemy' else ENEMY_SPAWN_LOCATION
+    spawn_threshold = YOUR_SPAWN_THRESHOLD if player_context == 'enemy' else ENEMY_SPAWN_THRESHOLD
 
     new_bbox = copy.copy(bbox)
     results = []

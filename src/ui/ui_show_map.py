@@ -53,6 +53,8 @@ class Application(Frame):
         self.game_state = ai.io.load_state(filename)
         self.blackboard = Blackboard()
         self.blackboard.set('game_state', self.game_state)
+        ai.expert.field_analyst.run(self.blackboard)
+        ai.expert.alien_expert.run(self.blackboard)
         self.labels['RoundNumber'].set('Round: %d/%d' % (self.game_state['RoundNumber'], self.game_state['RoundLimit']))
         self.redraw_canvas()
 
@@ -64,7 +66,7 @@ class Application(Frame):
         self.canvas.delete(ALL)
         for layer in self.layers:
             if layer.enabled.get():
-                layer.load_game_state(self.game_state)
+                layer.load_game_state(self.game_state, self.blackboard)
 
     # tries to load a specific state
     def load_specific_state(self, round_number):
@@ -171,12 +173,12 @@ class Layer():
         self.height = ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR
 
     # reload canvas with new game state
-    def load_game_state(self, game_state):
+    def load_game_state(self, game_state, blackboard):
         self.game_state = game_state
-        self.render(self.canvas)
+        self.render(self.canvas, blackboard)
 
     # base class to implement layer specific
-    def render(self, canvas):
+    def render(self, canvas, blackboard):
         return
 
 
@@ -184,7 +186,7 @@ class Layer():
 class LayerCellBase(Layer):
 
     # reload canvas with new game state
-    def render(self, canvas):
+    def render(self, canvas, blackboard):
         game_map = self.game_state['Map']
         for row_index, row in enumerate(game_map['Rows']):
             for column_index, cell in enumerate(row):
@@ -248,10 +250,7 @@ class LayerAlienBBox(Layer):
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Alien BBox')
 
-    def render(self, canvas):
-        blackboard = Blackboard()
-        blackboard.set('game_state', self.game_state)
-        ai.expert.field_analyst.run(blackboard)
+    def render(self, canvas, blackboard):
         bbox = blackboard.get('your_alien_bbox')
         canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='blue', width=2, state=DISABLED)
         bbox = blackboard.get('enemy_alien_bbox')
@@ -260,22 +259,36 @@ class LayerAlienBBox(Layer):
 # draw bounding box around aliens
 class LayerAlienBBoxPredictions(Layer):
 
+    at_time = 0
+    your_prediction_rect = None
+    enemy_prediction_rect = None
+    your_bbox_predictions = None
+    enemy_bbox_predictions = None
+
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Alien BBox Predictions')
 
-    def render(self, canvas):
-        blackboard = Blackboard()
-        blackboard.set('game_state', self.game_state)
-        ai.expert.field_analyst.run(blackboard)
-        ai.expert.alien_expert.run(blackboard)
-        your_bbox_predictions = blackboard.get('your_bbox_predictions')
-        for bbox in your_bbox_predictions:
-            canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='blue', width=2, state=DISABLED)
+    def render(self, canvas, blackboard):
+        self.your_bbox_predictions = blackboard.get('your_bbox_predictions')
+        self.your_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', activeoutline="blue", width=1, activewidth=4)
 
-        enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
-        for bbox in enemy_bbox_predictions:
-            canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='red', width=2, state=DISABLED)
+        self.enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
+        self.enemy_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', activeoutline="red", width=1, activewidth=4)
 
+    def show_at_time(self, t):
+        bbox = self.your_bbox_predictions[t]
+        self.canvas.coords(self.your_prediction_rect,
+                           bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR,
+                           (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
+                           (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR
+                           )
+
+        bbox = self.enemy_bbox_predictions[t]
+        self.canvas.coords(self.enemy_prediction_rect,
+                           bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR,
+                           (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
+                           (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR
+                           )
 
 # boostrap application
 root = Tk()
