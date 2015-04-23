@@ -26,6 +26,7 @@ class ExpertFieldAnalyst(Expert):
         player = game_state['Players'][player_index]
 
         # basic props
+        blackboard.set('round_number', game_state['RoundNumber'])
         blackboard.set('%s_lives' % player_context, player['Lives'])
         blackboard.set('%s_kills' % player_context, player['Kills'])
         blackboard.set('%s_alien_wave_size' % player_context, player['AlienWaveSize'])
