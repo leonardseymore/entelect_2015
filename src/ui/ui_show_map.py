@@ -1,7 +1,6 @@
-from Tkinter import *
 import tkFileDialog
 import ai.io
-import ai.entelect
+from ai.entelect import *
 import ai.event
 from ai.blackboard import Blackboard
 import ai.expert
@@ -111,7 +110,7 @@ class Application(Frame):
         frame = Frame(self.master)
         frame.grid(sticky=NSEW)
 
-        canvas = Canvas(frame, width=ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR, height=ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
+        canvas = Canvas(frame, width=MAP_WIDTH * RENDER_SCALE_FACTOR, height=MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
         self.canvas = canvas
         canvas.grid(row=0, sticky=EW)
         self.layers.append(LayerBase(canvas))
@@ -161,6 +160,7 @@ class Layer():
     canvas = None
     callback = None
     game_state = None
+    blackboard = None
     width = 0
     height = 0
 
@@ -169,12 +169,13 @@ class Layer():
         self.enabled.set(enabled)
         self.canvas = canvas
         self.name = name
-        self.width = ai.entelect.MAP_WIDTH * RENDER_SCALE_FACTOR
-        self.height = ai.entelect.MAP_HEIGHT * RENDER_SCALE_FACTOR
+        self.width = MAP_WIDTH * RENDER_SCALE_FACTOR
+        self.height = MAP_HEIGHT * RENDER_SCALE_FACTOR
 
     # reload canvas with new game state
     def load_game_state(self, game_state, blackboard):
         self.game_state = game_state
+        self.blackboard = blackboard
         self.render(self.canvas, blackboard)
 
     # base class to implement layer specific
@@ -210,7 +211,7 @@ class LayerBase(LayerCellBase):
         if not cell:
             canvas.itemconfig(rect, fill='lightgrey')
             return
-        if cell['Type'] == ai.entelect.WALL:
+        if cell['Type'] == WALL:
             canvas.itemconfig(rect, fill='grey')
 
 
@@ -241,8 +242,9 @@ class LayerLabels(LayerCellBase):
         Layer.__init__(self, canvas, 'Labels')
 
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
-        symbol = ai.entelect.cell_to_symbol(cell)
-        canvas.create_text(left + RENDER_SCALE_FACTOR / 2, top + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
+        symbol = cell_to_symbol(cell)
+        if not symbol == WALL_SYMBOL:
+            canvas.create_text(left + RENDER_SCALE_FACTOR / 2, top + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
 
 # draw bounding box around aliens
 class LayerAlienBBox(Layer):
@@ -260,6 +262,8 @@ class LayerAlienBBox(Layer):
 class LayerAlienBBoxPredictions(Layer):
 
     at_time = 0
+    max_time = 0
+    at_time_label = None
     your_prediction_rect = None
     enemy_prediction_rect = None
     your_bbox_predictions = None
@@ -267,13 +271,46 @@ class LayerAlienBBoxPredictions(Layer):
 
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Alien BBox Predictions')
+        self.at_time_label = StringVar()
+
+    def load_game_state(self, game_state, blackboard):
+        Layer.load_game_state(self, game_state, blackboard)
+        self.at_time = 0
 
     def render(self, canvas, blackboard):
+        rect_back = canvas.create_rectangle(0, 0, 40, 20, fill='purple', activefill='pink')
+        canvas.tag_bind(rect_back, '<ButtonPress-1>', lambda this=self: self.back())
+        canvas.create_text(20, 11, text='<<', state=DISABLED)
+
+        rect_forward = canvas.create_rectangle(40, 0, 80, 20, fill='purple', activefill='pink')
+        canvas.tag_bind(rect_forward, '<ButtonPress-1>', lambda this=self: self.forward())
+        canvas.create_text(60, 11, text='>>', state=DISABLED)
+
+        canvas.create_rectangle(80, 0, MAP_WIDTH * RENDER_SCALE_FACTOR, 20, fill='grey')
+        self.at_time_label = canvas.create_text(90, 11, text='No predictions', anchor=W, state=DISABLED)
+
         self.your_bbox_predictions = blackboard.get('your_bbox_predictions')
-        self.your_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', activeoutline="blue", width=1, activewidth=4)
+        self.max_time = len(self.your_bbox_predictions)
+        self.your_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', activeoutline="blue", width=2, activewidth=4)
 
         self.enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
-        self.enemy_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', activeoutline="red", width=1, activewidth=4)
+        self.enemy_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', activeoutline="red", width=2, activewidth=4)
+
+        self.update()
+
+    def back(self):
+        if self.at_time > 0:
+            self.at_time -= 1
+            self.update()
+
+    def forward(self):
+        if self.at_time < self.max_time - 1:
+            self.at_time += 1
+            self.update()
+
+    def update(self):
+        self.canvas.itemconfig(self.at_time_label, text='~In turns %d [round: %d]' % ((self.at_time + 1), (self.at_time + 1 + self.blackboard.get('round_number'))))
+        self.show_at_time(self.at_time)
 
     def show_at_time(self, t):
         bbox = self.your_bbox_predictions[t]

@@ -53,7 +53,7 @@ def predict_bbox(blackboard, player_context, t):
                 check_y = 'top' if player_context == 'your' else 'bottom'
                 set_y = 'bottom' if player_context == 'your' else 'top'
                 if (new_bbox['right'], new_bbox[check_y]) == spawn_threshold:
-                    new_bbox[set_y] = spawn_location[1] if player_context == 'your' else new_bbox[set_y] + 3
+                    new_bbox[set_y] = spawn_location[1] if player_context == 'your' else new_bbox[set_y] - 2
                     new_bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size)
 
         else: # right
