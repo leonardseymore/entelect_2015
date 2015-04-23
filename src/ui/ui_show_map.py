@@ -254,9 +254,9 @@ class LayerAlienBBox(Layer):
 
     def render(self, canvas, blackboard):
         bbox = blackboard.get('your_alien_bbox')
-        canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='blue', width=2, state=DISABLED)
+        canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='blue', width=2, activewidth=4)
         bbox = blackboard.get('enemy_alien_bbox')
-        canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='red', width=2, state=DISABLED)
+        canvas.create_rectangle(bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR, (bbox['right'] + 1) * RENDER_SCALE_FACTOR, (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR, outline='red', width=2, activewidth=4)
 
 # draw bounding box around aliens
 class LayerAlienBBoxPredictions(Layer):
@@ -272,6 +272,8 @@ class LayerAlienBBoxPredictions(Layer):
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Alien BBox Predictions')
         self.at_time_label = StringVar()
+        canvas.bind('<d>', lambda this=self: self.forward())
+        canvas.bind('<a>', lambda this=self: self.back())
 
     def load_game_state(self, game_state, blackboard):
         Layer.load_game_state(self, game_state, blackboard)
@@ -279,23 +281,31 @@ class LayerAlienBBoxPredictions(Layer):
 
     def render(self, canvas, blackboard):
         rect_back = canvas.create_rectangle(0, 0, 40, 20, fill='purple', activefill='pink')
-        canvas.tag_bind(rect_back, '<ButtonPress-1>', lambda this=self: self.back())
+        canvas.tag_bind(rect_back, '<ButtonPress-1>', lambda this=self: self.first())
         canvas.create_text(20, 11, text='<<', state=DISABLED)
 
-        rect_forward = canvas.create_rectangle(40, 0, 80, 20, fill='purple', activefill='pink')
-        canvas.tag_bind(rect_forward, '<ButtonPress-1>', lambda this=self: self.forward())
-        canvas.create_text(60, 11, text='>>', state=DISABLED)
+        rect_back = canvas.create_rectangle(40, 0, 80, 20, fill='purple', activefill='pink')
+        canvas.tag_bind(rect_back, '<ButtonPress-1>', lambda this=self: self.back())
+        canvas.create_text(60, 11, text='<', state=DISABLED)
 
-        canvas.create_rectangle(80, 0, MAP_WIDTH * RENDER_SCALE_FACTOR, 20, fill='grey')
-        self.at_time_label = canvas.create_text(90, 11, text='No predictions', anchor=W, state=DISABLED)
+        rect_forward = canvas.create_rectangle(80, 0, 120, 20, fill='purple', activefill='pink')
+        canvas.tag_bind(rect_forward, '<ButtonPress-1>', lambda this=self: self.forward())
+        canvas.create_text(100, 11, text='>', state=DISABLED)
+
+        canvas.create_rectangle(120, 0, MAP_WIDTH * RENDER_SCALE_FACTOR, 20, fill='grey')
+        self.at_time_label = canvas.create_text(130, 11, text='No predictions', anchor=W, state=DISABLED)
 
         self.your_bbox_predictions = blackboard.get('your_bbox_predictions')
         self.max_time = len(self.your_bbox_predictions)
-        self.your_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', activeoutline="blue", width=2, activewidth=4)
+        self.your_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', width=2, activewidth=4)
 
         self.enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
-        self.enemy_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', activeoutline="red", width=2, activewidth=4)
+        self.enemy_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', width=2, activewidth=4)
 
+        self.update()
+
+    def first(self):
+        self.at_time = 0
         self.update()
 
     def back(self):

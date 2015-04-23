@@ -1,4 +1,4 @@
-import ai.entelect
+from ai.entelect import *
 import ai.movement
 
 # expert base class
@@ -28,6 +28,7 @@ class FieldAnalystExpert(Expert):
 
         # basic props
         blackboard.set('round_number', game_state['RoundNumber'])
+        blackboard.set('rounds_remaining', game_state['RoundLimit'] - game_state['RoundNumber'])
         blackboard.set('%s_lives' % player_context, player['Lives'])
         blackboard.set('%s_kills' % player_context, player['Kills'])
         blackboard.set('%s_alien_wave_size' % player_context, player['AlienWaveSize'])
@@ -56,25 +57,38 @@ class FieldAnalystExpert(Expert):
 
         game_map = game_state['Map']
         # complex entries
-        your_alien_bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
-        start_row = 0 if player_index == 0 else ai.entelect.MAP_HEIGHT / 2
-        end_row = ai.entelect.MAP_HEIGHT / 2 if player_index == 0 else ai.entelect.MAP_HEIGHT
-        for row_index in range(start_row, end_row):
-            for column_index in range(0, ai.entelect.MAP_WIDTH):
-                cell = game_map['Rows'][row_index][column_index]
-                if not cell:
-                    continue
 
-                if cell['Type'] == ai.entelect.ALIEN:
-                    if your_alien_bbox['top'] == -1:
-                        your_alien_bbox['top'] = row_index
-                    if your_alien_bbox['bottom'] == -1 or your_alien_bbox['bottom'] < row_index:
-                        your_alien_bbox['bottom'] = row_index
-                    if your_alien_bbox['left'] == -1 or your_alien_bbox['left'] > column_index:
-                        your_alien_bbox['left'] = column_index
-                    if your_alien_bbox['right'] == -1 or your_alien_bbox['right'] < column_index:
-                        your_alien_bbox['right'] = column_index
-        blackboard.set('%s_alien_bbox' % player_context, your_alien_bbox)
+        alien_bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
+        if game_state['RoundNumber'] == 0:
+            if player_context == 'enemy':
+                alien_bbox['top'] = YOUR_SPAWN_LOCATION[1]
+                alien_bbox['right'] = MAP_RIGHT
+                alien_bbox['bottom'] = YOUR_SPAWN_LOCATION[1]
+                alien_bbox['left'] = MAP_RIGHT - wave_size_to_bbox_width(INITIAL_ALIEN_WAVE_SIZE) + 1
+            else:
+                alien_bbox['top'] = ENEMY_SPAWN_LOCATION[1]
+                alien_bbox['right'] = MAP_RIGHT
+                alien_bbox['bottom'] = ENEMY_SPAWN_LOCATION[1]
+                alien_bbox['left'] = MAP_RIGHT - wave_size_to_bbox_width(INITIAL_ALIEN_WAVE_SIZE) + 1
+        else:
+            start_row = 0 if player_index == 0 else MAP_HEIGHT / 2
+            end_row = MAP_HEIGHT / 2 if player_index == 0 else MAP_HEIGHT
+            for row_index in range(start_row, end_row):
+                for column_index in range(0, MAP_WIDTH):
+                    cell = game_map['Rows'][row_index][column_index]
+                    if not cell:
+                        continue
+    
+                    if cell['Type'] == ALIEN:
+                        if alien_bbox['top'] == -1:
+                            alien_bbox['top'] = row_index
+                        if alien_bbox['bottom'] == -1 or alien_bbox['bottom'] < row_index:
+                            alien_bbox['bottom'] = row_index
+                        if alien_bbox['left'] == -1 or alien_bbox['left'] > column_index:
+                            alien_bbox['left'] = column_index
+                        if alien_bbox['right'] == -1 or alien_bbox['right'] < column_index:
+                            alien_bbox['right'] = column_index
+        blackboard.set('%s_alien_bbox' % player_context, alien_bbox)
 
 # expert in alien movement prediction
 # depends on Field Analyst Expert
@@ -83,8 +97,8 @@ class AlienExpert(Expert):
         Expert.__init__(self, 'Alien Expert')
 
     def run(self, blackboard):
-        blackboard.set('your_bbox_predictions', ai.movement.predict_bbox(blackboard, 'your', 20))
-        blackboard.set('enemy_bbox_predictions', ai.movement.predict_bbox(blackboard, 'enemy', 20))
+        blackboard.set('your_bbox_predictions', ai.movement.predict_bbox(blackboard, 'your', blackboard.get('rounds_remaining')))
+        blackboard.set('enemy_bbox_predictions', ai.movement.predict_bbox(blackboard, 'enemy', blackboard.get('rounds_remaining')))
 
 
 field_analyst = FieldAnalystExpert()

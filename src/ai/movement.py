@@ -39,6 +39,9 @@ def predict_bbox(blackboard, player_context, t):
     new_bbox = copy.copy(bbox)
     results = []
     for i in range(0, t):
+        if (player_context == 'enemy' and new_bbox['left'] == MAP_LEFT and new_bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and new_bbox['left'] == MAP_LEFT and new_bbox['top'] == MAP_TOP):
+            continue
+
         round_number += 1
         if round_number == TIME_WAVE_SIZE_INCREASE:
             wave_size += 1
@@ -50,11 +53,11 @@ def predict_bbox(blackboard, player_context, t):
             else:
                 direction = 'left'
                 move_direction = 'left'
-                check_y = 'top' if player_context == 'your' else 'bottom'
+                check_y = 'top' if player_context == 'enemy' else 'bottom'
                 set_y = 'bottom' if player_context == 'your' else 'top'
                 if (new_bbox['right'], new_bbox[check_y]) == spawn_threshold:
-                    new_bbox[set_y] = spawn_location[1] if player_context == 'your' else new_bbox[set_y] - 2
-                    new_bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size)
+                    new_bbox[set_y] = spawn_location[1]
+                    new_bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
 
         else: # right
             if new_bbox['right'] == MAP_RIGHT:
