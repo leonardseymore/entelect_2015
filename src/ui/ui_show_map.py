@@ -1,23 +1,29 @@
 import tkFileDialog
-import ai.io
+from ai.io import *
 from ai.entelect import *
 import ai.event
 from ai.blackboard import Blackboard
-import ai.expert
+from ai.expert import *
 from ui.widgets import *
+from ai.util import *
 from os.path import dirname
 from os.path import join
 from os.path import exists
+from ai.util import *
+from ai.util import *
 
 # scale up the renderer
-RENDER_SCALE_FACTOR = 20
+RENDER_SCALE_FACTOR = 32
 
 
 # GUI application
 class Application(Frame):
+    harness_replay_states = None
     game_state_file = None
     game_state = None
+    game_states = None
     blackboard = None
+    blackboards = None
 
     windows = {}
 
@@ -42,19 +48,34 @@ class Application(Frame):
 
     # file dialog to load game state file
     def open_state_file(self):
-        filename = tkFileDialog.askopenfilename(filetypes=[("State files", "state.json")])
+        filename = tkFileDialog.askopenfilename(initialdir=REPLAY_DIR, filetypes=[("State files", "state.json")])
         if filename:
             self.load_state_file(filename)
 
     # file dialog to load game state file
     def load_state_file(self, filename):
         self.game_state_file = filename
-        self.game_state = ai.io.load_state(filename)
-        self.blackboard = Blackboard()
-        self.blackboard.set('game_state', self.game_state)
-        ai.expert.field_analyst.run(self.blackboard)
-        ai.expert.alien_expert.run(self.blackboard)
-        self.labels['RoundNumber'].set('Round: %d/%d' % (self.game_state['RoundNumber'], self.game_state['RoundLimit']))
+        self.game_states = load_harness_replay_states(filename)
+        self.blackboards = []
+        for game_state in self.game_states:
+            blackboard = Blackboard()
+            blackboard.set('game_state', game_state)
+            field_analyst.run(blackboard)
+            alien_expert.run(blackboard)
+            self.blackboards.append(blackboard)
+        round_number = int(basename(dirname(filename)))
+        self.load_round(round_number)
+
+    # loads a state based on round number
+    def load_round(self, round_number):
+        if not self.game_states:
+            return
+        if round_number >= len(self.game_states):
+            return
+
+        self.game_state = self.game_states[round_number]
+        self.blackboard = self.blackboards[round_number]
+        self.labels['RoundNumber'].set('Round: %d/%d' % (self.blackboard.get('round_number'), self.blackboard.get('round_limit')))
         self.redraw_canvas()
 
     # redraw canvas
@@ -81,14 +102,16 @@ class Application(Frame):
         if not self.game_state:
             return
         round_number = self.game_state['RoundNumber']
-        self.load_specific_state(round_number - 1)
+        if round_number == 0:
+            return
+        self.load_round(round_number - 1)
 
     # tries to load the next state
     def load_next_state(self):
         if not self.game_state:
             return
         round_number = self.game_state['RoundNumber']
-        self.load_specific_state(round_number + 1)
+        self.load_round(round_number + 1)
 
     # handler called when clicking on a cell
     def handle_cell_clicked(self, event):
@@ -104,6 +127,19 @@ class Application(Frame):
         for key in self.windows:
             window = self.windows[key]
             window.reload()
+
+    def show_prediction_bbox(self):
+        rounds = range(self.blackboard.get('round_number'), self.blackboard.get('round_limit'))
+        your_bbox_accuracy = []
+        enemy_bbox_accuracy = []
+
+        for round_number in rounds:
+            game_state = load_relative_harness_file(self.game_state_file, round_number)
+            blackboard = Blackboard()
+            blackboard.set('game_state', game_state)
+            field_analyst.run(blackboard)
+            your_alien_bbox = blackboard.get('your_alien_bbox')
+            enemy_alien_bbox = blackboard.get('enemy_alien_bbox')
 
     # initialize application widgets
     def create_widgets(self):
@@ -150,6 +186,10 @@ class Application(Frame):
         expert_menu = Menu(menu, tearoff=0)
         expert_menu.add_command(label='Show Blackboard', command=lambda: self.windows['blackboard'].show(self.blackboard))
         menu.add_cascade(label='Blackboard', menu=expert_menu)
+
+        prediction_menu = Menu(menu, tearoff=0)
+        prediction_menu.add_command(label='BBox Accuracy', command=self.show_prediction_bbox)
+        menu.add_cascade(label='Predictions', menu=prediction_menu)
 
         self.master.config(menu=menu)
 
@@ -280,20 +320,20 @@ class LayerAlienBBoxPredictions(Layer):
         self.at_time = 0
 
     def render(self, canvas, blackboard):
-        rect_back = canvas.create_rectangle(0, 0, 40, 20, fill='purple', activefill='pink')
+        rect_back = canvas.create_rectangle(0, 0, 40, RENDER_SCALE_FACTOR, fill='purple', activefill='pink')
         canvas.tag_bind(rect_back, '<ButtonPress-1>', lambda this=self: self.first())
-        canvas.create_text(20, 11, text='<<', state=DISABLED)
+        canvas.create_text(20, RENDER_SCALE_FACTOR / 2 + 1, text='<<', state=DISABLED)
 
-        rect_back = canvas.create_rectangle(40, 0, 80, 20, fill='purple', activefill='pink')
+        rect_back = canvas.create_rectangle(40, 0, 80, RENDER_SCALE_FACTOR, fill='purple', activefill='pink')
         canvas.tag_bind(rect_back, '<ButtonPress-1>', lambda this=self: self.back())
-        canvas.create_text(60, 11, text='<', state=DISABLED)
+        canvas.create_text(60, RENDER_SCALE_FACTOR / 2 + 1, text='<', state=DISABLED)
 
-        rect_forward = canvas.create_rectangle(80, 0, 120, 20, fill='purple', activefill='pink')
+        rect_forward = canvas.create_rectangle(80, 0, 120, RENDER_SCALE_FACTOR, fill='purple', activefill='pink')
         canvas.tag_bind(rect_forward, '<ButtonPress-1>', lambda this=self: self.forward())
-        canvas.create_text(100, 11, text='>', state=DISABLED)
+        canvas.create_text(100, RENDER_SCALE_FACTOR / 2 + 1, text='>', state=DISABLED)
 
-        canvas.create_rectangle(120, 0, MAP_WIDTH * RENDER_SCALE_FACTOR, 20, fill='grey')
-        self.at_time_label = canvas.create_text(130, 11, text='No predictions', anchor=W, state=DISABLED)
+        canvas.create_rectangle(120, 0, MAP_WIDTH * RENDER_SCALE_FACTOR, RENDER_SCALE_FACTOR, fill='grey')
+        self.at_time_label = canvas.create_text(130, RENDER_SCALE_FACTOR / 2 + 1, text='No predictions', anchor=W, state=DISABLED)
 
         self.your_bbox_predictions = blackboard.get('your_bbox_predictions')
         self.max_time = len(self.your_bbox_predictions)
@@ -302,10 +342,22 @@ class LayerAlienBBoxPredictions(Layer):
         self.enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
         self.enemy_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', width=2, activewidth=4)
 
+        round_limit = blackboard.get('round_limit')
+        cell_width = (MAP_WIDTH * RENDER_SCALE_FACTOR) / float(round_limit)
+        for i in range(0, round_limit):
+            rect_time = canvas.create_rectangle(i * cell_width, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR, (i + 1) * cell_width, MAP_HEIGHT * RENDER_SCALE_FACTOR, fill='purple', activefill='pink')
+            if i - 1 == blackboard.get('round_number'):
+                canvas.itemconfig(rect_time, fill='orange')
+            canvas.tag_bind(rect_time, '<ButtonPress-1>', lambda this=self, t=i: self.to(t))
+
         self.update()
 
     def first(self):
         self.at_time = 0
+        self.update()
+
+    def to(self, time):
+        self.at_time = time
         self.update()
 
     def back(self):

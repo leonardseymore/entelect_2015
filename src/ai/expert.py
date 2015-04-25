@@ -19,16 +19,18 @@ class FieldAnalystExpert(Expert):
 
     def run(self, blackboard):
         game_state = blackboard.get('game_state')
+        # basic props
+        blackboard.set('round_number', game_state['RoundNumber'])
+        blackboard.set('round_limit', game_state['RoundLimit'])
+        blackboard.set('rounds_remaining', game_state['RoundLimit'] - game_state['RoundNumber'])
         self.set_player_info(game_state, blackboard, 0)
         self.set_player_info(game_state, blackboard, 1)
+
 
     def set_player_info(self, game_state, blackboard, player_index):
         player_context = 'your' if player_index == 0 else 'enemy'
         player = game_state['Players'][player_index]
 
-        # basic props
-        blackboard.set('round_number', game_state['RoundNumber'])
-        blackboard.set('rounds_remaining', game_state['RoundLimit'] - game_state['RoundNumber'])
         blackboard.set('%s_lives' % player_context, player['Lives'])
         blackboard.set('%s_kills' % player_context, player['Kills'])
         blackboard.set('%s_alien_wave_size' % player_context, player['AlienWaveSize'])

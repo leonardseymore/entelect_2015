@@ -2,17 +2,18 @@
 class Blackboard():
     # parent scope
     parent = None
-    data = {}
+    data = None
 
     def __init__(self, parent=None):
         self.parent = parent
+        self.data = {}
 
     def set(self, key, value):
         self.data[key] = value
 
     # gets a value recursively up the blackboard hierarchy
     def get(self, key):
-        if key in self.data:
+        if self.data.has_key(key):
             return self.data[key]
         elif self.parent:
             return self.parent.get(key)
