@@ -306,6 +306,7 @@ class LayerAlienBBoxPredictions(Layer):
 
     at_time = 0
     max_time = 0
+    rect_time = None
     at_time_label = None
     your_prediction_rect = None
     enemy_prediction_rect = None
@@ -345,15 +346,15 @@ class LayerAlienBBoxPredictions(Layer):
         self.enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
         self.enemy_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', width=2, activewidth=4)
 
+        canvas.create_rectangle(0, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR, MAP_WIDTH * RENDER_SCALE_FACTOR, MAP_HEIGHT * RENDER_SCALE_FACTOR, width=1, fill='grey', state=DISABLED)
         round_limit = blackboard.get('round_limit')
         cell_width = (MAP_WIDTH * RENDER_SCALE_FACTOR) / float(round_limit)
         for i in range(0, round_limit):
-            rect_time = canvas.create_rectangle(i * cell_width, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR + 1, (i + 1) * cell_width, MAP_HEIGHT * RENDER_SCALE_FACTOR, width=0, fill='purple', activefill='pink')
-            if i == blackboard.get('round_number'):
-                canvas.itemconfig(rect_time, fill='orange')
-            elif i < blackboard.get('round_number') or i + 1 > blackboard.get('rounds_in_replay'):
-                canvas.itemconfig(rect_time, fill='grey', state=DISABLED)
-            canvas.tag_bind(rect_time, '<ButtonPress-1>', lambda this=self, t=i - blackboard.get('round_number'): self.to(t))
+            if i >= blackboard.get('round_number') and i < blackboard.get('rounds_in_replay'):
+                rect_time = canvas.create_rectangle(i * cell_width, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR + 1, (i + 1) * cell_width, MAP_HEIGHT * RENDER_SCALE_FACTOR, width=0, fill='purple', activefill='pink')
+                if i == blackboard.get('round_number'):
+                    canvas.itemconfig(rect_time, fill='orange')
+                canvas.tag_bind(rect_time, '<ButtonPress-1>', lambda this=self, rect=rect_time, t=i - blackboard.get('round_number'): self.to(t, rect))
 
         self.update()
 
@@ -361,7 +362,12 @@ class LayerAlienBBoxPredictions(Layer):
         self.at_time = 0
         self.update()
 
-    def to(self, time):
+    def to(self, time, rect_time):
+        if self.rect_time:
+            self.canvas.itemconfig(self.rect_time, width=0)
+        self.canvas.itemconfig(rect_time, width=1)
+        self.rect_time = rect_time
+
         self.at_time = time
         self.update()
 
@@ -380,19 +386,25 @@ class LayerAlienBBoxPredictions(Layer):
         self.show_at_time(self.at_time)
 
     def show_at_time(self, t):
-        bbox = self.your_bbox_predictions[t]
-        self.canvas.coords(self.your_prediction_rect,
-                           bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR,
-                           (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
-                           (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR
-                           )
+        if t < len(self.your_bbox_predictions):
+            bbox = self.your_bbox_predictions[t]
+            self.canvas.coords(self.your_prediction_rect,
+                               bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR,
+                               (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
+                               (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR
+                               )
+        else:
+            self.canvas.coords(self.your_prediction_rect, 0, 0, 0, 0)
 
-        bbox = self.enemy_bbox_predictions[t]
-        self.canvas.coords(self.enemy_prediction_rect,
-                           bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR,
-                           (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
-                           (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR
-                           )
+        if t < len(self.enemy_bbox_predictions):
+            bbox = self.enemy_bbox_predictions[t]
+            self.canvas.coords(self.enemy_prediction_rect,
+                               bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR,
+                               (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
+                               (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR
+                               )
+        else:
+            self.canvas.coords(self.enemy_prediction_rect, 0, 0, 0, 0)
 
 # boostrap application
 root = Tk()
