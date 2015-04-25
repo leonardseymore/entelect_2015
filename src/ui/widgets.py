@@ -1,5 +1,5 @@
 from Tkinter import *
-import ai.expert
+from ai.entelect import *
 
 class KeyValueGrid(Frame):
 
@@ -118,9 +118,9 @@ class BlackboardWindow(KeyValueWindow):
         KeyValueWindow.build_window(self)
         menu = self.menu
         experts_menu = Menu(menu, tearoff=0)
-        for key in ai.expert.experts:
+        for key in experts:
             print key
-            expert = ai.expert.experts[key]
+            expert = experts[key]
             experts_menu.add_command(label=expert.name, command=lambda expert_to_run=expert: self.run_expert(expert_to_run))
         menu.add_cascade(label='Run Expert', menu=experts_menu)
 

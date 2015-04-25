@@ -1,4 +1,3 @@
-import ai.io
 import ai.entelect
 
-ai.io.write_move(ai.entelect.BUILD_ALIEN_FACTORY)
+ai.entelect.write_move(ai.entelect.BUILD_ALIEN_FACTORY)

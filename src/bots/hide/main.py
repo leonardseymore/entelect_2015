@@ -1,14 +1,11 @@
-import ai.io
-import ai.entelect
-from ai.expert import field_analyst
-from ai.blackboard import Blackboard
+from ai.entelect import *
 
-game_state = ai.io.load_state()
+game_state = load_state()
 blackboard = Blackboard()
 blackboard.set('game_state', game_state)
 field_analyst.run(blackboard)
 
 if blackboard.get('your_alien_factory_built'):
-    ai.io.write_move(ai.entelect.BUILD_SHIELD)
+    write_move(BUILD_SHIELD)
 else:
-    ai.io.write_move(ai.entelect.BUILD_ALIEN_FACTORY)
+    write_move(BUILD_ALIEN_FACTORY)

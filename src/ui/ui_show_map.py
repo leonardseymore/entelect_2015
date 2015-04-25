@@ -1,16 +1,6 @@
 import tkFileDialog
-from ai.io import *
-from ai.entelect import *
-import ai.event
-from ai.blackboard import Blackboard
-from ai.expert import *
 from ui.widgets import *
-from ai.util import *
-from os.path import dirname
-from os.path import join
-from os.path import exists
-from ai.util import *
-from ai.util import *
+from ai.entelect import *
 
 # scale up the renderer
 RENDER_SCALE_FACTOR = 32
@@ -45,7 +35,7 @@ class Application(Frame):
         self.windows['player2_info'] = KeyValueWindow(master, 'Player 2 Information', lambda: self.game_state['Players'][1])
         self.windows['blackboard'] = BlackboardWindow(master, 'Blackboard', lambda: self.blackboard)
 
-        ai.event.register('cell_clicked', self)
+        register('cell_clicked', self)
 
     # file dialog to load game state file
     def open_state_file(self):
@@ -65,7 +55,7 @@ class Application(Frame):
             field_analyst.run(blackboard)
             alien_expert.run(blackboard)
             self.blackboards.append(blackboard)
-        round_number = int(basename(dirname(filename)))
+        round_number = int(os.path.basename(os.path.dirname(filename)))
         self.load_round(round_number)
 
     # loads a state based on round number
@@ -90,15 +80,6 @@ class Application(Frame):
         for layer in self.layers:
             if layer.enabled.get():
                 layer.load_game_state(self.game_state, self.blackboard)
-
-    # tries to load a specific state
-    def load_specific_state(self, round_number):
-        if not self.game_state or not (round_number >= 0 and round_number <= self.game_state['RoundLimit']):
-            return
-        file_to_load = dirname(dirname(self.game_state_file))
-        file_to_load = join(file_to_load, str(round_number).zfill(3), 'state.json')
-        if exists(file_to_load):
-            self.load_state_file(file_to_load)
 
     # tries to load the previous state
     def load_prev_state(self):
@@ -273,7 +254,7 @@ class LayerEntities(LayerCellBase):
             return
 
         rect = canvas.create_rectangle(left, top, right, bottom, activewidth=2)
-        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index: ai.event.dispatch(ai.event.Event('cell_clicked', {'row': row, 'column': column})))
+        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index: dispatch(Event('cell_clicked', {'row': row, 'column': column})))
         if cell['PlayerNumber'] == 1:
             canvas.itemconfig(rect, fill='blue')
         elif cell['PlayerNumber'] == 2:
