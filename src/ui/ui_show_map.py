@@ -24,6 +24,7 @@ class Application(Frame):
     game_states = None
     blackboard = None
     blackboards = None
+    round_number = 0
 
     windows = {}
 
@@ -60,6 +61,7 @@ class Application(Frame):
         for game_state in self.game_states:
             blackboard = Blackboard()
             blackboard.set('game_state', game_state)
+            blackboard.set('rounds_in_replay', len(self.game_states))
             field_analyst.run(blackboard)
             alien_expert.run(blackboard)
             self.blackboards.append(blackboard)
@@ -72,6 +74,7 @@ class Application(Frame):
             return
         if round_number >= len(self.game_states):
             return
+        self.round_number = round_number
 
         self.game_state = self.game_states[round_number]
         self.blackboard = self.blackboards[round_number]
@@ -345,10 +348,12 @@ class LayerAlienBBoxPredictions(Layer):
         round_limit = blackboard.get('round_limit')
         cell_width = (MAP_WIDTH * RENDER_SCALE_FACTOR) / float(round_limit)
         for i in range(0, round_limit):
-            rect_time = canvas.create_rectangle(i * cell_width, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR, (i + 1) * cell_width, MAP_HEIGHT * RENDER_SCALE_FACTOR, fill='purple', activefill='pink')
-            if i - 1 == blackboard.get('round_number'):
+            rect_time = canvas.create_rectangle(i * cell_width, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR + 1, (i + 1) * cell_width, MAP_HEIGHT * RENDER_SCALE_FACTOR, width=0, fill='purple', activefill='pink')
+            if i == blackboard.get('round_number'):
                 canvas.itemconfig(rect_time, fill='orange')
-            canvas.tag_bind(rect_time, '<ButtonPress-1>', lambda this=self, t=i: self.to(t))
+            elif i < blackboard.get('round_number') or i + 1 > blackboard.get('rounds_in_replay'):
+                canvas.itemconfig(rect_time, fill='grey', state=DISABLED)
+            canvas.tag_bind(rect_time, '<ButtonPress-1>', lambda this=self, t=i - blackboard.get('round_number'): self.to(t))
 
         self.update()
 
