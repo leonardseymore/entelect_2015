@@ -354,14 +354,13 @@ def predict_movement(blackboard, player_context, t):
 
     new_bbox = copy.copy(bbox)
     results = [{'bbox': new_bbox, 'aliens': copy.deepcopy(aliens)}]
-    for i in range(0, t):
+    for i in range(1, t):
         if (player_context == 'enemy' and new_bbox['left'] == MAP_LEFT and new_bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and new_bbox['left'] == MAP_LEFT and new_bbox['top'] == MAP_TOP):
             break
 
         if round_number == TIME_WAVE_SIZE_INCREASE:
             wave_size += 1
 
-        new_aliens = copy.deepcopy(new_aliens)
         if direction == 'left':
             if new_bbox['left'] == MAP_LEFT:
                 direction = 'right'
@@ -386,6 +385,7 @@ def predict_movement(blackboard, player_context, t):
                 move_direction = 'right'
         new_bbox = move_bbox(new_bbox, move_direction)
 
+        new_aliens = copy.deepcopy(new_aliens)
         for alien in new_aliens:
             if move_direction == 'left':
                 alien['pos']['x'] -= 1
