@@ -294,10 +294,11 @@ class LayerAlienBBoxPredictions(Layer):
     at_time_label = None
     your_prediction_rect = None
     enemy_prediction_rect = None
-    your_bbox_predictions = None
-    enemy_bbox_predictions = None
+    your_predictions = None
+    enemy_predictions = None
     layer_entities = None
     layer_labels = None
+    alien_rects = None
 
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Alien BBox Predictions')
@@ -311,6 +312,8 @@ class LayerAlienBBoxPredictions(Layer):
         Layer.load_game_state(self, game_state, blackboard)
 
     def render(self, canvas, blackboard):
+        self.alien_rects = []
+
         self.at_time = 0
         self.round_number = blackboard.get('round_number')
         self.max_time = blackboard.get('rounds_in_replay') - self.round_number - 1
@@ -330,10 +333,10 @@ class LayerAlienBBoxPredictions(Layer):
         canvas.create_rectangle(120, 0, MAP_WIDTH * RENDER_SCALE_FACTOR, RENDER_SCALE_FACTOR, fill='grey')
         self.at_time_label = canvas.create_text(130, RENDER_SCALE_FACTOR / 2 + 1, text='No predictions', anchor=W, state=DISABLED)
 
-        self.your_bbox_predictions = blackboard.get('your_bbox_predictions')
+        self.your_predictions = blackboard.get('your_predictions')
         self.your_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', width=2, activewidth=4)
 
-        self.enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
+        self.enemy_predictions = blackboard.get('enemy_predictions')
         self.enemy_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', width=2, activewidth=4)
 
         canvas.create_rectangle(0, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR, MAP_WIDTH * RENDER_SCALE_FACTOR, MAP_HEIGHT * RENDER_SCALE_FACTOR, width=1, fill='grey', state=DISABLED)
@@ -386,8 +389,8 @@ class LayerAlienBBoxPredictions(Layer):
         self.layer_labels.delete_labels(self.canvas)
         self.layer_labels.game_state = self.application.game_states[round_number]
         self.layer_entities.render(self.canvas, self.application.blackboards[round_number])
-        if t < len(self.your_bbox_predictions):
-            bbox = self.your_bbox_predictions[t]
+        if t < len(self.your_predictions):
+            bbox = self.your_predictions[t]['bbox']
             self.canvas.coords(self.your_prediction_rect,
                                bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR,
                                (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
@@ -396,8 +399,8 @@ class LayerAlienBBoxPredictions(Layer):
         else:
             self.canvas.coords(self.your_prediction_rect, 0, 0, 0, 0)
 
-        if t < len(self.enemy_bbox_predictions):
-            bbox = self.enemy_bbox_predictions[t]
+        if t < len(self.enemy_predictions):
+            bbox = self.enemy_predictions[t]['bbox']
             self.canvas.coords(self.enemy_prediction_rect,
                                bbox['left'] * RENDER_SCALE_FACTOR, bbox['top'] * RENDER_SCALE_FACTOR,
                                (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
@@ -405,6 +408,14 @@ class LayerAlienBBoxPredictions(Layer):
                                )
         else:
             self.canvas.coords(self.enemy_prediction_rect, 0, 0, 0, 0)
+
+        for alien_rect in self.alien_rects:
+            self.canvas.delete(alien_rect)
+        self.alien_rects = []
+
+        for alien in self.your_predictions[t]['aliens'] + self.enemy_predictions[t]['aliens']:
+            self.alien_rects.append(self.canvas.create_rectangle(alien['pos'][0] * RENDER_SCALE_FACTOR, alien['pos'][1] * RENDER_SCALE_FACTOR, (alien['pos'][0] + 1) * RENDER_SCALE_FACTOR, (alien['pos'][1] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4))
+
         self.layer_labels.render(self.canvas, self.application.blackboards[round_number])
 
 # boostrap application
