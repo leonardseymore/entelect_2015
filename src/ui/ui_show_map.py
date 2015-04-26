@@ -290,8 +290,10 @@ class LayerAlienBBox(Layer):
 # draw bounding box around aliens
 class LayerAlienBBoxPredictions(Layer):
     at_time = 0
+    round_number = 0
     max_time = 0
     rect_time = None
+    timeline_rects = None
     at_time_label = None
     your_prediction_rect = None
     enemy_prediction_rect = None
@@ -305,14 +307,17 @@ class LayerAlienBBoxPredictions(Layer):
         self.at_time_label = StringVar()
         self.layer_entities = LayerEntities(canvas)
         self.layer_labels = LayerLabels(canvas)
-        canvas.master.bind('<d>', lambda this=self: self.forward())
-        canvas.master.bind('<a>', lambda this=self: self.back())
+        self.application.master.bind('<d>', lambda this=self: self.forward())
+        self.application.master.bind('<a>', lambda this=self: self.back())
 
     def load_game_state(self, game_state, blackboard):
         Layer.load_game_state(self, game_state, blackboard)
-        self.at_time = 0
 
     def render(self, canvas, blackboard):
+        self.at_time = 0
+        self.round_number = blackboard.get('round_number')
+        self.max_time = blackboard.get('rounds_in_replay') - self.round_number - 1
+
         rect_back = canvas.create_rectangle(0, 0, 40, RENDER_SCALE_FACTOR, fill='purple', activefill='pink')
         canvas.tag_bind(rect_back, '<ButtonPress-1>', lambda this=self: self.first())
         canvas.create_text(20, RENDER_SCALE_FACTOR / 2 + 1, text='<<', state=DISABLED)
@@ -337,12 +342,14 @@ class LayerAlienBBoxPredictions(Layer):
         canvas.create_rectangle(0, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR, MAP_WIDTH * RENDER_SCALE_FACTOR, MAP_HEIGHT * RENDER_SCALE_FACTOR, width=1, fill='grey', state=DISABLED)
         round_limit = blackboard.get('round_limit')
         cell_width = (MAP_WIDTH * RENDER_SCALE_FACTOR) / float(round_limit)
-        for i in range(0, round_limit):
-            if i >= blackboard.get('round_number') and i < blackboard.get('rounds_in_replay'):
-                rect_time = canvas.create_rectangle(i * cell_width, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR + 1, (i + 1) * cell_width, MAP_HEIGHT * RENDER_SCALE_FACTOR, width=0, fill='purple', activefill='pink')
-                if i == blackboard.get('round_number'):
-                    canvas.itemconfig(rect_time, fill='orange')
-                canvas.tag_bind(rect_time, '<ButtonPress-1>', lambda this=self, rect=rect_time, t=i - blackboard.get('round_number'): self.to(t, rect))
+
+        self.timeline_rects = []
+        for i in range(self.round_number, blackboard.get('rounds_in_replay')):
+            rect_time = canvas.create_rectangle((i + 1) * cell_width, (MAP_HEIGHT * RENDER_SCALE_FACTOR) - RENDER_SCALE_FACTOR + 1, (i + 2) * cell_width, MAP_HEIGHT * RENDER_SCALE_FACTOR, width=0, fill='purple', activefill='pink')
+            if i == self.round_number:
+                canvas.itemconfig(rect_time, fill='orange')
+            canvas.tag_bind(rect_time, '<ButtonPress-1>', lambda this=self, t=i - self.round_number: self.to(t))
+            self.timeline_rects.append(rect_time)
 
         self.update()
 
@@ -350,12 +357,7 @@ class LayerAlienBBoxPredictions(Layer):
         self.at_time = 0
         self.update()
 
-    def to(self, time, rect_time):
-        if self.rect_time:
-            self.canvas.itemconfig(self.rect_time, width=0)
-        self.canvas.itemconfig(rect_time, width=1)
-        self.rect_time = rect_time
-
+    def to(self, time):
         self.at_time = time
         self.update()
 
@@ -365,20 +367,29 @@ class LayerAlienBBoxPredictions(Layer):
             self.update()
 
     def forward(self):
-        if self.at_time < len(self.application.game_states):
+        if self.at_time < self.max_time:
             self.at_time += 1
             self.update()
 
     def update(self):
-        self.canvas.itemconfig(self.at_time_label, text='~In turns %d [round: %d]' % ((self.at_time), (self.at_time + self.blackboard.get('round_number'))))
-        self.show_at_time(self.at_time)
+        self.canvas.itemconfig(self.at_time_label, text='~In turns %d [round: %d]' % ((self.at_time), (self.at_time + self.round_number)))
+        self.show_at_time(self.at_time, self.at_time + self.round_number)
 
-    def show_at_time(self, t):
+    def show_at_time(self, t, round_number):
+        print '%d - %d' % (t, round_number)
+        if round_number >= len(self.application.game_states):
+            return
+
+        if self.rect_time:
+            self.canvas.itemconfig(self.rect_time, width=0)
+        self.canvas.itemconfig(self.timeline_rects[t], width=1)
+        self.rect_time = self.timeline_rects[t]
+
         self.layer_entities.delete_entities(self.canvas)
-        self.layer_entities.game_state = self.application.game_states[t]
+        self.layer_entities.game_state = self.application.game_states[round_number]
         self.layer_labels.delete_labels(self.canvas)
-        self.layer_labels.game_state = self.application.game_states[t]
-        self.layer_entities.render(self.canvas, self.application.blackboards[t])
+        self.layer_labels.game_state = self.application.game_states[round_number]
+        self.layer_entities.render(self.canvas, self.application.blackboards[round_number])
         if t < len(self.your_bbox_predictions):
             bbox = self.your_bbox_predictions[t]
             self.canvas.coords(self.your_prediction_rect,
@@ -398,7 +409,7 @@ class LayerAlienBBoxPredictions(Layer):
                                )
         else:
             self.canvas.coords(self.enemy_prediction_rect, 0, 0, 0, 0)
-        self.layer_labels.render(self.canvas, self.application.blackboards[t])
+        self.layer_labels.render(self.canvas, self.application.blackboards[round_number])
 
 # boostrap application
 root = Tk()

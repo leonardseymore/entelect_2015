@@ -353,6 +353,7 @@ def predict_bbox(blackboard, player_context, t):
 
     new_bbox = copy.copy(bbox)
     results = []
+    results.append(new_bbox)
     for i in range(0, t):
         if (player_context == 'enemy' and new_bbox['left'] == MAP_LEFT and new_bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and new_bbox['left'] == MAP_LEFT and new_bbox['top'] == MAP_TOP):
             continue
