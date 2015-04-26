@@ -353,14 +353,15 @@ def predict_movement(blackboard, player_context, t):
     new_aliens = copy.deepcopy(aliens)
 
     new_bbox = copy.copy(bbox)
-    results = [{'bbox': new_bbox, 'aliens': new_aliens}]
+    results = [{'bbox': new_bbox, 'aliens': copy.deepcopy(aliens)}]
     for i in range(0, t):
         if (player_context == 'enemy' and new_bbox['left'] == MAP_LEFT and new_bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and new_bbox['left'] == MAP_LEFT and new_bbox['top'] == MAP_TOP):
-            continue
+            break
 
         if round_number == TIME_WAVE_SIZE_INCREASE:
             wave_size += 1
 
+        new_aliens = copy.deepcopy(new_aliens)
         if direction == 'left':
             if new_bbox['left'] == MAP_LEFT:
                 direction = 'right'
@@ -373,6 +374,8 @@ def predict_movement(blackboard, player_context, t):
                 if (new_bbox['right'], new_bbox[check_y]) == spawn_threshold:
                     new_bbox[set_y] = spawn_location[1]
                     new_bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
+                    for new_alien_idx in range(0, wave_size):
+                        new_aliens.append({'pos': {'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1]}, 'spawned': round_number})
 
         else: # right
             if new_bbox['right'] == MAP_RIGHT:
@@ -385,13 +388,13 @@ def predict_movement(blackboard, player_context, t):
 
         for alien in new_aliens:
             if move_direction == 'left':
-                alien['pos'][0] -= 1
+                alien['pos']['x'] -= 1
             elif move_direction == 'right':
-                alien['pos'][0] += 1
+                alien['pos']['x'] += 1
             elif move_direction == 'up':
-                alien['pos'][1] -= 1
+                alien['pos']['y'] -= 1
             elif move_direction == 'down':
-                alien['pos'][1] += 1
+                alien['pos']['y'] += 1
 
         results.append({'bbox': new_bbox, 'aliens': new_aliens})
 
@@ -427,9 +430,9 @@ class FieldAnalystExpert(Expert):
         self.set_player_info(game_state, blackboard, 0)
         self.set_player_info(game_state, blackboard, 1)
 
-
     def set_player_info(self, game_state, blackboard, player_index):
         player_context = 'your' if player_index == 0 else 'enemy'
+        player_number = 1 if player_context == 'your' else 2
         player = game_state['Players'][player_index]
 
         spawn_location = YOUR_SPAWN_LOCATION if player_context == 'your' else ENEMY_SPAWN_LOCATION
@@ -492,17 +495,19 @@ class FieldAnalystExpert(Expert):
 
         player_aliens = []
         if game_state['RoundNumber'] == 0:
-            player_aliens.append({'pos': [MAP_RIGHT, spawn_location[1]]})
+            player_aliens.append({'pos': {'x': MAP_RIGHT, 'y': spawn_location[1]}})
+            player_aliens.append({'pos': {'x': MAP_RIGHT - 3, 'y': spawn_location[1]}})
+            player_aliens.append({'pos': {'x': MAP_RIGHT - 6, 'y': spawn_location[1]}})
         else:
             for row_index in range(0, MAP_HEIGHT):
                 for column_index in range(0, MAP_WIDTH):
                     cell = game_map['Rows'][row_index][column_index]
                     if not cell:
                         continue
-                    if cell['Type'] == ALIEN and cell['PlayerNumber'] == player_index:
+                    if cell['Type'] == ALIEN and cell['PlayerNumber'] == player_number:
                         alien = {
                             'id': cell['Id'],
-                            'pos': [row_index, column_index]
+                            'pos': {'x': column_index, 'y': row_index}
                         }
                         player_aliens.append(alien)
         blackboard.set('%s_aliens' % player_context, player_aliens)

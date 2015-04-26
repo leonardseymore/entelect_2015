@@ -29,6 +29,7 @@ class Application(Frame):
         self.create_menu()
         self.windows['game_info'] = KeyValueWindow(master, 'Game Information', lambda: self.game_state)
         self.windows['cell_info'] = KeyValueWindow(master, 'Cell Information', None, '400x300')
+        self.windows['prediction_info'] = KeyValueWindow(master, 'Prediction Information', None, '400x300')
         self.windows['player1_info'] = KeyValueWindow(master, 'Player 1 Information', lambda: self.game_state['Players'][0])
         self.windows['player2_info'] = KeyValueWindow(master, 'Player 2 Information', lambda: self.game_state['Players'][1])
         self.windows['blackboard'] = BlackboardWindow(master, 'Blackboard', lambda: self.blackboard)
@@ -412,11 +413,15 @@ class LayerAlienBBoxPredictions(Layer):
         for alien_rect in self.alien_rects:
             self.canvas.delete(alien_rect)
         self.alien_rects = []
-
         for alien in self.your_predictions[t]['aliens'] + self.enemy_predictions[t]['aliens']:
-            self.alien_rects.append(self.canvas.create_rectangle(alien['pos'][0] * RENDER_SCALE_FACTOR, alien['pos'][1] * RENDER_SCALE_FACTOR, (alien['pos'][0] + 1) * RENDER_SCALE_FACTOR, (alien['pos'][1] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4))
+            alien_rect = self.canvas.create_rectangle(alien['pos']['x'] * RENDER_SCALE_FACTOR, alien['pos']['y'] * RENDER_SCALE_FACTOR, (alien['pos']['x'] + 1) * RENDER_SCALE_FACTOR, (alien['pos']['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
+            self.canvas.tag_bind(alien_rect, '<ButtonPress-1>', lambda event, item=alien: self.item_clicked(item))
+            self.alien_rects.append(alien_rect)
 
         self.layer_labels.render(self.canvas, self.application.blackboards[round_number])
+
+    def item_clicked(self, item):
+        self.application.windows['prediction_info'].show(item)
 
 # boostrap application
 root = Tk()

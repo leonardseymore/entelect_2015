@@ -110,7 +110,7 @@ class KeyValueWindow():
         self.grid.grid(sticky=NSEW)
 
     def reload(self):
-        if self.window and self.window.winfo_exists():
+        if self.get_value and self.window and self.window.winfo_exists():
             self.show(self.get_value())
 
 class BlackboardWindow(KeyValueWindow):
