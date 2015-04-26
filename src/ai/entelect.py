@@ -357,7 +357,6 @@ def predict_bbox(blackboard, player_context, t):
         if (player_context == 'enemy' and new_bbox['left'] == MAP_LEFT and new_bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and new_bbox['left'] == MAP_LEFT and new_bbox['top'] == MAP_TOP):
             continue
 
-        round_number += 1
         if round_number == TIME_WAVE_SIZE_INCREASE:
             wave_size += 1
 
@@ -384,6 +383,7 @@ def predict_bbox(blackboard, player_context, t):
         new_bbox = move_bbox(new_bbox, move_direction)
         results.append(new_bbox)
 
+        round_number += 1
     return results
 
 #

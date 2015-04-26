@@ -5,10 +5,8 @@ from ai.entelect import *
 # scale up the renderer
 RENDER_SCALE_FACTOR = 32
 
-
 # GUI application
 class Application(Frame):
-    harness_replay_states = None
     game_state_file = None
     game_state = None
     game_states = None
@@ -112,32 +110,18 @@ class Application(Frame):
             window = self.windows[key]
             window.reload()
 
-    def show_prediction_bbox(self):
-        rounds = range(self.blackboard.get('round_number'), self.blackboard.get('round_limit'))
-        your_bbox_accuracy = []
-        enemy_bbox_accuracy = []
-
-        for round_number in rounds:
-            game_state = load_relative_harness_file(self.game_state_file, round_number)
-            blackboard = Blackboard()
-            blackboard.set('game_state', game_state)
-            field_analyst.run(blackboard)
-            your_alien_bbox = blackboard.get('your_alien_bbox')
-            enemy_alien_bbox = blackboard.get('enemy_alien_bbox')
-
     # initialize application widgets
     def create_widgets(self):
         frame = Frame(self.master)
         frame.grid(sticky=NSEW)
 
-        canvas = Canvas(frame, width=MAP_WIDTH * RENDER_SCALE_FACTOR, height=MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
-        self.canvas = canvas
-        canvas.grid(row=0, sticky=EW)
-        self.layers.append(LayerBase(canvas))
-        self.layers.append(LayerEntities(canvas))
-        self.layers.append(LayerAlienBBox(canvas))
-        self.layers.append(LayerAlienBBoxPredictions(canvas))
-        self.layers.append(LayerLabels(canvas))
+        self.canvas = Canvas(frame, width=MAP_WIDTH * RENDER_SCALE_FACTOR, height=MAP_HEIGHT * RENDER_SCALE_FACTOR, bd=1, relief=SUNKEN)
+        self.canvas.grid(row=0, sticky=EW)
+        self.layers.append(LayerBase(self))
+        self.layers.append(LayerEntities(self))
+        self.layers.append(LayerAlienBBox(self))
+        self.layers.append(LayerAlienBBoxPredictions(self))
+        self.layers.append(LayerLabels(self))
 
         nav_frame = Frame(frame)
         nav_frame.grid(sticky=EW, row=1)
@@ -171,27 +155,25 @@ class Application(Frame):
         expert_menu.add_command(label='Show Blackboard', command=lambda: self.windows['blackboard'].show(self.blackboard))
         menu.add_cascade(label='Blackboard', menu=expert_menu)
 
-        prediction_menu = Menu(menu, tearoff=0)
-        prediction_menu.add_command(label='BBox Accuracy', command=self.show_prediction_bbox)
-        menu.add_cascade(label='Predictions', menu=prediction_menu)
-
         self.master.config(menu=menu)
 
 # frame to render on a canvas layer
 class Layer():
+    application = None
+    canvas = None
     name = None
     enabled = None
-    canvas = None
     callback = None
     game_state = None
     blackboard = None
     width = 0
     height = 0
 
-    def __init__(self, canvas, name, enabled=True):
-        self.enabled = BooleanVar(canvas)
+    def __init__(self, application, name, enabled=True):
+        self.application = application
+        self.canvas = application.canvas
+        self.enabled = BooleanVar(self.canvas)
         self.enabled.set(enabled)
-        self.canvas = canvas
         self.name = name
         self.width = MAP_WIDTH * RENDER_SCALE_FACTOR
         self.height = MAP_HEIGHT * RENDER_SCALE_FACTOR
@@ -224,10 +206,10 @@ class LayerCellBase(Layer):
 # frame to render game cells
 class LayerBase(LayerCellBase):
 
-    def __init__(self, canvas):
-        Layer.__init__(self, canvas, 'Base')
-        canvas.create_line(0, 0, self.width, self.height)
-        canvas.create_line(0, self.height, self.width, 0)
+    def __init__(self, application):
+        Layer.__init__(self, application, 'Base')
+        self.canvas.create_line(0, 0, self.width, self.height)
+        self.canvas.create_line(0, self.height, self.width, 0)
 
     # reload canvas with new game state
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
@@ -241,9 +223,19 @@ class LayerBase(LayerCellBase):
 
 # entities layer
 class LayerEntities(LayerCellBase):
+    entities = None
 
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Entities')
+        self.entities = []
+
+    def render(self, canvas, blackboard):
+        LayerCellBase.render(self, canvas, blackboard)
+
+    def delete_entities(self, canvas):
+        for entity in self.entities:
+            canvas.delete(entity)
+        self.entities = []
 
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
         if not cell:
@@ -254,6 +246,7 @@ class LayerEntities(LayerCellBase):
             return
 
         rect = canvas.create_rectangle(left, top, right, bottom, activewidth=2)
+        self.entities.append(rect)
         canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index: dispatch(Event('cell_clicked', {'row': row, 'column': column})))
         if cell['PlayerNumber'] == 1:
             canvas.itemconfig(rect, fill='blue')
@@ -262,13 +255,25 @@ class LayerEntities(LayerCellBase):
 
 # frame to labels
 class LayerLabels(LayerCellBase):
+    labels = None
+
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Labels')
+        self.labels = []
+
+    def render(self, canvas, blackboard):
+        LayerCellBase.render(self, canvas, blackboard)
+
+    def delete_labels(self, canvas):
+        for label in self.labels:
+            canvas.delete(label)
+        self.labels = []
 
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
         symbol = cell_to_symbol(cell)
         if not symbol == WALL_SYMBOL:
-            canvas.create_text(left + RENDER_SCALE_FACTOR / 2, top + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
+            label = canvas.create_text(left + RENDER_SCALE_FACTOR / 2, top + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
+            self.labels.append(label)
 
 # draw bounding box around aliens
 class LayerAlienBBox(Layer):
@@ -284,7 +289,6 @@ class LayerAlienBBox(Layer):
 
 # draw bounding box around aliens
 class LayerAlienBBoxPredictions(Layer):
-
     at_time = 0
     max_time = 0
     rect_time = None
@@ -293,12 +297,16 @@ class LayerAlienBBoxPredictions(Layer):
     enemy_prediction_rect = None
     your_bbox_predictions = None
     enemy_bbox_predictions = None
+    layer_entities = None
+    layer_labels = None
 
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Alien BBox Predictions')
         self.at_time_label = StringVar()
-        canvas.bind('<d>', lambda this=self: self.forward())
-        canvas.bind('<a>', lambda this=self: self.back())
+        self.layer_entities = LayerEntities(canvas)
+        self.layer_labels = LayerLabels(canvas)
+        canvas.master.bind('<d>', lambda this=self: self.forward())
+        canvas.master.bind('<a>', lambda this=self: self.back())
 
     def load_game_state(self, game_state, blackboard):
         Layer.load_game_state(self, game_state, blackboard)
@@ -321,7 +329,6 @@ class LayerAlienBBoxPredictions(Layer):
         self.at_time_label = canvas.create_text(130, RENDER_SCALE_FACTOR / 2 + 1, text='No predictions', anchor=W, state=DISABLED)
 
         self.your_bbox_predictions = blackboard.get('your_bbox_predictions')
-        self.max_time = len(self.your_bbox_predictions)
         self.your_prediction_rect = canvas.create_rectangle(0, 0, 0, 0, outline='purple', width=2, activewidth=4)
 
         self.enemy_bbox_predictions = blackboard.get('enemy_bbox_predictions')
@@ -358,15 +365,20 @@ class LayerAlienBBoxPredictions(Layer):
             self.update()
 
     def forward(self):
-        if self.at_time < self.max_time - 1:
+        if self.at_time < len(self.application.game_states):
             self.at_time += 1
             self.update()
 
     def update(self):
-        self.canvas.itemconfig(self.at_time_label, text='~In turns %d [round: %d]' % ((self.at_time + 1), (self.at_time + 1 + self.blackboard.get('round_number'))))
+        self.canvas.itemconfig(self.at_time_label, text='~In turns %d [round: %d]' % ((self.at_time), (self.at_time + self.blackboard.get('round_number'))))
         self.show_at_time(self.at_time)
 
     def show_at_time(self, t):
+        self.layer_entities.delete_entities(self.canvas)
+        self.layer_entities.game_state = self.application.game_states[t]
+        self.layer_labels.delete_labels(self.canvas)
+        self.layer_labels.game_state = self.application.game_states[t]
+        self.layer_entities.render(self.canvas, self.application.blackboards[t])
         if t < len(self.your_bbox_predictions):
             bbox = self.your_bbox_predictions[t]
             self.canvas.coords(self.your_prediction_rect,
@@ -386,6 +398,7 @@ class LayerAlienBBoxPredictions(Layer):
                                )
         else:
             self.canvas.coords(self.enemy_prediction_rect, 0, 0, 0, 0)
+        self.layer_labels.render(self.canvas, self.application.blackboards[t])
 
 # boostrap application
 root = Tk()
