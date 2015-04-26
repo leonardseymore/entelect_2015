@@ -51,11 +51,11 @@ MAP_RIGHT = 17
 MAP_BOTTOM = 23
 MAP_LEFT = 1
 
-YOUR_SPAWN_LOCATION = (16, 13)
-YOUR_SPAWN_THRESHOLD = (16, 15)
+YOUR_SPAWN_LOCATION = (16, 11)
+YOUR_SPAWN_THRESHOLD = (16, 9)
 
-ENEMY_SPAWN_LOCATION = (16, 11)
-ENEMY_SPAWN_THRESHOLD = (16, 9)
+ENEMY_SPAWN_LOCATION = (16, 13)
+ENEMY_SPAWN_THRESHOLD = (16, 15)
 
 INITIAL_ALIEN_WAVE_SIZE = 3
 TIME_WAVE_SIZE_INCREASE = 40
@@ -348,12 +348,11 @@ def predict_bbox(blackboard, player_context, t):
     wave_size = blackboard.get('%s_alien_wave_size' % player_context)
     round_number = blackboard.get('round_number')
 
-    spawn_location = YOUR_SPAWN_LOCATION if player_context == 'enemy' else ENEMY_SPAWN_LOCATION
-    spawn_threshold = YOUR_SPAWN_THRESHOLD if player_context == 'enemy' else ENEMY_SPAWN_THRESHOLD
+    spawn_location = blackboard.get('%s_alien_spawn_location' % player_context)
+    spawn_threshold = blackboard.get('%s_alien_spawn_threshold' % player_context)
 
     new_bbox = copy.copy(bbox)
-    results = []
-    results.append(new_bbox)
+    results = [new_bbox]
     for i in range(0, t):
         if (player_context == 'enemy' and new_bbox['left'] == MAP_LEFT and new_bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and new_bbox['left'] == MAP_LEFT and new_bbox['top'] == MAP_TOP):
             continue
@@ -421,6 +420,10 @@ class FieldAnalystExpert(Expert):
         player_context = 'your' if player_index == 0 else 'enemy'
         player = game_state['Players'][player_index]
 
+        spawn_location = YOUR_SPAWN_LOCATION if player_context == 'your' else ENEMY_SPAWN_LOCATION
+        spawn_threshold = YOUR_SPAWN_THRESHOLD if player_context == 'your' else ENEMY_SPAWN_THRESHOLD
+        blackboard.set('%s_alien_spawn_location' % player_context, spawn_location)
+        blackboard.set('%s_alien_spawn_threshold' % player_context, spawn_threshold)
         blackboard.set('%s_lives' % player_context, player['Lives'])
         blackboard.set('%s_kills' % player_context, player['Kills'])
         blackboard.set('%s_alien_wave_size' % player_context, player['AlienWaveSize'])
@@ -447,21 +450,28 @@ class FieldAnalystExpert(Expert):
         else:
             blackboard.set('%s_alien_factory_pos' % player_context, None)
 
-        game_map = game_state['Map']
         # complex entries
+        game_map = game_state['Map']
+        player_aliens = []
+        for row_index in range(0, MAP_HEIGHT):
+            for column_index in range(0, MAP_WIDTH):
+                cell = game_map['Rows'][row_index][column_index]
+                if not cell:
+                    continue
+                if cell['Type'] == ALIEN and cell['PlayerNumber'] == player_index:
+                    alien = {
+                        'pos': (row_index, column_index),
+                        'relative_pos': (row_index - spawn_location[0], column_index - spawn_location[1])
+                        }
+                    player_aliens.append(alien)
+        blackboard.set('%_aliens', player_aliens)
 
         alien_bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
         if game_state['RoundNumber'] == 0:
-            if player_context == 'enemy':
-                alien_bbox['top'] = YOUR_SPAWN_LOCATION[1]
-                alien_bbox['right'] = MAP_RIGHT
-                alien_bbox['bottom'] = YOUR_SPAWN_LOCATION[1]
-                alien_bbox['left'] = MAP_RIGHT - wave_size_to_bbox_width(INITIAL_ALIEN_WAVE_SIZE) + 1
-            else:
-                alien_bbox['top'] = ENEMY_SPAWN_LOCATION[1]
-                alien_bbox['right'] = MAP_RIGHT
-                alien_bbox['bottom'] = ENEMY_SPAWN_LOCATION[1]
-                alien_bbox['left'] = MAP_RIGHT - wave_size_to_bbox_width(INITIAL_ALIEN_WAVE_SIZE) + 1
+            alien_bbox['top'] = spawn_location[1]
+            alien_bbox['right'] = MAP_RIGHT
+            alien_bbox['bottom'] = spawn_location[1]
+            alien_bbox['left'] = MAP_RIGHT - wave_size_to_bbox_width(INITIAL_ALIEN_WAVE_SIZE) + 1
         else:
             start_row = 0 if player_index == 0 else MAP_HEIGHT / 2
             end_row = MAP_HEIGHT / 2 if player_index == 0 else MAP_HEIGHT
