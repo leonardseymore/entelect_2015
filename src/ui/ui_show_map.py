@@ -33,8 +33,6 @@ class Application(Frame):
         self.windows['player2_info'] = KeyValueWindow(master, 'Player 2 Information', lambda: self.game_state['Players'][1])
         self.windows['blackboard'] = BlackboardWindow(master, 'Blackboard', lambda: self.blackboard)
 
-        register('cell_clicked', self)
-
     # file dialog to load game state file
     def open_state_file(self):
         filename = tkFileDialog.askopenfilename(initialdir=REPLAY_DIR, filetypes=[("State files", "state.json")])
@@ -94,14 +92,6 @@ class Application(Frame):
             return
         round_number = self.game_state['RoundNumber']
         self.load_round(round_number + 1)
-
-    # handler called when clicking on a cell
-    def handle_cell_clicked(self, event):
-        row = event.payload['row']
-        column = event.payload['column']
-        cell = self.game_state['Map']['Rows'][row][column]
-        self.windows['cell_info'].show(cell)
-        self.windows['cell_info'].get_value = lambda : self.game_state['Map']['Rows'][row][column]
 
     def reload_all_windows(self):
         if not self.game_state:
@@ -228,6 +218,7 @@ class LayerEntities(LayerCellBase):
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Entities')
         self.entities = []
+        self.enabled.set(False)
 
     def render(self, canvas, blackboard):
         LayerCellBase.render(self, canvas, blackboard)
@@ -236,6 +227,11 @@ class LayerEntities(LayerCellBase):
         for entity in self.entities:
             canvas.delete(entity)
         self.entities = []
+
+    def cell_clicked(self, row, column):
+        cell = self.game_state['Map']['Rows'][row][column]
+        self.application.windows['cell_info'].show(cell)
+        self.application.windows['cell_info'].get_value = lambda : self.game_state['Map']['Rows'][row][column]
 
     def render_cell(self, canvas, cell, column_index, row_index, left, top, right, bottom):
         if not cell:
@@ -247,7 +243,7 @@ class LayerEntities(LayerCellBase):
 
         rect = canvas.create_rectangle(left, top, right, bottom, activewidth=2)
         self.entities.append(rect)
-        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index: dispatch(Event('cell_clicked', {'row': row, 'column': column})))
+        canvas.tag_bind(rect, '<ButtonPress-1>', lambda event, row=row_index, column=column_index: self.cell_clicked(row, column))
         if cell['PlayerNumber'] == 1:
             canvas.itemconfig(rect, fill='blue')
         elif cell['PlayerNumber'] == 2:
@@ -280,6 +276,7 @@ class LayerAlienBBox(Layer):
 
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Alien BBox')
+        self.enabled.set(False)
 
     def render(self, canvas, blackboard):
         bbox = blackboard.get('your_alien_bbox')
@@ -376,7 +373,6 @@ class LayerAlienBBoxPredictions(Layer):
         self.show_at_time(self.at_time, self.at_time + self.round_number)
 
     def show_at_time(self, t, round_number):
-        print '%d - %d' % (t, round_number)
         if round_number >= len(self.application.game_states):
             return
 
