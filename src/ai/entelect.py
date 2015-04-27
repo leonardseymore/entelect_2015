@@ -322,7 +322,14 @@ class BlackboardManager(Decorator):
 
 # predicts alien movement
 def predict_movement(blackboard, player_context, t):
-    results = [{'bbox': blackboard.get('%s_alien_bbox' % player_context), 'aliens': copy.deepcopy(blackboard.get('%s_aliens' % player_context))}]
+    results = [
+        {
+            'bbox': blackboard.get('%s_alien_bbox' % player_context),
+            'aliens': copy.deepcopy(blackboard.get('%s_aliens' % player_context)),
+            'missiles': copy.deepcopy(blackboard.get('%s_missiles' % player_context)),
+            'bullets': copy.deepcopy(blackboard.get('%s_bullets' % player_context))
+        }
+    ]
     blackboard_child = Blackboard(blackboard)
     for i in range(1, t):
         result = predict_next_state(blackboard_child, player_context)
@@ -332,11 +339,19 @@ def predict_movement(blackboard, player_context, t):
             blackboard_child.set('%s_aliens' % player_context, result['aliens'])
             blackboard_child.set('%s_alien_direction' % player_context, result['direction'])
             blackboard_child.set('%s_alien_wave_size' % player_context, result['wave_size'])
+            blackboard_child.set('%s_missiles' % player_context, result['missiles'])
+            blackboard_child.set('%s_bullets' % player_context, result['bullets'])
             blackboard_child.set('round_number', result['round_number'])
         else:
             break
     return results
 
+# Update the alien commander to spawn new aliens and give aliens orders;
+# Update missiles, moving them forward;
+# Update alien bullets, moving them forward;
+# Update aliens, executing their move & shoot orders;
+# Update ships, executing their orders;
+# Advance respawn timer and respawn ships if necessary.
 def predict_next_state(blackboard, player_context):
     bbox = blackboard.get('%s_alien_bbox' % player_context)
     direction = blackboard.get('%s_alien_direction' % player_context)
@@ -347,10 +362,13 @@ def predict_next_state(blackboard, player_context):
     spawn_threshold = blackboard.get('%s_alien_spawn_threshold' % player_context)
 
     aliens = blackboard.get('%s_aliens' % player_context)
+    missiles = blackboard.get('%s_missiles' % player_context)
+    bullets = blackboard.get('%s_bullets' % player_context)
 
     if (player_context == 'enemy' and bbox['left'] == MAP_LEFT and bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and bbox['left'] == MAP_LEFT and bbox['top'] == MAP_TOP):
         return None
 
+    # update aliens
     if round_number == TIME_WAVE_SIZE_INCREASE:
         wave_size += 1
 
@@ -367,7 +385,7 @@ def predict_next_state(blackboard, player_context):
                 bbox[set_y] = spawn_location[1]
                 bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
                 for new_alien_idx in range(0, wave_size):
-                    aliens.append({'pos': {'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1]}, 'spawned': round_number})
+                    aliens.append({'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1], 'spawned': round_number})
 
     else: # right
         if bbox['right'] == MAP_RIGHT:
@@ -377,6 +395,31 @@ def predict_next_state(blackboard, player_context):
             direction = 'right'
             move_direction = 'right'
 
+    # move missiles
+    new_missiles = copy.deepcopy(missiles)
+    for missile in missiles[:]:
+        missile['y'] += -1 if player_context == 'your' else 1
+        if missile['y'] <= 0 or missile['y'] >= MAP_HEIGHT - 1:
+            new_missiles.remove(missile)
+        else:
+            for alien in aliens[:]:
+                if missile['x'] == alien['x'] and missile['y'] == alien['y']:
+                    alien.remove(alien)
+                    new_missiles.remove(missile)
+
+    # move bullets
+    new_bullets = copy.deepcopy(bullets)
+    for bullet in new_bullets[:]:
+        bullet['y'] += -1 if player_context == 'your' else 1
+        if bullet['y'] <= 0 or bullet['y'] >= MAP_HEIGHT - 1:
+            new_bullets.remove(bullet)
+        else:
+            for alien in aliens[:]:
+                if bullet['x'] == alien['x'] and bullet['y'] == alien['y']:
+                    alien.remove(alien)
+                    new_bullets.remove(bullet)
+
+    # move aliens
     new_aliens = copy.deepcopy(aliens)
     new_bbox = copy.copy(bbox)
     # move bbox
@@ -395,15 +438,23 @@ def predict_next_state(blackboard, player_context):
 
     for alien in new_aliens:
         if move_direction == 'left':
-            alien['pos']['x'] -= 1
+            alien['x'] -= 1
         elif move_direction == 'right':
-            alien['pos']['x'] += 1
+            alien['x'] += 1
         elif move_direction == 'up':
-            alien['pos']['y'] -= 1
+            alien['y'] -= 1
         elif move_direction == 'down':
-            alien['pos']['y'] += 1
+            alien['y'] += 1
 
-    return {'bbox': new_bbox, 'aliens': new_aliens, 'direction': direction, 'wave_size': wave_size, 'round_number': round_number + 1}
+    return {
+        'bbox': new_bbox,
+        'aliens': new_aliens,
+        'direction': direction,
+        'wave_size': wave_size,
+        'round_number': round_number + 1,
+        'missiles': missiles,
+        'bullets': new_bullets
+    }
 
 #
 # SEARCH
@@ -471,19 +522,21 @@ class FieldAnalystExpert(Expert):
         # nullable object
         ship = player['Ship']
         if ship:
-            blackboard.set('%s_ship' % player_context, {'X': ship['X'], 'Y': ship['Y']})
+            blackboard.set('%s_ship' % player_context, {'x': ship['X'], 'y': ship['Y']})
         else:
             blackboard.set('%s_ship' % player_context, None)
 
         alien_factory = player['AlienFactory']
         blackboard.set('%s_alien_factory_built' % player_context, alien_factory is not None)
         if alien_factory:
-            blackboard.set('%s_alien_factory_pos' % player_context, {'X': alien_factory['X'], 'Y': alien_factory['Y']})
+            blackboard.set('%s_alien_factory_pos' % player_context, {'x': alien_factory['X'], 'y': alien_factory['Y']})
         else:
             blackboard.set('%s_alien_factory_pos' % player_context, None)
 
         # complex entries
         game_map = game_state['Map']
+        missiles = []
+        bullets = []
         alien_bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
         if game_state['RoundNumber'] == 0:
             alien_bbox['top'] = spawn_location[1]
@@ -508,13 +561,22 @@ class FieldAnalystExpert(Expert):
                             alien_bbox['left'] = column_index
                         if alien_bbox['right'] == -1 or alien_bbox['right'] < column_index:
                             alien_bbox['right'] = column_index
+                    elif cell['Type'] == MISSILE:
+                        if cell['PlayerNumber'] == player_number:
+                            missiles.append({'x': column_index, 'y': row_index})
+                    elif cell['Type'] == BULLET:
+                        if cell['PlayerNumber'] == player_number:
+                            bullets.append({'x': column_index, 'y': row_index})
+
         blackboard.set('%s_alien_bbox' % player_context, alien_bbox)
+        blackboard.set('%s_missiles' % player_context, missiles)
+        blackboard.set('%s_bullets' % player_context, bullets)
 
         player_aliens = []
         if game_state['RoundNumber'] == 0:
-            player_aliens.append({'pos': {'x': MAP_RIGHT, 'y': spawn_location[1]}})
-            player_aliens.append({'pos': {'x': MAP_RIGHT - 3, 'y': spawn_location[1]}})
-            player_aliens.append({'pos': {'x': MAP_RIGHT - 6, 'y': spawn_location[1]}})
+            player_aliens.append({'x': MAP_RIGHT, 'y': spawn_location[1]})
+            player_aliens.append({'x': MAP_RIGHT - 3, 'y': spawn_location[1]})
+            player_aliens.append({'x': MAP_RIGHT - 6, 'y': spawn_location[1]})
         else:
             for row_index in range(0, MAP_HEIGHT):
                 for column_index in range(0, MAP_WIDTH):
@@ -524,7 +586,8 @@ class FieldAnalystExpert(Expert):
                     if cell['Type'] == ALIEN and cell['PlayerNumber'] == player_number:
                         alien = {
                             'id': cell['Id'],
-                            'pos': {'x': column_index, 'y': row_index}
+                            'x': column_index,
+                            'y': row_index
                         }
                         player_aliens.append(alien)
         blackboard.set('%s_aliens' % player_context, player_aliens)
