@@ -1,5 +1,5 @@
 import random
-import ai.io
+from ai.entelect import *
 
 MOVES = [
     'Nothing',
@@ -12,5 +12,5 @@ MOVES = [
 ]
 
 move = random.choice(MOVES)
-ai.io.write_move(move)
+write_move(move)
 print 'Move - %s' % move
