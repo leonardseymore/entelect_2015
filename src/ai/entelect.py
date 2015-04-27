@@ -320,29 +320,26 @@ class BlackboardManager(Decorator):
 # MOVEMENT
 #
 
-# move a bbox up, right, down, left
-def move_bbox(bbox, direction):
-    new_bbox = copy.copy(bbox)
-    if direction == 'up':
-        new_bbox['top'] -= 1
-        new_bbox['bottom'] -= 1
-    elif direction == 'right':
-        new_bbox['left'] += 1
-        new_bbox['right'] += 1
-    elif direction == 'down':
-        new_bbox['top'] += 1
-        new_bbox['bottom'] += 1
-    else: # left
-        new_bbox['left'] -= 1
-        new_bbox['right'] -= 1
-
-    return new_bbox
-
 # predicts alien movement
 def predict_movement(blackboard, player_context, t):
+    results = [{'bbox': blackboard.get('%s_alien_bbox' % player_context), 'aliens': copy.deepcopy(blackboard.get('%s_aliens' % player_context))}]
+    blackboard_child = Blackboard(blackboard)
+    for i in range(1, t):
+        result = predict_next_state(blackboard_child, player_context)
+        if result:
+            results.append(result)
+            blackboard_child.set('%s_alien_bbox' % player_context, result['bbox'])
+            blackboard_child.set('%s_aliens' % player_context, result['aliens'])
+            blackboard_child.set('%s_alien_direction' % player_context, result['direction'])
+            blackboard_child.set('%s_alien_wave_size' % player_context, result['wave_size'])
+            blackboard_child.set('round_number', result['round_number'])
+        else:
+            break
+    return results
+
+def predict_next_state(blackboard, player_context):
     bbox = blackboard.get('%s_alien_bbox' % player_context)
     direction = blackboard.get('%s_alien_direction' % player_context)
-
     wave_size = blackboard.get('%s_alien_wave_size' % player_context)
     round_number = blackboard.get('round_number')
 
@@ -350,56 +347,76 @@ def predict_movement(blackboard, player_context, t):
     spawn_threshold = blackboard.get('%s_alien_spawn_threshold' % player_context)
 
     aliens = blackboard.get('%s_aliens' % player_context)
+
+    if (player_context == 'enemy' and bbox['left'] == MAP_LEFT and bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and bbox['left'] == MAP_LEFT and bbox['top'] == MAP_TOP):
+        return None
+
+    if round_number == TIME_WAVE_SIZE_INCREASE:
+        wave_size += 1
+
+    if direction == 'left':
+        if bbox['left'] == MAP_LEFT:
+            direction = 'right'
+            move_direction = 'down' if player_context == 'enemy' else 'up'
+        else:
+            direction = 'left'
+            move_direction = 'left'
+            check_y = 'top' if player_context == 'enemy' else 'bottom'
+            set_y = 'bottom' if player_context == 'your' else 'top'
+            if (bbox['right'], bbox[check_y]) == spawn_threshold:
+                bbox[set_y] = spawn_location[1]
+                bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
+                for new_alien_idx in range(0, wave_size):
+                    aliens.append({'pos': {'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1]}, 'spawned': round_number})
+
+    else: # right
+        if bbox['right'] == MAP_RIGHT:
+            direction = 'left'
+            move_direction = 'down' if player_context == 'enemy' else 'up'
+        else:
+            direction = 'right'
+            move_direction = 'right'
+
     new_aliens = copy.deepcopy(aliens)
-
     new_bbox = copy.copy(bbox)
-    results = [{'bbox': new_bbox, 'aliens': copy.deepcopy(aliens)}]
-    for i in range(1, t):
-        if (player_context == 'enemy' and new_bbox['left'] == MAP_LEFT and new_bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and new_bbox['left'] == MAP_LEFT and new_bbox['top'] == MAP_TOP):
-            break
+    # move bbox
+    if move_direction == 'up':
+        new_bbox['top'] -= 1
+        new_bbox['bottom'] -= 1
+    elif move_direction == 'right':
+        new_bbox['left'] += 1
+        new_bbox['right'] += 1
+    elif move_direction == 'down':
+        new_bbox['top'] += 1
+        new_bbox['bottom'] += 1
+    else: # left
+        new_bbox['left'] -= 1
+        new_bbox['right'] -= 1
 
-        if round_number == TIME_WAVE_SIZE_INCREASE:
-            wave_size += 1
+    for alien in new_aliens:
+        if move_direction == 'left':
+            alien['pos']['x'] -= 1
+        elif move_direction == 'right':
+            alien['pos']['x'] += 1
+        elif move_direction == 'up':
+            alien['pos']['y'] -= 1
+        elif move_direction == 'down':
+            alien['pos']['y'] += 1
 
-        if direction == 'left':
-            if new_bbox['left'] == MAP_LEFT:
-                direction = 'right'
-                move_direction = 'down' if player_context == 'enemy' else 'up'
-            else:
-                direction = 'left'
-                move_direction = 'left'
-                check_y = 'top' if player_context == 'enemy' else 'bottom'
-                set_y = 'bottom' if player_context == 'your' else 'top'
-                if (new_bbox['right'], new_bbox[check_y]) == spawn_threshold:
-                    new_bbox[set_y] = spawn_location[1]
-                    new_bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
-                    for new_alien_idx in range(0, wave_size):
-                        new_aliens.append({'pos': {'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1]}, 'spawned': round_number})
+    return {'bbox': new_bbox, 'aliens': new_aliens, 'direction': direction, 'wave_size': wave_size, 'round_number': round_number + 1}
 
-        else: # right
-            if new_bbox['right'] == MAP_RIGHT:
-                direction = 'left'
-                move_direction = 'down' if player_context == 'enemy' else 'up'
-            else:
-                direction = 'right'
-                move_direction = 'right'
-        new_bbox = move_bbox(new_bbox, move_direction)
+#
+# SEARCH
+#
+class Node():
+    blackboard = None
 
-        new_aliens = copy.deepcopy(new_aliens)
-        for alien in new_aliens:
-            if move_direction == 'left':
-                alien['pos']['x'] -= 1
-            elif move_direction == 'right':
-                alien['pos']['x'] += 1
-            elif move_direction == 'up':
-                alien['pos']['y'] -= 1
-            elif move_direction == 'down':
-                alien['pos']['y'] += 1
+    def __init__(self, blackboard):
+        self.blackboard = blackboard
 
-        results.append({'bbox': new_bbox, 'aliens': new_aliens})
+    # def get_children(self):
 
-        round_number += 1
-    return results
+
 
 #
 # EXPERTS
