@@ -410,10 +410,8 @@ class LayerAlienBBoxPredictions(Layer):
         self.alien_rects = []
         for alien in self.predictions[t]['your_aliens'] \
                 + self.predictions[t]['enemy_aliens'] \
-                + self.predictions[t]['your_missiles'] \
-                + self.predictions[t]['enemy_missiles'] \
-                + self.predictions[t]['your_bullets'] \
-                + self.predictions[t]['enemy_bullets']:
+                + self.predictions[t]['missiles'] \
+                + self.predictions[t]['bullets']:
             alien_rect = self.canvas.create_rectangle(alien['x'] * RENDER_SCALE_FACTOR, alien['y'] * RENDER_SCALE_FACTOR, (alien['x'] + 1) * RENDER_SCALE_FACTOR, (alien['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
             self.canvas.tag_bind(alien_rect, '<ButtonPress-1>', lambda event, item=alien: self.item_clicked(item))
             self.alien_rects.append(alien_rect)

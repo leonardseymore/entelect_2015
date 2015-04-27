@@ -341,41 +341,7 @@ def next_state(state, your_move=None, enemy_move=None):
     new_state = {}
     player_contexts = ['your', 'enemy']
 
-    # move missiles
-    for player_context in player_contexts:
-        missiles = state['%s_missiles' % player_context]
-        aliens = state['%s_aliens' % player_context]
-        new_missiles = copy.deepcopy(missiles)
-        for missile in missiles[:]:
-            missile['y'] += -1 if player_context == 'your' else 1
-            if missile['y'] <= 0 or missile['y'] >= MAP_HEIGHT - 1:
-                new_missiles.remove(missile)
-            else:
-                for alien in aliens[:]:
-                    if missile['x'] == alien['x'] and missile['y'] == alien['y']:
-                        alien.remove(alien)
-                        new_missiles.remove(missile)
-        new_state['%s_missiles' % player_context] = new_missiles
-
-    # move bullets
-    for player_context in player_contexts:
-        bullets = state['%s_bullets' % player_context]
-        aliens = state['%s_aliens' % player_context]
-        new_bullets = copy.deepcopy(bullets)
-        for bullet in new_bullets[:]:
-            bullet['y'] += -1 if player_context == 'your' else 1
-            if bullet['y'] <= 0 or bullet['y'] >= MAP_HEIGHT - 1:
-                new_bullets.remove(bullet)
-            else:
-                for alien in aliens[:]:
-                    if bullet['x'] == alien['x'] and bullet['y'] == alien['y']:
-                        alien.remove(alien)
-                        new_bullets.remove(bullet)
-        new_state['%s_bullets' % player_context] = new_bullets
-
-    # TODO: recalc bounding boxes
-
-    # move aliens
+    # spawn aliens
     round_number = state['round_number']
     for player_context in player_contexts:
         bbox = state['%s_alien_bbox' % player_context]
@@ -410,7 +376,7 @@ def next_state(state, your_move=None, enemy_move=None):
                     bbox[set_y] = spawn_location[1]
                     bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
                     for new_alien_idx in range(0, wave_size):
-                        aliens.append({'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1], 'spawned': round_number})
+                        aliens.append({'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1], 'spawned': round_number, 'player_context': player_context})
 
         else: # right
             if bbox['right'] == MAP_RIGHT:
@@ -420,7 +386,44 @@ def next_state(state, your_move=None, enemy_move=None):
                 direction = 'right'
                 move_direction = 'right'
         new_state['%s_alien_direction' % player_context] = direction
+        new_state['%s_alien_move_direction' % player_context] = move_direction
 
+    # move missiles
+
+    missiles = state['missiles']
+    new_missiles = copy.deepcopy(missiles)
+    for missile in new_missiles[:]:
+        missile['y'] += -1 if missile['player_context'] == 'your' else 1
+        if missile['y'] <= 0 or missile['y'] >= MAP_HEIGHT - 1:
+            new_missiles.remove(missile)
+        else:
+            for alien in state['your_aliens'] + state['enemy_aliens']:
+                if missile['x'] == alien['x'] and missile['y'] == alien['y']:
+                    state['%s_aliens' % alien['player_context']].remove(alien)
+                    new_missiles.remove(missile)
+    new_state['missiles'] = new_missiles
+
+    # move bullets
+    bullets = state['bullets']
+    new_bullets = copy.deepcopy(bullets)
+    for bullet in new_bullets[:]:
+        bullet['y'] += -1 if bullet['player_context'] == 'your' else 1
+        if bullet['y'] <= 0 or bullet['y'] >= MAP_HEIGHT - 1:
+            new_bullets.remove(bullet)
+        else:
+            for alien in state['your_aliens'] + state['enemy_aliens']:
+                if bullet['x'] == alien['x'] and bullet['y'] == alien['y']:
+                    state['%s_aliens' % alien['player_context']].remove(alien)
+                    new_bullets.remove(bullet)
+    new_state['bullets'] = new_bullets
+
+    # TODO: recalc bounding boxes
+
+    # move aliens
+    for player_context in player_contexts:
+        bbox = state['%s_alien_bbox' % player_context]
+        aliens = state['%s_aliens' % player_context]
+        move_direction = new_state['%s_alien_move_direction' % player_context]
         new_aliens = copy.deepcopy(aliens)
         new_bbox = copy.copy(bbox)
         # move bbox
@@ -494,6 +497,24 @@ class FieldAnalystExpert(Expert):
         self.set_player_info(game_state, blackboard, 0)
         self.set_player_info(game_state, blackboard, 1)
 
+        game_map = game_state['Map']
+        missiles = []
+        bullets = []
+        for row_index in range(0, MAP_HEIGHT):
+            for column_index in range(0, MAP_WIDTH):
+                cell = game_map['Rows'][row_index][column_index]
+                if not cell:
+                    continue
+
+                player_context = 'your' if cell['PlayerNumber'] == 1 else 'enemy'
+                if cell['Type'] == MISSILE:
+                    missiles.append({'x': column_index, 'y': row_index, 'player_context': player_context})
+                elif cell['Type'] == BULLET:
+                    bullets.append({'x': column_index, 'y': row_index, 'player_context': player_context})
+        blackboard.set('missiles', missiles)
+        blackboard.set('bullets', bullets)
+
+
     def set_player_info(self, game_state, blackboard, player_index):
         player_context = 'your' if player_index == 0 else 'enemy'
         player_number = 1 if player_context == 'your' else 2
@@ -531,8 +552,6 @@ class FieldAnalystExpert(Expert):
 
         # complex entries
         game_map = game_state['Map']
-        missiles = []
-        bullets = []
         alien_bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
         if game_state['RoundNumber'] == 0:
             alien_bbox['top'] = spawn_location[1]
@@ -557,22 +576,13 @@ class FieldAnalystExpert(Expert):
                             alien_bbox['left'] = column_index
                         if alien_bbox['right'] == -1 or alien_bbox['right'] < column_index:
                             alien_bbox['right'] = column_index
-                    elif cell['Type'] == MISSILE:
-                        if cell['PlayerNumber'] == player_number:
-                            missiles.append({'x': column_index, 'y': row_index})
-                    elif cell['Type'] == BULLET:
-                        if cell['PlayerNumber'] == player_number:
-                            bullets.append({'x': column_index, 'y': row_index})
-
         blackboard.set('%s_alien_bbox' % player_context, alien_bbox)
-        blackboard.set('%s_missiles' % player_context, missiles)
-        blackboard.set('%s_bullets' % player_context, bullets)
 
         player_aliens = []
         if game_state['RoundNumber'] == 0:
-            player_aliens.append({'x': MAP_RIGHT, 'y': spawn_location[1]})
-            player_aliens.append({'x': MAP_RIGHT - 3, 'y': spawn_location[1]})
-            player_aliens.append({'x': MAP_RIGHT - 6, 'y': spawn_location[1]})
+            player_aliens.append({'x': MAP_RIGHT, 'y': spawn_location[1], 'player_context': player_context})
+            player_aliens.append({'x': MAP_RIGHT - 3, 'y': spawn_location[1], 'player_context': player_context})
+            player_aliens.append({'x': MAP_RIGHT - 6, 'y': spawn_location[1], 'player_context': player_context})
         else:
             for row_index in range(0, MAP_HEIGHT):
                 for column_index in range(0, MAP_WIDTH):
@@ -583,7 +593,8 @@ class FieldAnalystExpert(Expert):
                         alien = {
                             'id': cell['Id'],
                             'x': column_index,
-                            'y': row_index
+                            'y': row_index,
+                            'player_context': player_context
                         }
                         player_aliens.append(alien)
         blackboard.set('%s_aliens' % player_context, player_aliens)
