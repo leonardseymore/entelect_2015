@@ -402,19 +402,21 @@ class LayerAlienBBoxPredictions(Layer):
                                (bbox['right'] + 1) * RENDER_SCALE_FACTOR,
                                (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR
                                )
+
+            for alien_rect in self.alien_rects:
+                self.canvas.delete(alien_rect)
+            self.alien_rects = []
+            for alien in self.predictions[t]['your_aliens'] \
+                    + self.predictions[t]['enemy_aliens'] \
+                    + self.predictions[t]['missiles'] \
+                    + self.predictions[t]['bullets'] \
+                    + self.predictions[t]['shields']:
+                alien_rect = self.canvas.create_rectangle(alien['x'] * RENDER_SCALE_FACTOR, alien['y'] * RENDER_SCALE_FACTOR, (alien['x'] + 1) * RENDER_SCALE_FACTOR, (alien['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
+                self.canvas.tag_bind(alien_rect, '<ButtonPress-1>', lambda event, item=alien: self.item_clicked(item))
+                self.alien_rects.append(alien_rect)
         else:
             self.canvas.coords(self.your_prediction_rect, 0, 0, 0, 0)
 
-        for alien_rect in self.alien_rects:
-            self.canvas.delete(alien_rect)
-        self.alien_rects = []
-        for alien in self.predictions[t]['your_aliens'] \
-                + self.predictions[t]['enemy_aliens'] \
-                + self.predictions[t]['missiles'] \
-                + self.predictions[t]['bullets']:
-            alien_rect = self.canvas.create_rectangle(alien['x'] * RENDER_SCALE_FACTOR, alien['y'] * RENDER_SCALE_FACTOR, (alien['x'] + 1) * RENDER_SCALE_FACTOR, (alien['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
-            self.canvas.tag_bind(alien_rect, '<ButtonPress-1>', lambda event, item=alien: self.item_clicked(item))
-            self.alien_rects.append(alien_rect)
 
         self.layer_labels.render(self.canvas, self.application.blackboards[round_number])
 

@@ -389,8 +389,12 @@ def next_state(state, your_move=None, enemy_move=None):
         new_state['%s_alien_move_direction' % player_context] = move_direction
 
     # move missiles
-
+    shields = state['shields']
+    new_shields = copy.deepcopy(shields)
+    bullets = state['bullets']
+    new_bullets = copy.deepcopy(bullets)
     missiles = state['missiles']
+
     new_missiles = copy.deepcopy(missiles)
     for missile in new_missiles[:]:
         missile['y'] += -1 if missile['player_context'] == 'your' else 1
@@ -401,11 +405,16 @@ def next_state(state, your_move=None, enemy_move=None):
                 if missile['x'] == alien['x'] and missile['y'] == alien['y']:
                     state['%s_aliens' % alien['player_context']].remove(alien)
                     new_missiles.remove(missile)
-    new_state['missiles'] = new_missiles
+            for shield in new_shields[:]:
+                if missile['x'] == shield['x'] and missile['y'] == shield['y']:
+                    new_shields.remove(shield)
+                    new_missiles.remove(missile)
+            for bullet in new_bullets[:]:
+                if missile['x'] == bullet['x'] and missile['y'] == bullet['y']:
+                    new_bullets.remove(bullet)
+                    new_missiles.remove(missile)
 
     # move bullets
-    bullets = state['bullets']
-    new_bullets = copy.deepcopy(bullets)
     for bullet in new_bullets[:]:
         bullet['y'] += -1 if bullet['player_context'] == 'your' else 1
         if bullet['y'] <= 0 or bullet['y'] >= MAP_HEIGHT - 1:
@@ -415,7 +424,18 @@ def next_state(state, your_move=None, enemy_move=None):
                 if bullet['x'] == alien['x'] and bullet['y'] == alien['y']:
                     state['%s_aliens' % alien['player_context']].remove(alien)
                     new_bullets.remove(bullet)
+            for shield in new_shields[:]:
+                if bullet['x'] == shield['x'] and bullet['y'] == shield['y']:
+                    new_shields.remove(shield)
+                    new_bullets.remove(bullet)
+            for missile in new_missiles[:]:
+                if bullet['x'] == missile['x'] and bullet['y'] == missile['y']:
+                    new_bullets.remove(bullet)
+                    new_missiles.remove(missile)
+
+    new_state['missiles'] = new_missiles
     new_state['bullets'] = new_bullets
+    new_state['shields'] = new_shields
 
     # TODO: recalc bounding boxes
 
@@ -500,6 +520,7 @@ class FieldAnalystExpert(Expert):
         game_map = game_state['Map']
         missiles = []
         bullets = []
+        shields = []
         for row_index in range(0, MAP_HEIGHT):
             for column_index in range(0, MAP_WIDTH):
                 cell = game_map['Rows'][row_index][column_index]
@@ -511,8 +532,11 @@ class FieldAnalystExpert(Expert):
                     missiles.append({'x': column_index, 'y': row_index, 'player_context': player_context})
                 elif cell['Type'] == BULLET:
                     bullets.append({'x': column_index, 'y': row_index, 'player_context': player_context})
+                elif cell['Type'] == SHIELD:
+                    shields.append({'x': column_index, 'y': row_index})
         blackboard.set('missiles', missiles)
         blackboard.set('bullets', bullets)
+        blackboard.set('shields', shields)
 
 
     def set_player_info(self, game_state, blackboard, player_index):
