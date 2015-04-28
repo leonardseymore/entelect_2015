@@ -426,7 +426,7 @@ def next_state(state, your_move=None, enemy_move=None):
                         break
             if not removed:
                 for building in new_buildings[:]:
-                    if building['x'] >= missile['x'] < building['x'] + 3 and missile['y'] == building['y']:
+                    if (building['x'] <= missile['x'] < building['x'] + 3) and missile['y'] == building['y']:
                         new_buildings.remove(building)
                         new_missiles.remove(missile)
                         removed = True
