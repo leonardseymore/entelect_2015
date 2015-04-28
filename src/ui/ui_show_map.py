@@ -299,7 +299,7 @@ class LayerAlienBBoxPredictions(Layer):
     enemy_predictions = None
     layer_entities = None
     layer_labels = None
-    alien_rects = None
+    prediction_rects = None
 
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Alien BBox Predictions')
@@ -313,7 +313,7 @@ class LayerAlienBBoxPredictions(Layer):
         Layer.load_game_state(self, game_state, blackboard)
 
     def render(self, canvas, blackboard):
-        self.alien_rects = []
+        self.prediction_rects = []
         self.predictions = blackboard.get('predictions')
 
         self.at_time = 0
@@ -403,17 +403,21 @@ class LayerAlienBBoxPredictions(Layer):
                                (bbox['bottom'] + 1) * RENDER_SCALE_FACTOR
                                )
 
-            for alien_rect in self.alien_rects:
-                self.canvas.delete(alien_rect)
-            self.alien_rects = []
-            for alien in self.predictions[t]['your_aliens'] \
+            for prediction_rect in self.prediction_rects:
+                self.canvas.delete(prediction_rect)
+            self.prediction_rects = []
+            for prediction in self.predictions[t]['your_aliens'] \
                     + self.predictions[t]['enemy_aliens'] \
                     + self.predictions[t]['missiles'] \
                     + self.predictions[t]['bullets'] \
                     + self.predictions[t]['shields']:
-                alien_rect = self.canvas.create_rectangle(alien['x'] * RENDER_SCALE_FACTOR, alien['y'] * RENDER_SCALE_FACTOR, (alien['x'] + 1) * RENDER_SCALE_FACTOR, (alien['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
-                self.canvas.tag_bind(alien_rect, '<ButtonPress-1>', lambda event, item=alien: self.item_clicked(item))
-                self.alien_rects.append(alien_rect)
+                prediction_rect = self.canvas.create_rectangle(prediction['x'] * RENDER_SCALE_FACTOR, prediction['y'] * RENDER_SCALE_FACTOR, (prediction['x'] + 1) * RENDER_SCALE_FACTOR, (prediction['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
+                self.canvas.tag_bind(prediction_rect, '<ButtonPress-1>', lambda event, item=prediction: self.item_clicked(item))
+                self.prediction_rects.append(prediction_rect)
+            for prediction in self.predictions[t]['buildings']:
+                prediction_rect = self.canvas.create_rectangle(prediction['x'] * RENDER_SCALE_FACTOR, prediction['y'] * RENDER_SCALE_FACTOR, (prediction['x'] + 3) * RENDER_SCALE_FACTOR, (prediction['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
+                self.canvas.tag_bind(prediction_rect, '<ButtonPress-1>', lambda event, item=prediction: self.item_clicked(item))
+                self.prediction_rects.append(prediction_rect)
         else:
             self.canvas.coords(self.your_prediction_rect, 0, 0, 0, 0)
 

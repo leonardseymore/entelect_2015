@@ -394,25 +394,43 @@ def next_state(state, your_move=None, enemy_move=None):
     bullets = state['bullets']
     new_bullets = copy.deepcopy(bullets)
     missiles = state['missiles']
-
     new_missiles = copy.deepcopy(missiles)
+    buildings = state['buildings']
+    new_buildings = copy.deepcopy(buildings)
+    
     for missile in new_missiles[:]:
         missile['y'] += -1 if missile['player_context'] == 'your' else 1
         if missile['y'] <= 0 or missile['y'] >= MAP_HEIGHT - 1:
             new_missiles.remove(missile)
         else:
+            removed = False
             for alien in state['your_aliens'] + state['enemy_aliens']:
                 if missile['x'] == alien['x'] and missile['y'] == alien['y']:
                     state['%s_aliens' % alien['player_context']].remove(alien)
                     new_missiles.remove(missile)
-            for shield in new_shields[:]:
-                if missile['x'] == shield['x'] and missile['y'] == shield['y']:
-                    new_shields.remove(shield)
-                    new_missiles.remove(missile)
-            for bullet in new_bullets[:]:
-                if missile['x'] == bullet['x'] and missile['y'] == bullet['y']:
-                    new_bullets.remove(bullet)
-                    new_missiles.remove(missile)
+                    removed = True
+                    break
+            if not removed:
+                for shield in new_shields[:]:
+                    if missile['x'] == shield['x'] and missile['y'] == shield['y']:
+                        new_shields.remove(shield)
+                        new_missiles.remove(missile)
+                        removed = True
+                        break
+            if not removed:
+                for bullet in new_bullets[:]:
+                    if missile['x'] == bullet['x'] and missile['y'] == bullet['y']:
+                        new_bullets.remove(bullet)
+                        new_missiles.remove(missile)
+                        removed = True
+                        break
+            if not removed:
+                for building in new_buildings[:]:
+                    if building['x'] >= missile['x'] < building['x'] + 3 and missile['y'] == building['y']:
+                        new_buildings.remove(building)
+                        new_missiles.remove(missile)
+                        removed = True
+                        break
 
     # move bullets
     for bullet in new_bullets[:]:
@@ -420,22 +438,32 @@ def next_state(state, your_move=None, enemy_move=None):
         if bullet['y'] <= 0 or bullet['y'] >= MAP_HEIGHT - 1:
             new_bullets.remove(bullet)
         else:
-            for alien in state['your_aliens'] + state['enemy_aliens']:
-                if bullet['x'] == alien['x'] and bullet['y'] == alien['y']:
-                    state['%s_aliens' % alien['player_context']].remove(alien)
-                    new_bullets.remove(bullet)
+            removed = False
             for shield in new_shields[:]:
                 if bullet['x'] == shield['x'] and bullet['y'] == shield['y']:
                     new_shields.remove(shield)
                     new_bullets.remove(bullet)
-            for missile in new_missiles[:]:
-                if bullet['x'] == missile['x'] and bullet['y'] == missile['y']:
-                    new_bullets.remove(bullet)
-                    new_missiles.remove(missile)
+                    removed = True
+                    break
+            if not removed:
+                for missile in new_missiles[:]:
+                    if bullet['x'] == missile['x'] and bullet['y'] == missile['y']:
+                        new_bullets.remove(bullet)
+                        new_missiles.remove(missile)
+                        removed = True
+                        break
+            if not removed:
+                for building in new_buildings[:]:
+                    if (building['x'] <= bullet['x'] < building['x'] + 3) and bullet['y'] == building['y']:
+                        new_buildings.remove(building)
+                        new_bullets.remove(bullet)
+                        removed = True
+                        break
 
     new_state['missiles'] = new_missiles
     new_state['bullets'] = new_bullets
     new_state['shields'] = new_shields
+    new_state['buildings'] = new_buildings
 
     # TODO: recalc bounding boxes
 
@@ -521,6 +549,7 @@ class FieldAnalystExpert(Expert):
         missiles = []
         bullets = []
         shields = []
+        buildings = []
         for row_index in range(0, MAP_HEIGHT):
             for column_index in range(0, MAP_WIDTH):
                 cell = game_map['Rows'][row_index][column_index]
@@ -532,11 +561,18 @@ class FieldAnalystExpert(Expert):
                     missiles.append({'x': column_index, 'y': row_index, 'player_context': player_context})
                 elif cell['Type'] == BULLET:
                     bullets.append({'x': column_index, 'y': row_index, 'player_context': player_context})
+                elif cell['Type'] == ALIEN_FACTORY:
+                    if cell['X'] == column_index and cell['Y'] == row_index:
+                        buildings.append({'x': column_index, 'y': row_index, 'player_context': player_context, 'type': ALIEN_FACTORY})
+                elif cell['Type'] == MISSILE_CONTROLLER:
+                    if cell['X'] == column_index and cell['Y'] == row_index:
+                        buildings.append({'x': column_index, 'y': row_index, 'player_context': player_context, 'type': MISSILE_CONTROLLER})
                 elif cell['Type'] == SHIELD:
                     shields.append({'x': column_index, 'y': row_index})
         blackboard.set('missiles', missiles)
         blackboard.set('bullets', bullets)
         blackboard.set('shields', shields)
+        blackboard.set('buildings', buildings)
 
 
     def set_player_info(self, game_state, blackboard, player_index):
