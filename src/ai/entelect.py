@@ -367,29 +367,13 @@ def next_state(state, your_move=None, enemy_move=None):
         new_state['%s_alien_wave_size' % player_context] = wave_size
 
         if direction == 'left':
-            if bbox['left'] == MAP_LEFT:
-                direction = 'right'
-                move_direction = 'down' if player_context == 'enemy' else 'up'
-            else:
-                direction = 'left'
-                move_direction = 'left'
-                check_y = 'top' if player_context == 'enemy' else 'bottom'
-                set_y = 'bottom' if player_context == 'your' else 'top'
-                if (bbox['right'], bbox[check_y]) == spawn_threshold:
-                    bbox[set_y] = spawn_location[1]
-                    bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
-                    for new_alien_idx in range(0, wave_size):
-                        aliens.append({'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1], 'spawned': round_number, 'player_context': player_context})
-
-        else: # right
-            if bbox['right'] == MAP_RIGHT:
-                direction = 'left'
-                move_direction = 'down' if player_context == 'enemy' else 'up'
-            else:
-                direction = 'right'
-                move_direction = 'right'
-        new_state['%s_alien_direction' % player_context] = direction
-        new_state['%s_alien_move_direction' % player_context] = move_direction
+            check_y = 'top' if player_context == 'enemy' else 'bottom'
+            set_y = 'bottom' if player_context == 'your' else 'top'
+            if (bbox['right'], bbox[check_y]) == spawn_threshold:
+                bbox[set_y] = spawn_location[1]
+                bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
+                for new_alien_idx in range(0, wave_size):
+                    aliens.append({'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1], 'spawned': round_number, 'player_context': player_context})
 
     # move missiles
     shields = state['shields']
@@ -509,11 +493,40 @@ def next_state(state, your_move=None, enemy_move=None):
 
     # move aliens
     for player_context in player_contexts:
-        bbox = state['%s_alien_bbox' % player_context]
+        direction = state['%s_alien_direction' % player_context]
         aliens = state['%s_aliens' % player_context]
-        move_direction = new_state['%s_alien_move_direction' % player_context]
+
+        new_bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
+        for alien in aliens:
+            x = alien['x']
+            y = alien['y']
+            if new_bbox['top'] == -1 or new_bbox['top'] > y:
+                new_bbox['top'] = y
+            if new_bbox['bottom'] == -1 or new_bbox['bottom'] < y:
+                new_bbox['bottom'] = y
+            if new_bbox['left'] == -1 or new_bbox['left'] > x:
+                new_bbox['left'] = x
+            if new_bbox['right'] == -1 or new_bbox['right'] < x:
+                new_bbox['right'] = x
+
+        if direction == 'left':
+            if new_bbox['left'] == MAP_LEFT:
+                direction = 'right'
+                move_direction = 'down' if player_context == 'enemy' else 'up'
+            else:
+                direction = 'left'
+                move_direction = 'left'
+        else: # right
+            if new_bbox['right'] == MAP_RIGHT:
+                direction = 'left'
+                move_direction = 'down' if player_context == 'enemy' else 'up'
+            else:
+                direction = 'right'
+                move_direction = 'right'
+        new_state['%s_alien_direction' % player_context] = direction
+        new_state['%s_alien_move_direction' % player_context] = move_direction
+
         new_aliens = copy.deepcopy(aliens)
-        new_bbox = copy.copy(bbox)
         # move bbox
         if move_direction == 'up':
             new_bbox['top'] -= 1
