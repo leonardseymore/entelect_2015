@@ -414,7 +414,8 @@ class LayerAlienBBoxPredictions(Layer):
                 prediction_rect = self.canvas.create_rectangle(prediction['x'] * RENDER_SCALE_FACTOR, prediction['y'] * RENDER_SCALE_FACTOR, (prediction['x'] + 1) * RENDER_SCALE_FACTOR, (prediction['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
                 self.canvas.tag_bind(prediction_rect, '<ButtonPress-1>', lambda event, item=prediction: self.item_clicked(item))
                 self.prediction_rects.append(prediction_rect)
-            for prediction in self.predictions[t]['buildings']:
+            for prediction in self.predictions[t]['buildings']\
+                    + self.predictions[t]['ships']:
                 prediction_rect = self.canvas.create_rectangle(prediction['x'] * RENDER_SCALE_FACTOR, prediction['y'] * RENDER_SCALE_FACTOR, (prediction['x'] + 3) * RENDER_SCALE_FACTOR, (prediction['y'] + 1) * RENDER_SCALE_FACTOR, outline='green', width=2, activewidth=4)
                 self.canvas.tag_bind(prediction_rect, '<ButtonPress-1>', lambda event, item=prediction: self.item_clicked(item))
                 self.prediction_rects.append(prediction_rect)

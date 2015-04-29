@@ -341,6 +341,14 @@ def next_state(state, your_move=None, enemy_move=None):
     new_state = {}
     player_contexts = ['your', 'enemy']
 
+    # TODO: see if using a spacial index makes collision detection easier
+    # index = []
+    # for row_index in range(0, MAP_HEIGHT):
+    #     row = []
+    #     index.append(row)
+    #     for column_index in range(0, MAP_WIDTH):
+    #         row.append(None)
+
     # spawn aliens
     round_number = state['round_number']
     for player_context in player_contexts:
@@ -397,7 +405,9 @@ def next_state(state, your_move=None, enemy_move=None):
     new_missiles = copy.deepcopy(missiles)
     buildings = state['buildings']
     new_buildings = copy.deepcopy(buildings)
-    
+    ships = state['ships']
+    new_ships = copy.deepcopy(ships)
+
     for missile in new_missiles[:]:
         missile['y'] += -1 if missile['player_context'] == 'your' else 1
         if missile['y'] <= 0 or missile['y'] >= MAP_HEIGHT - 1:
@@ -431,6 +441,15 @@ def next_state(state, your_move=None, enemy_move=None):
                         new_missiles.remove(missile)
                         removed = True
                         break
+            if not removed:
+                for ship in new_ships[:]:
+                    if (ship['x'] <= missile['x'] < ship['x'] + 3) and missile['y'] == ship['y']:
+                        new_ships.remove(ship)
+                        state['%s_ship' % ship['player_context']] = None
+                        state['%s_respawn_timer' % ship['player_context']] = 2
+                        new_missiles.remove(missile)
+                        removed = True
+                        break
 
     # move bullets
     for bullet in new_bullets[:]:
@@ -459,11 +478,21 @@ def next_state(state, your_move=None, enemy_move=None):
                         new_bullets.remove(bullet)
                         removed = True
                         break
+            if not removed:
+                for ship in new_ships[:]:
+                    if (ship['x'] <= bullet['x'] < ship['x'] + 3) and bullet['y'] == ship['y']:
+                        new_ships.remove(ship)
+                        state['%s_ship' % ship['player_context']] = None
+                        state['%s_respawn_timer' % ship['player_context']] = 2
+                        new_bullets.remove(bullet)
+                        removed = True
+                        break
 
     new_state['missiles'] = new_missiles
     new_state['bullets'] = new_bullets
     new_state['shields'] = new_shields
     new_state['buildings'] = new_buildings
+    new_state['ships'] = new_ships
 
     # TODO: recalc bounding boxes
 
@@ -550,6 +579,7 @@ class FieldAnalystExpert(Expert):
         bullets = []
         shields = []
         buildings = []
+        ships = []
         for row_index in range(0, MAP_HEIGHT):
             for column_index in range(0, MAP_WIDTH):
                 cell = game_map['Rows'][row_index][column_index]
@@ -569,10 +599,14 @@ class FieldAnalystExpert(Expert):
                         buildings.append({'x': column_index, 'y': row_index, 'player_context': player_context, 'type': MISSILE_CONTROLLER})
                 elif cell['Type'] == SHIELD:
                     shields.append({'x': column_index, 'y': row_index})
+                elif cell['Type'] == SHIP:
+                    if cell['X'] == column_index and cell['Y'] == row_index:
+                        ships.append({'x': column_index, 'y': row_index, 'player_context': player_context})
         blackboard.set('missiles', missiles)
         blackboard.set('bullets', bullets)
         blackboard.set('shields', shields)
         blackboard.set('buildings', buildings)
+        blackboard.set('ships', ships)
 
 
     def set_player_info(self, game_state, blackboard, player_index):
@@ -588,7 +622,6 @@ class FieldAnalystExpert(Expert):
         blackboard.set('%s_kills' % player_context, player['Kills'])
         blackboard.set('%s_alien_wave_size' % player_context, player['AlienWaveSize'])
         blackboard.set('%s_missile_limit' % player_context, player['MissileLimit'])
-        blackboard.set('%s_respawn_timer' % player_context, player['RespawnTimer'])
         blackboard.set('%s_respawn_timer' % player_context, player['RespawnTimer'])
 
         alien_manager = player['AlienManager']
