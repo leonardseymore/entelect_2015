@@ -344,14 +344,6 @@ def next_state(state, your_move=None, enemy_move=None):
     new_state = {}
     player_contexts = ['your', 'enemy']
 
-    # TODO: see if using a spacial index makes collision detection easier
-    # index = []
-    # for row_index in range(0, MAP_HEIGHT):
-    #     row = []
-    #     index.append(row)
-    #     for column_index in range(0, MAP_WIDTH):
-    #         row.append(None)
-
     # spawn aliens
     round_number = state['round_number']
     for player_context in player_contexts:
@@ -411,7 +403,11 @@ def next_state(state, your_move=None, enemy_move=None):
     ships = state['ships']
     new_ships = copy.deepcopy(ships)
 
+    missiles_to_remove = []
     for missile in new_missiles[:]:
+        if missile in missiles_to_remove:
+            continue
+
         missile['y'] += -1 if missile['player_context'] == 'your' else 1
         if missile['y'] <= 0 or missile['y'] >= MAP_HEIGHT - 1:
             new_missiles.remove(missile)
@@ -453,7 +449,18 @@ def next_state(state, your_move=None, enemy_move=None):
                         new_missiles.remove(missile)
                         removed = True
                         break
-    # TODO: missiles colliding
+            if not removed:
+                for other_missile in new_missiles[:]:
+                    if missile == other_missile:
+                        continue
+
+                    if missile['x'] == other_missile['x'] and missile['y'] == other_missile['y']:
+                        missiles_to_remove.append(other_missile)
+                        new_missiles.remove(missile)
+                        removed = True
+                        break
+    for missile in missiles_to_remove:
+        new_missiles.remove(missile)
 
     # move bullets
     for bullet in new_bullets[:]:
