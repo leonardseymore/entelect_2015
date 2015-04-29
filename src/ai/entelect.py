@@ -57,6 +57,9 @@ YOUR_SPAWN_THRESHOLD = (16, 9)
 ENEMY_SPAWN_LOCATION = (16, 13)
 ENEMY_SPAWN_THRESHOLD = (16, 15)
 
+YOUR_SHIELD_FRONT = 19
+ENEMY_SHIELD_FRONT = 5
+
 INITIAL_ALIEN_WAVE_SIZE = 3
 TIME_WAVE_SIZE_INCREASE = 40
 
@@ -450,6 +453,7 @@ def next_state(state, your_move=None, enemy_move=None):
                         new_missiles.remove(missile)
                         removed = True
                         break
+    # TODO: missiles colliding
 
     # move bullets
     for bullet in new_bullets[:]:
@@ -518,7 +522,7 @@ def next_state(state, your_move=None, enemy_move=None):
             new_bbox['right'] -= 1
         new_state['%s_alien_bbox' % player_context] = new_bbox
 
-        for alien in new_aliens:
+        for alien in new_aliens[:]:
             if move_direction == 'left':
                 alien['x'] -= 1
             elif move_direction == 'right':
@@ -527,6 +531,50 @@ def next_state(state, your_move=None, enemy_move=None):
                 alien['y'] -= 1
             elif move_direction == 'down':
                 alien['y'] += 1
+
+            # all hell brakes loose and alien explodes
+            explosion = None
+            for shield in new_shields[:]:
+                if alien['x'] == shield['x'] and alien['y'] == shield['y']:
+                    new_aliens.remove(alien)
+                    new_shields.remove(shield)
+                    explosion = {'x': alien['x'], 'y': alien['y']}
+                    break
+
+            if explosion:
+                # now check for collisions in the 9 surrounding squares
+                for x in range(explosion['x'] - 1, explosion['x'] + 2):
+                    for y in range(explosion['y'] - 1, explosion['y'] + 2):
+                        if x == explosion['x'] and y == explosion['y']:
+                            continue
+                        for shield in new_shields[:]:
+                            if x == shield['x'] and y == shield['y']:
+                                new_shields.remove(shield)
+                                break
+                        for missile in new_missiles[:]:
+                            if x == missile['x'] and y == missile['y']:
+                                new_missiles.remove(missile)
+                        for building in new_buildings[:]:
+                            if (building['x'] <= x < building['x'] + 3) and y == building['y']:
+                                new_buildings.remove(building)
+                        for ship in new_ships[:]:
+                            if (ship['x'] <= x < ship['x'] + 3) and y == ship['y']:
+                                new_ships.remove(ship)
+                                # TODO: update respawn stuffs
+            else:
+                # check for aliens moving into stuff
+                for missile in new_missiles[:]:
+                    if alien['x'] == missile['x'] and alien['y'] == missile['x']:
+                        new_aliens.remove(alien)
+                        new_missiles.remove(missile)
+                for building in new_buildings[:]:
+                    if (building['x'] <= alien['x'] < building['x'] + 3) and alien['y'] == building['y']:
+                        new_buildings.remove(building)
+                for ship in new_ships[:]:
+                    if (ship['x'] <= alien['x'] < ship['x'] + 3) and alien['y'] == ship['y']:
+                        new_ships.remove(ship)
+                        # TODO: update respawn stuffs
+
         new_state['%s_aliens' % player_context] = new_aliens
 
     new_state['round_number'] = round_number + 1
