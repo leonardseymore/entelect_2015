@@ -1,1 +1,1 @@
-BasicBot.exe %1
+python -m bots.defense.main %1 

@@ -46,6 +46,11 @@ MISSILE_CONTROLLER_SYMBOL = 'M'
 MAP_WIDTH = 19
 MAP_HEIGHT = 25
 
+PLAYING_FIELD_HEIGHT = 12
+PLAYING_FIELD_WIDTH = 17
+YOUR_PLAYING_START = (1,12)
+YOUR_PLAYING_END = (17,25)
+
 MAP_TOP = 1
 MAP_RIGHT = 17
 MAP_BOTTOM = 23
@@ -90,6 +95,24 @@ def cell_to_symbol(cell):
             return MISSILE_PLAYER2_SYMBOL
     elif text == SHIP:
         if cell['PlayerNumber'] == 1:
+            return SHIP_PLAYER1_SYMBOL
+        else:
+            return SHIP_PLAYER2_SYMBOL
+    else:
+        return TEXT_TO_SYMBOL[text]
+
+def entity_to_symbol(entity):
+    if not entity:
+        return EMPTY_SYMBOL
+
+    text = entity['type']
+    if text == MISSILE:
+        if entity['player_number'] == 1:
+            return MISSILE_PLAYER1_SYMBOL
+        else:
+            return MISSILE_PLAYER2_SYMBOL
+    elif text == SHIP:
+        if entity['player_number'] == 1:
             return SHIP_PLAYER1_SYMBOL
         else:
             return SHIP_PLAYER2_SYMBOL
@@ -151,53 +174,6 @@ def load_harness_replay_states(filename, replaytype='file'):
     return states
 
 #
-# EVENTS
-#
-
-# event base class
-class Event():
-    event_type = None
-    payload = None
-
-    # event_type and generic payload to avoid unnecessary base classes
-    def __init__(self, event_type, payload=None):
-        self.event_type = event_type
-        self.payload = payload
-
-
-# listeners where key = event_type
-listeners = {}
-
-
-# register object to handle event message of specified type
-def register(event_type, obj):
-    event_type_listeners = []
-    if listeners.has_key(event_type):
-        event_type_listeners = listeners[event_type]
-    else:
-        listeners[event_type] = event_type_listeners
-    event_type_listeners.append(obj)
-
-
-# unregister object from specified event type (None to remove from all)
-def unregister(event_type, obj):
-    if event_type:
-        listeners[event_type].remove(obj)
-    else:
-        for key in listeners:
-            listeners[key].remove(obj)
-
-
-# dispatch event to interested listeners
-def dispatch(event):
-    for listener in listeners[event.event_type]:
-        method = getattr(listener, 'handle_%s' % event.event_type)
-        if method:
-            method(event)
-        else:
-            listener.handle(event.event_type, event)
-
-#
 # Blackboard
 #
 
@@ -238,88 +214,6 @@ class Blackboard():
         return tree
 
 #
-# BEHAVIOR
-#
-
-# a task is an abstract node in a behavior tree
-class Task():
-    # child tasks
-    children = []
-
-    def __init__(self, *children):
-        self.children = children
-
-    # abstract method to be implemented
-    def run(self, blackboard=None):
-        return
-
-
-# selector runs children until a child evals to true
-class Selector(Task):
-    def run(self, blackboard=None):
-        for c in self.children:
-            if c.run(blackboard):
-                return True
-        return False
-
-
-# sequence runs children until a child evals to false
-class Sequence(Task):
-    def run(self, blackboard=None):
-        for c in self.children:
-            if not c.run(blackboard):
-                return False
-        return True
-
-
-# decorator conditionally executes child
-class Decorator(Task):
-    child = None
-
-    def __init__(self, child):
-        Task.__init__(self)
-        self.child = child
-
-
-# limit number of times task can be executed
-class Limit(Decorator):
-    run_limit = 0
-    run_so_far = 0
-
-    def __init__(self, child, run_limit):
-        Decorator.__init__(self, child)
-        self.run_limit = run_limit
-
-    def run(self, blackboard=None):
-        if self.run_so_far >= self.run_limit:
-            return False
-        self.run_so_far += 1
-        return self.child.run(blackboard)
-
-
-# run a child task until it fails
-class UntilFail(Decorator):
-    def run(self, blackboard=None):
-        while True:
-            if not self.child.run(blackboard):
-                break
-        return True
-
-
-# flip the return value of task
-class Inverter(Decorator):
-    def run(self, blackboard=None):
-        return not self.child.run(blackboard)
-
-
-# inject blackboard into child task
-class BlackboardManager(Decorator):
-    def run(self, blackboard=None):
-        new_blackboard = Blackboard(blackboard)
-        return self.child.run(new_blackboard)
-
-
-#
 # MOVEMENT
 #
 
@@ -334,272 +228,273 @@ def predict_states(state, t):
             break
     return results
 
-# Update the alien commander to spawn new aliens and give aliens orders;
-# Update missiles, moving them forward;
-# Update alien bullets, moving them forward;
-# Update aliens, executing their move & shoot orders;
-# Update ships, executing their orders;
+def get_bbox(aliens):
+    bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
+    for alien in aliens:
+        x = alien['x']
+        y = alien['y']
+        if bbox['top'] == -1 or y < bbox['top']:
+            bbox['top'] = y
+        if bbox['bottom'] == -1 or y > bbox['bottom']:
+            bbox['bottom'] = y
+        if bbox['left'] == -1 or x < bbox['left']:
+            bbox['left'] = x
+        if bbox['right'] == -1 or x > bbox['right']:
+            bbox['right'] = x
+    return bbox
+
+def clone_collection(collection, playing_field, state):
+    new_collection = []
+    for entity in collection:
+        new_collection.append(entity)
+        entity['collection'] = new_collection
+        entity['playing_field'] = playing_field
+        entity['state'] = state
+
+        for i in range(entity['x'], entity['x'] + entity['width'] + 1):
+            playing_field[entity['y']][entity['x']] = entity
+    return new_collection
+
+def new_entity(x, y, type, width, playing_field, collection, state, player_number):
+    for i in range(x, x + width):
+        entity_at = playing_field[y][x]
+        if entity_at:
+            raise Exception('Trying place entity [%s] on occupied space [%s (%d:%d)]' % (type, entity_at['type'], x, y))
+    entity = {
+        'x': x,
+        'y': y,
+        'type': type,
+        'width': width,
+        'playing_field': playing_field,
+        'collection': collection,
+        'state': state,
+        'player_number': player_number
+    }
+    for i in range(x, x + width):
+        playing_field[y][x] = entity
+    if collection:
+        collection.append(entity)
+
+    entity['destroy'] = lambda this = entity: destroy_entity(this)
+    return entity
+
+def print_state(state):
+    playing_field = state['playing_field']
+    text = ''
+    for x in range(0, PLAYING_FIELD_WIDTH + 2):
+        text += '+'
+    text += '\n'
+    for y in range(0, PLAYING_FIELD_HEIGHT):
+        text += '+'
+        for x in range(0, PLAYING_FIELD_WIDTH):
+            text += entity_to_symbol(playing_field[y][x])
+        text += '+\n'
+    for x in range(0, PLAYING_FIELD_WIDTH + 2):
+        text += '+'
+    text += '\n'
+    print text
+
+
+# Update the alien commander to spawn new aliens and give aliens orders
+# Update missiles, moving them forward
+# Update alien bullets, moving them forward
+# Update aliens, executing their move & shoot orders
+# Update ships, executing their orders
 # Advance respawn timer and respawn ships if necessary.
-def next_state(state, your_move=None, enemy_move=None):
+def next_state(state, action=None):
     new_state = {}
-    player_contexts = ['your', 'enemy']
-
-    # spawn aliens
+    # basic
     round_number = state['round_number']
-    for player_context in player_contexts:
-        bbox = state['%s_alien_bbox' % player_context]
-        direction = state['%s_alien_direction' % player_context]
-        wave_size = state['%s_alien_wave_size' % player_context]
-
-        spawn_location = state['%s_alien_spawn_location' % player_context]
-        new_state['%s_alien_spawn_location' % player_context] = spawn_location
-        spawn_threshold = state['%s_alien_spawn_threshold' % player_context]
-        new_state['%s_alien_spawn_threshold' % player_context] = spawn_threshold
-
-        aliens = state['%s_aliens' % player_context]
-
-        if (player_context == 'enemy' and bbox['left'] == MAP_LEFT and bbox['bottom'] == MAP_BOTTOM) or (player_context == 'your' and bbox['left'] == MAP_LEFT and bbox['top'] == MAP_TOP):
-           return None
-
-        # update aliens
-        if round_number == TIME_WAVE_SIZE_INCREASE:
-            wave_size += 1
-        new_state['%s_alien_wave_size' % player_context] = wave_size
-
-        if direction == 'left':
-            check_y = 'top' if player_context == 'enemy' else 'bottom'
-            set_y = 'bottom' if player_context == 'your' else 'top'
-            if (bbox['right'], bbox[check_y]) == spawn_threshold:
-                bbox[set_y] = spawn_location[1]
-                bbox['left'] = spawn_location[0] - wave_size_to_bbox_width(wave_size) + 1
-                for new_alien_idx in range(0, wave_size):
-                    aliens.append({'x': spawn_location[0] - new_alien_idx * 3, 'y': spawn_location[1], 'spawned': round_number, 'player_context': player_context})
-
-    # move missiles
+    kills = state['kills']
+    lives = state['lives']
+    missile_limit = state['missile_limit']
+    respawn_timer = state['respawn_timer']
+    direction = state['enemy_alien_direction']
+    wave_size = state['enemy_alien_wave_size']
+    # entities
+    ship = state['ship']
+    alien_factory = state['alien_factory']
+    missile_controller = state['missile_controller']
+    # collections
     shields = state['shields']
-    new_shields = copy.deepcopy(shields)
-    bullets = state['bullets']
-    new_bullets = copy.deepcopy(bullets)
     missiles = state['missiles']
-    new_missiles = copy.deepcopy(missiles)
+    aliens = state['aliens']
+    bullets = state['bullets']
     buildings = state['buildings']
-    new_buildings = copy.deepcopy(buildings)
-    ships = state['ships']
-    new_ships = copy.deepcopy(ships)
+    playing_field = state['playing_field']
+    # new collections
+    new_state['lives'] = lives
+    new_playing_field = [[None for x in range(MAP_WIDTH)] for y in range(MAP_HEIGHT)]
+    new_shields = clone_collection(shields, new_playing_field, new_state)
+    new_missiles = clone_collection(missiles, new_playing_field, new_state)
+    new_aliens = clone_collection(aliens, new_playing_field, new_state)
+    new_bullets = clone_collection(bullets, new_playing_field, new_state)
+    new_buildings = clone_collection(buildings, new_playing_field, new_state)
 
-    missiles_to_remove = []
+    if round_number == TIME_WAVE_SIZE_INCREASE:
+        wave_size += 1
+    if respawn_timer > -1:
+        respawn_timer -= 1
+
+    # Update the alien commander to spawn new aliens and give aliens orders
+    bbox = get_bbox(aliens)
+    spawn_x = 16
+    spawn_y = 1
+    if (bbox['right'], bbox['top']) == (spawn_x, spawn_y):
+        for i in range(0, wave_size):
+            entity_x = spawn_x - (i * 3)
+            entity_y = spawn_y
+            entity = new_playing_field[entity_y][entity_x]
+            if entity:
+                entity['destroy']()
+            else:
+                new_entity(x, y, ALIEN, 1, new_playing_field, new_aliens, new_state, 2)
+
+    # TODO: also remove out of bound items
+    # Update missiles, moving them forward
     for missile in new_missiles[:]:
-        if missile in missiles_to_remove:
-            continue
-
-        missile['y'] += -1 if missile['player_context'] == 'your' else 1
-        if missile['y'] <= 0 or missile['y'] >= MAP_HEIGHT - 1:
+        missile['y'] += missile['direction']
+        entity = new_playing_field[missile['y']][missile['x']]
+        if entity:
+            entity['destroy']()
             new_missiles.remove(missile)
-        else:
-            removed = False
-            for alien in state['your_aliens'] + state['enemy_aliens']:
-                if missile['x'] == alien['x'] and missile['y'] == alien['y']:
-                    state['%s_aliens' % alien['player_context']].remove(alien)
-                    new_missiles.remove(missile)
-                    removed = True
-                    break
-            if not removed:
-                for shield in new_shields[:]:
-                    if missile['x'] == shield['x'] and missile['y'] == shield['y']:
-                        new_shields.remove(shield)
-                        new_missiles.remove(missile)
-                        removed = True
-                        break
-            if not removed:
-                for bullet in new_bullets[:]:
-                    if missile['x'] == bullet['x'] and missile['y'] == bullet['y']:
-                        new_bullets.remove(bullet)
-                        new_missiles.remove(missile)
-                        removed = True
-                        break
-            if not removed:
-                for building in new_buildings[:]:
-                    if (building['x'] <= missile['x'] < building['x'] + 3) and missile['y'] == building['y']:
-                        new_buildings.remove(building)
-                        new_missiles.remove(missile)
-                        removed = True
-                        break
-            if not removed:
-                for ship in new_ships[:]:
-                    if (ship['x'] <= missile['x'] < ship['x'] + 3) and missile['y'] == ship['y']:
-                        new_ships.remove(ship)
-                        state['%s_ship' % ship['player_context']] = None
-                        state['%s_respawn_timer' % ship['player_context']] = 2
-                        new_missiles.remove(missile)
-                        removed = True
-                        break
-            if not removed:
-                for other_missile in new_missiles[:]:
-                    if missile == other_missile:
-                        continue
+            if entity['type'] == ALIEN:
+                kills += 1
 
-                    if missile['x'] == other_missile['x'] and missile['y'] == other_missile['y']:
-                        missiles_to_remove.append(other_missile)
-                        new_missiles.remove(missile)
-                        removed = True
-                        break
-    for missile in missiles_to_remove:
-        new_missiles.remove(missile)
-
-    # move bullets
+    # Update alien bullets, moving them forward
     for bullet in new_bullets[:]:
-        bullet['y'] += -1 if bullet['player_context'] == 'your' else 1
-        if bullet['y'] <= 0 or bullet['y'] >= MAP_HEIGHT - 1:
+        bullet['y'] += 1
+        entity = new_playing_field[bullet['y']][bullet['x']]
+        if entity:
+            entity['destroy']()
             new_bullets.remove(bullet)
+
+    # Update aliens, executing their move & shoot orders
+    bbox = get_bbox(new_aliens)
+    move_direction = None
+    if direction == -1:
+        if bbox['left'] == 0:
+            direction = 1
+            move_direction = 'down'
         else:
-            removed = False
-            for shield in new_shields[:]:
-                if bullet['x'] == shield['x'] and bullet['y'] == shield['y']:
-                    new_shields.remove(shield)
-                    new_bullets.remove(bullet)
-                    removed = True
-                    break
-            if not removed:
-                for missile in new_missiles[:]:
-                    if bullet['x'] == missile['x'] and bullet['y'] == missile['y']:
-                        new_bullets.remove(bullet)
-                        new_missiles.remove(missile)
-                        removed = True
-                        break
-            if not removed:
-                for building in new_buildings[:]:
-                    if (building['x'] <= bullet['x'] < building['x'] + 3) and bullet['y'] == building['y']:
-                        new_buildings.remove(building)
-                        new_bullets.remove(bullet)
-                        removed = True
-                        break
-            if not removed:
-                for ship in new_ships[:]:
-                    if (ship['x'] <= bullet['x'] < ship['x'] + 3) and bullet['y'] == ship['y']:
-                        new_ships.remove(ship)
-                        state['%s_ship' % ship['player_context']] = None
-                        state['%s_respawn_timer' % ship['player_context']] = 2
-                        new_bullets.remove(bullet)
-                        removed = True
-                        break
+            move_direction = 'left'
+    else: # right
+        if bbox['right'] == PLAYING_FIELD_WIDTH:
+            direction = -1
+            move_direction = 'down'
+        else:
+            move_direction = 'right'
 
-    new_state['missiles'] = new_missiles
-    new_state['bullets'] = new_bullets
-    new_state['shields'] = new_shields
-    new_state['buildings'] = new_buildings
-    new_state['ships'] = new_ships
-
-    # TODO: recalc bounding boxes
-
-    # move aliens
-    for player_context in player_contexts:
-        direction = state['%s_alien_direction' % player_context]
-        aliens = state['%s_aliens' % player_context]
-
-        new_bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
-        for alien in aliens:
-            x = alien['x']
-            y = alien['y']
-            if new_bbox['top'] == -1 or new_bbox['top'] > y:
-                new_bbox['top'] = y
-            if new_bbox['bottom'] == -1 or new_bbox['bottom'] < y:
-                new_bbox['bottom'] = y
-            if new_bbox['left'] == -1 or new_bbox['left'] > x:
-                new_bbox['left'] = x
-            if new_bbox['right'] == -1 or new_bbox['right'] < x:
-                new_bbox['right'] = x
-
-        if direction == 'left':
-            if new_bbox['left'] == MAP_LEFT:
-                direction = 'right'
-                move_direction = 'down' if player_context == 'enemy' else 'up'
-            else:
-                direction = 'left'
-                move_direction = 'left'
-        else: # right
-            if new_bbox['right'] == MAP_RIGHT:
-                direction = 'left'
-                move_direction = 'down' if player_context == 'enemy' else 'up'
-            else:
-                direction = 'right'
-                move_direction = 'right'
-        new_state['%s_alien_direction' % player_context] = direction
-        new_state['%s_alien_move_direction' % player_context] = move_direction
-
-        new_aliens = copy.deepcopy(aliens)
-        # move bbox
-        if move_direction == 'up':
-            new_bbox['top'] -= 1
-            new_bbox['bottom'] -= 1
+    for alien in aliens:
+        if move_direction == 'left':
+            alien['x'] -= 1
         elif move_direction == 'right':
-            new_bbox['left'] += 1
-            new_bbox['right'] += 1
+            alien['x'] += 1
         elif move_direction == 'down':
-            new_bbox['top'] += 1
-            new_bbox['bottom'] += 1
-        else: # left
-            new_bbox['left'] -= 1
-            new_bbox['right'] -= 1
-        new_state['%s_alien_bbox' % player_context] = new_bbox
+            alien['y'] += 1
 
-        for alien in new_aliens[:]:
-            if move_direction == 'left':
-                alien['x'] -= 1
-            elif move_direction == 'right':
-                alien['x'] += 1
-            elif move_direction == 'up':
-                alien['y'] -= 1
-            elif move_direction == 'down':
-                alien['y'] += 1
+        entity = new_playing_field[alien['y']][alien['x']]
+        if entity:
+            entity['destroy']()
+            new_aliens.remove(alien)
+            if entity['type'] == SHIELD:
+                for y in range(entity['y'] - 1, entity['y'] + 2):
+                    for x in range(entity['x'] - 1, entity['x'] + 2):
+                        collateral = new_playing_field[y][x]
+                        collateral['destroy']()
 
-            # all hell brakes loose and alien explodes
-            explosion = None
-            for shield in new_shields[:]:
-                if alien['x'] == shield['x'] and alien['y'] == shield['y']:
-                    new_aliens.remove(alien)
-                    new_shields.remove(shield)
-                    explosion = {'x': alien['x'], 'y': alien['y']}
-                    break
+    # check if game over
+    new_lives = new_state['lives']
+    if new_lives < 0:
+        return None
 
-            if explosion:
-                # now check for collisions in the 9 surrounding squares
-                for x in range(explosion['x'] - 1, explosion['x'] + 2):
-                    for y in range(explosion['y'] - 1, explosion['y'] + 2):
-                        if x == explosion['x'] and y == explosion['y']:
-                            continue
-                        for shield in new_shields[:]:
-                            if x == shield['x'] and y == shield['y']:
-                                new_shields.remove(shield)
-                                break
-                        for missile in new_missiles[:]:
-                            if x == missile['x'] and y == missile['y']:
-                                new_missiles.remove(missile)
-                        for building in new_buildings[:]:
-                            if (building['x'] <= x < building['x'] + 3) and y == building['y']:
-                                new_buildings.remove(building)
-                        for ship in new_ships[:]:
-                            if (ship['x'] <= x < ship['x'] + 3) and y == ship['y']:
-                                new_ships.remove(ship)
-                                # TODO: update respawn stuffs
+    # Update ships, executing their orders
+    if ship:
+        # NOTHING = 'Nothing'
+        # MOVE_LEFT = 'MoveLeft'
+        # MOVE_RIGHT = 'MoveRight'
+        # SHOOT = 'Shoot'
+        # BUILD_ALIEN_FACTORY = 'BuildAlienFactory'
+        # BUILD_MISSILE_CONTROLLER = 'BuildMissileController'
+        # BUILD_SHIELD = 'BuildShield'
+        if action == MOVE_LEFT:
+            if ship['x'] == 0:
+                raise Exception('Out of bounds')
             else:
-                # check for aliens moving into stuff
-                for missile in new_missiles[:]:
-                    if alien['x'] == missile['x'] and alien['y'] == missile['x']:
-                        new_aliens.remove(alien)
-                        new_missiles.remove(missile)
-                for building in new_buildings[:]:
-                    if (building['x'] <= alien['x'] < building['x'] + 3) and alien['y'] == building['y']:
-                        new_buildings.remove(building)
-                for ship in new_ships[:]:
-                    if (ship['x'] <= alien['x'] < ship['x'] + 3) and alien['y'] == ship['y']:
-                        new_ships.remove(ship)
-                        # TODO: update respawn stuffs
+                ship['x'] -= 1
+        elif action == MOVE_RIGHT:
+            if ship['x'] > PLAYING_FIELD_WIDTH - 1:
+                raise Exception('Out of bounds')
+            else:
+                ship['x'] += 1
+        elif action == SHOOT:
+            if missile_limit >= sum(missile.player_number == 1 for missile in new_missiles):
+                raise Exception('Out of missiles')
+            else:
+                new_entity(ship['x'] + 1, ship['y'] - 1, MISSILE, 1, new_playing_field, None, new_state, 1)
+        elif action == BUILD_ALIEN_FACTORY or action == BUILD_MISSILE_CONTROLLER or action == BUILD_SHIELD:
+            if new_lives == 0:
+                raise Exception('No lives left for building')
+            if action == BUILD_ALIEN_FACTORY:
+                if alien_factory:
+                    raise Exception('Alien factory already built')
+                else:
+                    alien_factory = new_entity(ship['x'], ship['y'] + 1, ALIEN_FACTORY, 3, new_playing_field, new_buildings, new_state, 1)
+            elif action == BUILD_MISSILE_CONTROLLER:
+                if missile_controller:
+                    raise Exception('Missile controller already built')
+                else:
+                    missile_controller = new_entity(ship['x'], ship['y'] + 1, MISSILE_CONTROLLER, 3, new_playing_field, new_buildings, new_state, 1)
+            elif action == BUILD_SHIELD:
+                for y in range(6, 10):
+                    for x in range(ship['x'], ship['width']):
+                        entity = new_playing_field[y][x]
+                        if entity:
+                            if not entity['type'] == SHIELD:
+                                entity['destroy']()
+                        else:
+                            new_entity(x, y, SHIELD, 1, new_playing_field, new_shields, new_state, 1)
 
-        new_state['%s_aliens' % player_context] = new_aliens
+    # Advance respawn timer and respawn ships if necessary.
+    if respawn_timer > -1:
+        respawn_timer -= 1
+        if respawn_timer == -1:
+            ship_x = 8
+            ship_y = PLAYING_FIELD_HEIGHT - 2
+            entity = new_playing_field[ship_y][ship_x]
+            if entity:
+                entity['destroy']()
+                respawn_timer = 2
+            else:
+                ship = new_entity(ship_x, ship_y, SHIP, 3, new_playing_field, None, new_state)
 
-    new_state['round_number'] = round_number + 1
+    # check if game over
+    new_lives = new_state['lives']
+    if new_lives < 0:
+        return None
+
+    # update state
+    round_number += 1
+    new_state['round_number'] = round_number
+    new_state['lives'] = new_lives
+    new_state['kills'] = kills
+    new_state['missile_limit'] = missile_limit
+    new_state['respawn_timer'] = respawn_timer
+    new_state['enemy_alien_direction'] = direction
+    new_state['enemy_alien_wave_size'] = wave_size
+    # entities
+    new_state['ship'] = ship
+    new_state['alien_factory'] = alien_factory
+    new_state['missile_controller'] = missile_controller
+    # collections
+    new_state['shields'] = new_shields
+    new_state['missiles'] = new_missiles
+    new_state['aliens'] = new_aliens
+    new_state['bullets'] = new_bullets
+    new_state['buildings'] = new_buildings
+    new_state['playing_field'] = new_playing_field
+
     return new_state
-
 #
 # SEARCH
 #
@@ -628,6 +523,25 @@ class Expert():
     def run(self, blackboard):
         pass
 
+# clean up collections and playing field when an entity is destroyed
+def destroy_entity(entity):
+    collection = entity.get('collection')
+    if collection:
+        collection.remove(entity)
+    for i in range(entity['x'], entity['x'] + entity['width']):
+        entity['playing_field'][entity['y']][i] = None
+
+    if entity['type'] == SHIP:
+        state = entity['state']
+        state['lives'] -= 1
+        state['respawn_timer'] = 3
+        state['ship'] = None
+    elif entity['type'] == ALIEN_FACTORY:
+        state['alien_factory'] = None
+    elif entity['type'] == MISSILE_CONTROLLER:
+        state['missile_limit'] = 1
+        state['missile_controller'] = None
+
 # analyses game state and gets most important information
 class FieldAnalystExpert(Expert):
     def __init__(self):
@@ -636,129 +550,77 @@ class FieldAnalystExpert(Expert):
     def run(self, blackboard):
         game_state = blackboard.get('game_state')
         # basic props
-        blackboard.set('round_number', game_state['RoundNumber'])
-        blackboard.set('round_limit', game_state['RoundLimit'])
-        blackboard.set('rounds_remaining', game_state['RoundLimit'] - game_state['RoundNumber'])
-        self.set_player_info(game_state, blackboard, 0)
-        self.set_player_info(game_state, blackboard, 1)
+        state = {}
+        state['round_number'] = game_state['RoundNumber']
+        state['round_limit'] = game_state['RoundLimit']
+        you = game_state['Players'][0]
+        state['missile_limit'] = you['MissileLimit']
+        state['respawn_timer'] = you['RespawnTimer']
+        state['kills'] = you['Kills']
+        state['lives'] = you['Lives']
+        enemy = game_state['Players'][1]
+        state['enemy_alien_wave_size'] = enemy['AlienWaveSize']
+        enemy_alien_man = enemy['AlienManager']
+        state['enemy_alien_direction'] = enemy_alien_man['DeltaX']
 
         game_map = game_state['Map']
+        playing_field = [[None for x in range(MAP_WIDTH)] for y in range(MAP_HEIGHT)]
+        aliens = []
         missiles = []
         bullets = []
         shields = []
         buildings = []
-        ships = []
-        for row_index in range(0, MAP_HEIGHT):
-            for column_index in range(0, MAP_WIDTH):
+        alien_factory = None
+        missile_controller = None
+        ship = None
+        for row_index in range(YOUR_PLAYING_START[1], YOUR_PLAYING_END[1]):
+            for column_index in range(YOUR_PLAYING_START[0], YOUR_PLAYING_END[0]):
                 cell = game_map['Rows'][row_index][column_index]
                 if not cell:
                     continue
 
-                player_context = 'your' if cell['PlayerNumber'] == 1 else 'enemy'
+                player_number = cell['PlayerNumber']
+                x = cell['X'] - YOUR_PLAYING_START[0]
+                y = cell['Y'] - YOUR_PLAYING_START[1]
+
+                if cell['X'] == column_index and cell['Y'] == row_index:
+                    entity = new_entity(x, y, cell['Type'], cell['Width'], playing_field, None, state, player_number)
+
+                collection = None
+                if cell['Type'] == ALIEN:
+                    collection = aliens
                 if cell['Type'] == MISSILE:
-                    missiles.append({'x': column_index, 'y': row_index, 'player_context': player_context})
+                    collection = missiles
+                    entity['direction'] = -1 if player_number == 1 else 1
                 elif cell['Type'] == BULLET:
-                    bullets.append({'x': column_index, 'y': row_index, 'player_context': player_context})
-                elif cell['Type'] == ALIEN_FACTORY:
+                    collection = bullets
+                elif cell['Type'] == ALIEN_FACTORY or cell['Type'] == MISSILE_CONTROLLER:
                     if cell['X'] == column_index and cell['Y'] == row_index:
-                        buildings.append({'x': column_index, 'y': row_index, 'player_context': player_context, 'type': ALIEN_FACTORY})
-                elif cell['Type'] == MISSILE_CONTROLLER:
-                    if cell['X'] == column_index and cell['Y'] == row_index:
-                        buildings.append({'x': column_index, 'y': row_index, 'player_context': player_context, 'type': MISSILE_CONTROLLER})
+                        collection = buildings
+                        if cell['Type'] == ALIEN_FACTORY:
+                            alien_factory = entity
+                        else:
+                            missile_controller = entity
                 elif cell['Type'] == SHIELD:
-                    shields.append({'x': column_index, 'y': row_index})
+                    collection = shields
                 elif cell['Type'] == SHIP:
                     if cell['X'] == column_index and cell['Y'] == row_index:
-                        ships.append({'x': column_index, 'y': row_index, 'player_context': player_context})
-        blackboard.set('missiles', missiles)
-        blackboard.set('bullets', bullets)
-        blackboard.set('shields', shields)
-        blackboard.set('buildings', buildings)
-        blackboard.set('ships', ships)
+                        if player_number == 1:
+                            ship = entity
+                if collection is not None:
+                    entity['collection'] = collection
+                    collection.append(entity)
 
-
-    def set_player_info(self, game_state, blackboard, player_index):
-        player_context = 'your' if player_index == 0 else 'enemy'
-        player_number = 1 if player_context == 'your' else 2
-        player = game_state['Players'][player_index]
-
-        spawn_location = YOUR_SPAWN_LOCATION if player_context == 'your' else ENEMY_SPAWN_LOCATION
-        spawn_threshold = YOUR_SPAWN_THRESHOLD if player_context == 'your' else ENEMY_SPAWN_THRESHOLD
-        blackboard.set('%s_alien_spawn_location' % player_context, spawn_location)
-        blackboard.set('%s_alien_spawn_threshold' % player_context, spawn_threshold)
-        blackboard.set('%s_lives' % player_context, player['Lives'])
-        blackboard.set('%s_kills' % player_context, player['Kills'])
-        blackboard.set('%s_alien_wave_size' % player_context, player['AlienWaveSize'])
-        blackboard.set('%s_missile_limit' % player_context, player['MissileLimit'])
-        blackboard.set('%s_respawn_timer' % player_context, player['RespawnTimer'])
-
-        alien_manager = player['AlienManager']
-        blackboard.set('%s_alien_direction' % player_context, 'left' if alien_manager['DeltaX'] == -1 else 'right')
-        blackboard.set('%s_alien_shot_energy_cost' % player_context, alien_manager['ShotEnergyCost'])
-        blackboard.set('%s_alien_shot_energy' % player_context, alien_manager['ShotEnergy'])
-
-        # nullable object
-        ship = player['Ship']
-        if ship:
-            blackboard.set('%s_ship' % player_context, {'x': ship['X'], 'y': ship['Y']})
-        else:
-            blackboard.set('%s_ship' % player_context, None)
-
-        alien_factory = player['AlienFactory']
-        blackboard.set('%s_alien_factory_built' % player_context, alien_factory is not None)
-        if alien_factory:
-            blackboard.set('%s_alien_factory_pos' % player_context, {'x': alien_factory['X'], 'y': alien_factory['Y']})
-        else:
-            blackboard.set('%s_alien_factory_pos' % player_context, None)
-
-        # complex entries
-        game_map = game_state['Map']
-        alien_bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
-        if game_state['RoundNumber'] == 0:
-            alien_bbox['top'] = spawn_location[1]
-            alien_bbox['right'] = MAP_RIGHT
-            alien_bbox['bottom'] = spawn_location[1]
-            alien_bbox['left'] = MAP_RIGHT - wave_size_to_bbox_width(INITIAL_ALIEN_WAVE_SIZE) + 1
-        else:
-            start_row = 0 if player_index == 0 else MAP_HEIGHT / 2
-            end_row = MAP_HEIGHT / 2 if player_index == 0 else MAP_HEIGHT
-            for row_index in range(start_row, end_row):
-                for column_index in range(0, MAP_WIDTH):
-                    cell = game_map['Rows'][row_index][column_index]
-                    if not cell:
-                        continue
-
-                    if cell['Type'] == ALIEN:
-                        if alien_bbox['top'] == -1:
-                            alien_bbox['top'] = row_index
-                        if alien_bbox['bottom'] == -1 or alien_bbox['bottom'] < row_index:
-                            alien_bbox['bottom'] = row_index
-                        if alien_bbox['left'] == -1 or alien_bbox['left'] > column_index:
-                            alien_bbox['left'] = column_index
-                        if alien_bbox['right'] == -1 or alien_bbox['right'] < column_index:
-                            alien_bbox['right'] = column_index
-        blackboard.set('%s_alien_bbox' % player_context, alien_bbox)
-
-        player_aliens = []
-        if game_state['RoundNumber'] == 0:
-            player_aliens.append({'x': MAP_RIGHT, 'y': spawn_location[1], 'player_context': player_context})
-            player_aliens.append({'x': MAP_RIGHT - 3, 'y': spawn_location[1], 'player_context': player_context})
-            player_aliens.append({'x': MAP_RIGHT - 6, 'y': spawn_location[1], 'player_context': player_context})
-        else:
-            for row_index in range(0, MAP_HEIGHT):
-                for column_index in range(0, MAP_WIDTH):
-                    cell = game_map['Rows'][row_index][column_index]
-                    if not cell:
-                        continue
-                    if cell['Type'] == ALIEN and cell['PlayerNumber'] == player_number:
-                        alien = {
-                            'id': cell['Id'],
-                            'x': column_index,
-                            'y': row_index,
-                            'player_context': player_context
-                        }
-                        player_aliens.append(alien)
-        blackboard.set('%s_aliens' % player_context, player_aliens)
+        state['aliens'] = aliens
+        state['missiles'] = missiles
+        state['bullets'] = bullets
+        state['shields'] = shields
+        state['buildings'] = buildings
+        state['alien_factory'] = alien_factory
+        state['missile_controller'] = missile_controller
+        state['ship'] = ship
+        state['playing_field'] = playing_field
+        blackboard.set('state', state)
 
 # expert in alien movement prediction
 # depends on Field Analyst Expert

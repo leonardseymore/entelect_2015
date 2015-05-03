@@ -94,3 +94,29 @@ x: Alien
 |: Alien Bullet
 !: Your Missiles
 i: Opponent's Missiles
+
+01################### <-- If an alien reaches this row your opponent loses
+02#                 # <-- Opponent's building row
+03#       VVV       #
+04# ---         --- #
+05# ---         --- #
+06# ---         --- #
+07#                 #
+08#                 #
+09#                 #
+10#                 #
+11#                 #
+12#          x  x  x# <-- Your aliens spawn here and move up
+13#                 # <-- Middle row
+14#          x  x  x# <-- Your opponent's aliens spawn here and move down
+15#                 #
+16#                 #
+17#                 #
+18#                 #
+19#                 #
+20# ---         --- #
+21# ---         --- #
+22# ---         --- #
+23#       AAA       #
+24#                 # <-- Your building row
+25################### <-- If an alien reaches this row you lose
