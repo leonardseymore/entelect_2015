@@ -245,19 +245,33 @@ def get_bbox(aliens):
 
 def clone_collection(collection, playing_field, state):
     new_collection = []
-    for entity in collection:
-        new_collection.append(entity)
-        entity['collection'] = new_collection
-        entity['playing_field'] = playing_field
-        entity['state'] = state
 
-        for i in range(entity['x'], entity['x'] + entity['width'] + 1):
-            playing_field[entity['y']][entity['x']] = entity
+    for entity in collection:
+        cloned_entity = copy.copy(entity)
+        new_collection.append(cloned_entity)
+        cloned_entity['collection'] = new_collection
+        cloned_entity['playing_field'] = playing_field
+        cloned_entity['state'] = state
+
+        for i in range(cloned_entity['x'], cloned_entity['x'] + cloned_entity['width']):
+            playing_field[cloned_entity['y']][cloned_entity['x']] = cloned_entity
     return new_collection
+
+def clone_entity(entity, playing_field, state):
+    if not entity:
+        return None
+
+    cloned_entity = copy.copy(entity)
+    cloned_entity['playing_field'] = playing_field
+    cloned_entity['state'] = state
+
+    for i in range(cloned_entity['x'], cloned_entity['x'] + cloned_entity['width']):
+        playing_field[cloned_entity['y']][i] = cloned_entity
+    return cloned_entity
 
 def new_entity(x, y, type, width, playing_field, collection, state, player_number):
     for i in range(x, x + width):
-        entity_at = playing_field[y][x]
+        entity_at = playing_field[y][i]
         if entity_at:
             raise Exception('Trying place entity [%s] on occupied space [%s (%d:%d)]' % (type, entity_at['type'], x, y))
     entity = {
@@ -271,7 +285,7 @@ def new_entity(x, y, type, width, playing_field, collection, state, player_numbe
         'player_number': player_number
     }
     for i in range(x, x + width):
-        playing_field[y][x] = entity
+        playing_field[y][i] = entity
     if collection:
         collection.append(entity)
 
@@ -287,6 +301,7 @@ def print_state(state):
     for y in range(0, PLAYING_FIELD_HEIGHT):
         text += '+'
         for x in range(0, PLAYING_FIELD_WIDTH):
+            entity = playing_field[y][x]
             text += entity_to_symbol(playing_field[y][x])
         text += '+\n'
     for x in range(0, PLAYING_FIELD_WIDTH + 2):
@@ -330,6 +345,13 @@ def next_state(state, action=None):
     new_aliens = clone_collection(aliens, new_playing_field, new_state)
     new_bullets = clone_collection(bullets, new_playing_field, new_state)
     new_buildings = clone_collection(buildings, new_playing_field, new_state)
+    new_ship = clone_entity(ship, new_playing_field, new_state)
+    new_alien_factory = clone_entity(alien_factory, new_playing_field, new_state)
+    new_missile_controller = clone_entity(missile_controller, new_playing_field, new_state)
+
+    new_state['ship'] = new_ship
+    new_state['alien_factory'] = new_alien_factory
+    new_state['missile_controller'] = new_missile_controller
 
     if round_number == TIME_WAVE_SIZE_INCREASE:
         wave_size += 1
@@ -410,13 +432,6 @@ def next_state(state, action=None):
 
     # Update ships, executing their orders
     if ship:
-        # NOTHING = 'Nothing'
-        # MOVE_LEFT = 'MoveLeft'
-        # MOVE_RIGHT = 'MoveRight'
-        # SHOOT = 'Shoot'
-        # BUILD_ALIEN_FACTORY = 'BuildAlienFactory'
-        # BUILD_MISSILE_CONTROLLER = 'BuildMissileController'
-        # BUILD_SHIELD = 'BuildShield'
         if action == MOVE_LEFT:
             if ship['x'] == 0:
                 raise Exception('Out of bounds')
@@ -482,10 +497,6 @@ def next_state(state, action=None):
     new_state['respawn_timer'] = respawn_timer
     new_state['enemy_alien_direction'] = direction
     new_state['enemy_alien_wave_size'] = wave_size
-    # entities
-    new_state['ship'] = ship
-    new_state['alien_factory'] = alien_factory
-    new_state['missile_controller'] = missile_controller
     # collections
     new_state['shields'] = new_shields
     new_state['missiles'] = new_missiles
@@ -525,14 +536,15 @@ class Expert():
 
 # clean up collections and playing field when an entity is destroyed
 def destroy_entity(entity):
+    print 'Destroying [%s] at [%d:%d]' % (entity['type'], entity['x'], entity['y'])
     collection = entity.get('collection')
     if collection:
         collection.remove(entity)
     for i in range(entity['x'], entity['x'] + entity['width']):
         entity['playing_field'][entity['y']][i] = None
 
+    state = entity['state']
     if entity['type'] == SHIP:
-        state = entity['state']
         state['lives'] -= 1
         state['respawn_timer'] = 3
         state['ship'] = None
@@ -607,7 +619,7 @@ class FieldAnalystExpert(Expert):
                     if cell['X'] == column_index and cell['Y'] == row_index:
                         if player_number == 1:
                             ship = entity
-                if collection is not None:
+                if entity and collection is not None:
                     entity['collection'] = collection
                     collection.append(entity)
 

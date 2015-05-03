@@ -1,7 +1,7 @@
 
 Round 0
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   0      #
 # Kills: 0        #
 # Lives: 2        #
@@ -43,17 +43,17 @@ Player 2: Nothing              > Did nothing.
 
 Round 1
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   1      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 1        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
 #                 #
 #                 #
@@ -81,21 +81,21 @@ Round 1
 ###################
 
 Player 1: BuildShield          > Built shields.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Built shields.
 
 Round 2
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   2      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
 #                 #
 #                 #
@@ -123,21 +123,21 @@ Round 2
 ###################
 
 Player 1: BuildShield          > Built shields.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Built shields.
 
 Round 3
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   3      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
 #                 #
 #                 #
@@ -165,21 +165,21 @@ Round 3
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 4
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   4      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
 #                 #
 #                 #
@@ -207,21 +207,21 @@ Round 4
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 5
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   5      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
 #                 #
 #                 #
@@ -249,30 +249,30 @@ Round 5
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 6
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   6      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
 #                 #
 #                 #
 #                 #
-#          |      #
+#       |         #
 #    x  x  x      #
 #                 #
 #    x  x  x      #
-#          |      #
+#       |         #
 #                 #
 #                 #
 #                 #
@@ -291,31 +291,31 @@ Round 6
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 7
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   7      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
 #                 #
 #                 #
-#          |      #
-#                 #
-#   x  x  x       #
+#       |         #
 #                 #
 #   x  x  x       #
 #                 #
-#          |      #
+#   x  x  x       #
+#                 #
+#       |         #
 #                 #
 #                 #
 #                 #
@@ -333,24 +333,24 @@ Round 7
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 8
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   8      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
 #                 #
-#          |      #
+#       |         #
 #                 #
 #                 #
 #  x  x  x        #
@@ -358,7 +358,7 @@ Round 8
 #  x  x  x        #
 #                 #
 #                 #
-#          |      #
+#       |         #
 #                 #
 #                 #
 # ---   ---   --- #
@@ -375,23 +375,23 @@ Round 8
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 9
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:   9      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
 #                 #
-#          |      #
+#       |         #
 #                 #
 #                 #
 #                 #
@@ -401,7 +401,7 @@ Round 9
 #                 #
 #                 #
 #                 #
-#          |      #
+#       |         #
 #                 #
 # ---   ---   --- #
 # ---   ---   --- #
@@ -417,22 +417,22 @@ Round 9
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 10
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  10      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
-#          |      #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   ---   --- #
+#       |         #
 #                 #
 #                 #
 #                 #
@@ -444,7 +444,7 @@ Round 10
 #                 #
 #                 #
 #                 #
-#          |      #
+#       |         #
 # ---   ---   --- #
 # ---   ---   --- #
 # ---   ---   --- #
@@ -459,21 +459,21 @@ Round 10
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 11
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  11      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---      |  --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---    --   --- #
 #                 #
 #                 #
 #                 #
@@ -487,7 +487,7 @@ Round 11
 #                 #
 #                 #
 #                 #
-# ---   ---|  --- #
+# ---    --   --- #
 # ---   ---   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -501,36 +501,36 @@ Round 11
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 12
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  12      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---      |  --- #
-# ---         --- #
-#                 #
-#                 #
-#                 #
-#       |         #
-# x  x  x         #
-#                 #
-#                 #
-#                 #
-# x  x  x         #
-#       |         #
-#                 #
-#                 #
-#                 #
 # ---   ---   --- #
-# ---   ---|  --- #
+# ---   ---   --- #
+# ---    --   --- #
+#                 #
+#                 #
+#                 #
+#       |         #
+# x  x  x         #
+#                 #
+#                 #
+#                 #
+# x  x  x         #
+#       |         #
+#                 #
+#                 #
+#                 #
+# ---    --   --- #
+# ---   ---   --- #
 # ---   ---   --- #
 #       AAA       #
 #                 #
@@ -543,21 +543,21 @@ Round 12
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 13
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  13      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---      |  --- #
-# ---         --- #
-# ---         --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---    --   --- #
 #                 #
 #                 #
 #       |         #
@@ -571,9 +571,9 @@ Round 13
 #       |         #
 #                 #
 #                 #
+# ---    --   --- #
 # ---   ---   --- #
 # ---   ---   --- #
-# ---   ---|  --- #
 #       AAA       #
 #                 #
 ###################
@@ -585,21 +585,21 @@ Round 13
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 14
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  14      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
-#       VVV|      #
-# ---         --- #
-# ---         --- #
-# ---         --- #
+#       VVV       #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---    --   --- #
 #                 #
 #       |         #
 #                 #
@@ -613,10 +613,10 @@ Round 14
 #                 #
 #       |         #
 #                 #
+# ---    --   --- #
 # ---   ---   --- #
 # ---   ---   --- #
-# ---   ---   --- #
-#       AAA|      #
+#       AAA       #
 #                 #
 ###################
 # Missiles: 0/1   #
@@ -627,39 +627,39 @@ Round 14
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 15
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  15      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
-#          |      #
+#                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
-#       |         #
-#                 #
-#                 #
-#                 #
-#    x  x  x      #
-#                 #
-#                 #
-#                 #
-#    x  x  x      #
-#                 #
-#                 #
-#                 #
-#       |         #
 # ---   ---   --- #
+# ---   ---   --- #
+# ---    --   --- #
+#       |         #
+#                 #
+#                 #
+#                 #
+#    x  x  x      #
+#                 #
+#                 #
+#                 #
+#    x  x  x      #
+#                 #
+#                 #
+#                 #
+#       |         #
+# ---    --   --- #
 # ---   ---   --- #
 # ---   ---   --- #
 #       AAA       #
-#          |      #
+#                 #
 ###################
 # Missiles: 0/1   #
 # Lives: 0        #
@@ -669,21 +669,21 @@ Round 15
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 16
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  16      #
 # Kills: 0        #
-# Lives: 2        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---   |     --- #
+# ---   ---   --- #
+# ---   ---   --- #
+# ---   |--   --- #
 #                 #
 #                 #
 #                 #
@@ -694,258 +694,6 @@ Round 16
 #                 #
 #     x  x  x     #
 #                 #
-#                 #
-#                 #
-#                 #
-# ---    --   --- #
-# ---   ---   --- #
-# ---   ---   --- #
-#       AAA       #
-#                 #
-###################
-# Missiles: 0/1   #
-# Lives: 0        #
-# Kills: 0        #
-# Round:  16      #
-# Hide!!!         #
-###################
-
-Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
-
-Round 17
-###################
-# Player 2        #
-# Round:  17      #
-# Kills: 0        #
-# Lives: 2        #
-# Missiles: 0/1   #
-###################
-#                 #
-#       VVV       #
-# ---         --- #
-# ---   |     --- #
-# ---         --- #
-#                 #
-#                 #
-#                 #
-#                 #
-#      x  x  x    #
-#                 #
-#                 #
-#                 #
-#      x  x  x    #
-#                 #
-#                 #
-#                 #
-#                 #
-# ---    --   --- #
-# ---   ---   --- #
-# ---   ---   --- #
-#       AAA       #
-#                 #
-###################
-# Missiles: 0/1   #
-# Lives: 0        #
-# Kills: 0        #
-# Round:  17      #
-# Hide!!!         #
-###################
-
-Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
-
-Round 18
-###################
-# Player 2        #
-# Round:  18      #
-# Kills: 0        #
-# Lives: 2        #
-# Missiles: 0/1   #
-###################
-#                 #
-#       VVV       #
-# ---   |     --- #
-# ---         --- #
-# ---         --- #
-#                 #
-#                 #
-#                 #
-#       |         #
-#       x  x  x   #
-#                 #
-#                 #
-#                 #
-#       x  x  x   #
-#       |         #
-#                 #
-#                 #
-#                 #
-# ---    --   --- #
-# ---   ---   --- #
-# ---   ---   --- #
-#       AAA       #
-#                 #
-###################
-# Missiles: 0/1   #
-# Lives: 0        #
-# Kills: 0        #
-# Round:  18      #
-# Hide!!!         #
-###################
-
-Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
-
-Round 19
-###################
-# Player 2        #
-# Round:  19      #
-# Kills: 0        #
-# Lives: 2        #
-# Missiles: 0/1   #
-###################
-#                 #
-#                 #
-# ---         --- #
-# ---         --- #
-# ---         --- #
-#                 #
-#                 #
-#       |         #
-#                 #
-#        x  x  x  #
-#                 #
-#                 #
-#                 #
-#        x  x  x  #
-#                 #
-#       |         #
-#                 #
-#                 #
-# ---    --   --- #
-# ---   ---   --- #
-# ---   ---   --- #
-#       AAA       #
-#                 #
-###################
-# Missiles: 0/1   #
-# Lives: 0        #
-# Kills: 0        #
-# Round:  19      #
-# Hide!!!         #
-###################
-
-Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Ship is respawning.
-
-Round 20
-###################
-# Player 2        #
-# Round:  20      #
-# Kills: 0        #
-# Lives: 2        #
-# Missiles: 0/1   #
-###################
-#                 #
-#                 #
-# ---         --- #
-# ---         --- #
-# ---         --- #
-#                 #
-#       |         #
-#                 #
-#                 #
-#         x  x  x #
-#                 #
-#                 #
-#                 #
-#         x  x  x #
-#                 #
-#                 #
-#       |         #
-#                 #
-# ---    --   --- #
-# ---   ---   --- #
-# ---   ---   --- #
-#       AAA       #
-#                 #
-###################
-# Missiles: 0/1   #
-# Lives: 0        #
-# Kills: 0        #
-# Round:  20      #
-# Hide!!!         #
-###################
-
-Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Ship is respawning.
-
-Round 21
-###################
-# Player 2        #
-# Round:  21      #
-# Kills: 0        #
-# Lives: 1        #
-# Missiles: 0/1   #
-###################
-#                 #
-#       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         --- #
-#       |         #
-#                 #
-#                 #
-#                 #
-#          x  x  x#
-#                 #
-#                 #
-#                 #
-#          x  x  x#
-#                 #
-#                 #
-#                 #
-#       |         #
-# ---    --   --- #
-# ---   ---   --- #
-# ---   ---   --- #
-#       AAA       #
-#                 #
-###################
-# Missiles: 0/1   #
-# Lives: 0        #
-# Kills: 0        #
-# Round:  21      #
-# Hide!!!         #
-###################
-
-Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
-
-Round 22
-###################
-# Player 2        #
-# Round:  22      #
-# Kills: 0        #
-# Lives: 1        #
-# Missiles: 0/1   #
-###################
-#                 #
-#       VVV       #
-# ---         --- #
-# ---         --- #
-# ---   |     --- #
-#                 #
-#                 #
-#                 #
-#          x  x  x#
-#                 #
-#                 #
-#                 #
-#                 #
-#                 #
-#          x  x  x#
 #                 #
 #                 #
 #                 #
@@ -958,40 +706,292 @@ Round 22
 # Missiles: 0/1   #
 # Lives: 0        #
 # Kills: 0        #
+# Round:  16      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 17
+###################
+# Hide!!!         #
+# Round:  17      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --   --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#      x  x  x    #
+#                 #
+#                 #
+#                 #
+#      x  x  x    #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---    --   --- #
+# ---    --   --- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  17      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 18
+###################
+# Hide!!!         #
+# Round:  18      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --   --- #
+#                 #
+#                 #
+#                 #
+#             |   #
+#       x  x  x   #
+#                 #
+#                 #
+#                 #
+#       x  x  x   #
+#             |   #
+#                 #
+#                 #
+#                 #
+# ---    --   --- #
+# ---    --   --- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  18      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 19
+###################
+# Hide!!!         #
+# Round:  19      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --   --- #
+#                 #
+#                 #
+#             |   #
+#                 #
+#        x  x  x  #
+#                 #
+#                 #
+#                 #
+#        x  x  x  #
+#                 #
+#             |   #
+#                 #
+#                 #
+# ---    --   --- #
+# ---    --   --- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  19      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 20
+###################
+# Hide!!!         #
+# Round:  20      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --   --- #
+#                 #
+#             |   #
+#                 #
+#                 #
+#         x  x  x #
+#                 #
+#                 #
+#                 #
+#         x  x  x #
+#                 #
+#                 #
+#             |   #
+#                 #
+# ---    --   --- #
+# ---    --   --- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  20      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 21
+###################
+# Hide!!!         #
+# Round:  21      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --   --- #
+#             |   #
+#                 #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                 #
+#                 #
+#             |   #
+# ---    --   --- #
+# ---    --   --- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  21      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 22
+###################
+# Hide!!!         #
+# Round:  22      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --    -- #
+#                 #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                 #
+#                 #
+# ---    --    -- #
+# ---    --   --- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
 # Round:  22      #
 # Hide!!!         #
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 23
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  23      #
 # Kills: 0        #
-# Lives: 1        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---   |     --- #
-# ---         --- #
-#                 #
-#                 #
-#                 #
-#         x  x  x #
-#                 #
-#         x  x  x #
-#                 #
-#         x  x  x #
-#                 #
-#         x  x  x #
-#                 #
-#                 #
-#                 #
+# ---   ---   --- #
 # ---    --   --- #
+# ---    --    -- #
+#                 #
+#                 #
+#                 #
+#         x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#                 #
+#                 #
+# ---    --    -- #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1005,35 +1005,35 @@ Round 23
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 24
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  24      #
 # Kills: 0        #
-# Lives: 1        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
 #       VVV       #
-# ---   |     --- #
-# ---         --- #
-# ---         --- #
-#                 #
-#                 #
-#              |  #
-#        x  x  x  #
-#                 #
-#        x  x  x  #
-#                 #
-#        x  x  x  #
-#                 #
-#        x  x  x  #
-#              |  #
-#                 #
-#                 #
+# ---   ---   --- #
 # ---    --   --- #
+# ---    --    -- #
+#                 #
+#                 #
+#              |  #
+#        x  x  x  #
+#                 #
+#        x  x  x  #
+#                 #
+#        x  x  x  #
+#                 #
+#        x  x  x  #
+#              |  #
+#                 #
+#                 #
+# ---    --    -- #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1047,35 +1047,35 @@ Round 24
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 25
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  25      #
 # Kills: 0        #
-# Lives: 1        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
-#                 #
-# ---         --- #
-# ---         --- #
-# ---         --- #
-#                 #
-#              |  #
-#                 #
-#       x  x  x   #
-#                 #
-#       x  x  x   #
-#                 #
-#       x  x  x   #
-#                 #
-#       x  x  x   #
-#                 #
-#              |  #
-#                 #
+#       VVV       #
+# ---   ---   --- #
 # ---    --   --- #
+# ---    --    -- #
+#                 #
+#              |  #
+#                 #
+#       x  x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+#              |  #
+#                 #
+# ---    --    -- #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1089,35 +1089,35 @@ Round 25
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Ship is respawning.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 26
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  26      #
 # Kills: 0        #
-# Lives: 1        #
+# Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
-#                 #
-# ---         --- #
-# ---         --- #
-# ---         --- #
-#              |  #
-#                 #
-#                 #
-#      x  x  x    #
-#                 #
-#      x  x  x    #
-#                 #
-#      x  x  x    #
-#                 #
-#      x  x  x    #
-#                 #
-#                 #
-#              |  #
+#       VVV       #
+# ---   ---   --- #
 # ---    --   --- #
+# ---    --    -- #
+#              |  #
+#                 #
+#                 #
+#      x  x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+#                 #
+#              |  #
+# ---    --    -- #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1131,11 +1131,11 @@ Round 26
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Ship is respawning.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 27
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  27      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1143,9 +1143,9 @@ Round 27
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         - - #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --     - #
 #                 #
 #                 #
 #                 #
@@ -1159,7 +1159,7 @@ Round 27
 #                 #
 #                 #
 #                 #
-# ---    --   - - #
+# ---    --     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1173,11 +1173,11 @@ Round 27
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 28
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  28      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1185,9 +1185,9 @@ Round 28
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         - - #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --     - #
 #                 #
 #                 #
 #                 #
@@ -1201,7 +1201,7 @@ Round 28
 #                 #
 #                 #
 #                 #
-# ---    --   - - #
+# ---    --     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1215,11 +1215,11 @@ Round 28
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 29
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  29      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1227,9 +1227,9 @@ Round 29
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         - - #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --     - #
 #                 #
 #                 #
 #                 #
@@ -1243,7 +1243,7 @@ Round 29
 #                 #
 #                 #
 #                 #
-# ---    --   - - #
+# ---    --     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1257,11 +1257,11 @@ Round 29
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 30
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  30      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1269,12 +1269,12 @@ Round 30
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         - - #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --     - #
 #                 #
 #                 #
-#     |           #
+#        |        #
 #  x  x  x        #
 #                 #
 #  x  x  x        #
@@ -1282,10 +1282,10 @@ Round 30
 #  x  x  x        #
 #                 #
 #  x  x  x        #
-#     |           #
+#        |        #
 #                 #
 #                 #
-# ---    --   - - #
+# ---    --     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1299,11 +1299,11 @@ Round 30
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 31
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  31      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1311,13 +1311,11 @@ Round 31
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         - - #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --     - #
 #                 #
-#     |           #
-#                 #
-# x  x  x         #
+#        |        #
 #                 #
 # x  x  x         #
 #                 #
@@ -1325,9 +1323,11 @@ Round 31
 #                 #
 # x  x  x         #
 #                 #
-#     |           #
+# x  x  x         #
 #                 #
-# ---    --   - - #
+#        |        #
+#                 #
+# ---    --     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1341,11 +1341,11 @@ Round 31
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 32
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  32      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1353,10 +1353,10 @@ Round 32
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         - - #
-#     |           #
+# ---   ---   --- #
+# ---    --   --- #
+# ---    --     - #
+#        |        #
 #                 #
 #                 #
 #x  x  x          #
@@ -1368,8 +1368,8 @@ Round 32
 #x  x  x          #
 #                 #
 #                 #
-#     |           #
-# ---    --   - - #
+#        |        #
+# ---    --     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1383,11 +1383,11 @@ Round 32
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 33
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  33      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1395,9 +1395,9 @@ Round 33
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --- |       - - #
+# ---   ---   --- #
+# ---    --   --- #
+# ---     -     - #
 #                 #
 #                 #
 #x  x  x          #
@@ -1411,7 +1411,7 @@ Round 33
 #x  x  x          #
 #                 #
 #                 #
-# --- |  --   - - #
+# ---     -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1425,11 +1425,11 @@ Round 33
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 34
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  34      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1437,9 +1437,9 @@ Round 34
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# --- |       --- #
-# ---         - - #
+# ---   ---   --- #
+# ---    --   --- #
+# ---     -     - #
 #                 #
 #                 #
 # x  x  x         #
@@ -1453,8 +1453,8 @@ Round 34
 # x  x  x         #
 #                 #
 #                 #
-# ---    --   - - #
-# --- |  --   --- #
+# ---     -     - #
+# ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
 #                 #
@@ -1467,11 +1467,11 @@ Round 34
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 35
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  35      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1479,25 +1479,25 @@ Round 35
 ###################
 #                 #
 #       VVV       #
-# --- |       --- #
-# ---         --- #
-# ---         - - #
-#                 #
-#                 #
-#  x  x  x        #
-#                 #
-#  x  x  x        #
-#                 #
-#                 #
-#                 #
-#  x  x  x        #
-#                 #
-#  x  x  x        #
-#                 #
-#                 #
-# ---    --   - - #
+# ---   ---   --- #
 # ---    --   --- #
-# --- | ---   --- #
+# ---     -     - #
+#                 #
+#                 #
+#  x  x  x        #
+#                 #
+#  x  x  x        #
+#                 #
+#                 #
+#                 #
+#  x  x  x        #
+#                 #
+#  x  x  x        #
+#                 #
+#                 #
+# ---     -     - #
+# ---    --   --- #
+# ---   ---   --- #
 #       AAA       #
 #                 #
 ###################
@@ -1509,21 +1509,21 @@ Round 35
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 36
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  36      #
 # Kills: 0        #
 # Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
-#     | VVV       #
-# ---         --- #
-# ---         --- #
-# ---         - - #
+#       VVV       #
+# ---   ---   --- #
+# ---    --   --- #
+# ---     -     - #
 #                 #
 #   |             #
 #   x  x  x       #
@@ -1537,10 +1537,10 @@ Round 36
 #   x  x  x       #
 #   |             #
 #                 #
-# ---    --   - - #
+# ---     -     - #
 # ---    --   --- #
 # ---   ---   --- #
-#     | AAA       #
+#       AAA       #
 #                 #
 ###################
 # Missiles: 0/1   #
@@ -1551,21 +1551,21 @@ Round 36
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 37
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  37      #
 # Kills: 0        #
 # Lives: 0        #
 # Missiles: 0/1   #
 ###################
-#     |           #
+#                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# ---         - - #
+# ---   ---   --- #
+# ---    --   --- #
+# ---     -     - #
 #   |             #
 #                 #
 #    x  x  x      #
@@ -1579,11 +1579,11 @@ Round 37
 #    x  x  x      #
 #                 #
 #   |             #
-# ---    --   - - #
+# ---     -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
-#     |           #
+#                 #
 ###################
 # Missiles: 0/1   #
 # Lives: 0        #
@@ -1593,11 +1593,11 @@ Round 37
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 38
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  38      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1605,9 +1605,9 @@ Round 38
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #                 #
 #                 #
 #     x  x  x     #
@@ -1621,7 +1621,7 @@ Round 38
 #     x  x  x     #
 #                 #
 #                 #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1635,11 +1635,11 @@ Round 38
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 39
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  39      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1647,9 +1647,9 @@ Round 39
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #                 #
 #                 #
 #      x  x  x    #
@@ -1663,7 +1663,7 @@ Round 39
 #      x  x  x    #
 #                 #
 #                 #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1677,11 +1677,11 @@ Round 39
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 40
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  40      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1689,9 +1689,9 @@ Round 40
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #                 #
 #                 #
 #       x  x  x   #
@@ -1705,7 +1705,7 @@ Round 40
 #       x  x  x   #
 #                 #
 #                 #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1719,11 +1719,11 @@ Round 40
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 41
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  41      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1731,9 +1731,9 @@ Round 41
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #                 #
 #                 #
 #        x  x  x  #
@@ -1747,7 +1747,7 @@ Round 41
 #        x  x  x  #
 #                 #
 #                 #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1761,11 +1761,11 @@ Round 41
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 42
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  42      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1773,9 +1773,9 @@ Round 42
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #                 #
 #            |    #
 #         x  x  x #
@@ -1789,7 +1789,7 @@ Round 42
 #         x  x  x #
 #            |    #
 #                 #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1803,11 +1803,11 @@ Round 42
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 43
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  43      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1815,9 +1815,9 @@ Round 43
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #            |    #
 #                 #
 #          x  x  x#
@@ -1831,7 +1831,7 @@ Round 43
 #          x  x  x#
 #                 #
 #            |    #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1845,11 +1845,11 @@ Round 43
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 44
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  44      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1857,9 +1857,9 @@ Round 44
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --         |- - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -  |  - #
 #                 #
 #          x  x  x#
 #                 #
@@ -1873,7 +1873,7 @@ Round 44
 #                 #
 #          x  x  x#
 #                 #
-# --     --  |- - #
+# --      -  |  - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -1887,11 +1887,11 @@ Round 44
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 45
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  45      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1899,9 +1899,9 @@ Round 45
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---        |--- #
-# --          - - #
+# ---   ---   --- #
+# ---    --  |--- #
+# --      -     - #
 #                 #
 #         x  x  x #
 #                 #
@@ -1915,7 +1915,7 @@ Round 45
 #                 #
 #         x  x  x #
 #                 #
-# --     --   - - #
+# --      -     - #
 # ---    --  |--- #
 # ---   ---   --- #
 #       AAA       #
@@ -1929,11 +1929,11 @@ Round 45
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 46
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  46      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1941,9 +1941,9 @@ Round 46
 ###################
 #                 #
 #       VVV       #
-# ---        |--- #
-# ---         --- #
-# --          - - #
+# ---   ---  |--- #
+# ---    --   --- #
+# --      -     - #
 #                 #
 #        x  x  x  #
 #                 #
@@ -1957,7 +1957,7 @@ Round 46
 #                 #
 #        x  x  x  #
 #                 #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---  |--- #
 #       AAA       #
@@ -1971,11 +1971,11 @@ Round 46
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 47
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  47      #
 # Kills: 0        #
 # Lives: 0        #
@@ -1983,9 +1983,9 @@ Round 47
 ###################
 #                 #
 #       VVV  |    #
-# ---         --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #                 #
 #       x  x  x   #
 #                 #
@@ -1999,7 +1999,7 @@ Round 47
 #                 #
 #       x  x  x   #
 #                 #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA  |    #
@@ -2013,11 +2013,11 @@ Round 47
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 48
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  48      #
 # Kills: 0        #
 # Lives: 0        #
@@ -2025,10 +2025,10 @@ Round 48
 ###################
 #            |    #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
-#      |          #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
+#            |    #
 #      x  x  x    #
 #                 #
 #      x  x  x    #
@@ -2040,8 +2040,8 @@ Round 48
 #      x  x  x    #
 #                 #
 #      x  x  x    #
-#      |          #
-# --     --   - - #
+#            |    #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -2055,11 +2055,11 @@ Round 48
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 49
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  49      #
 # Kills: 0        #
 # Lives: 0        #
@@ -2067,9 +2067,9 @@ Round 49
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --   |      - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -  |  - #
 #                 #
 #     x  x  x     #
 #                 #
@@ -2083,7 +2083,7 @@ Round 49
 #                 #
 #     x  x  x     #
 #                 #
-# --   | --   - - #
+# --      -  |  - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -2097,11 +2097,11 @@ Round 49
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 50
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  50      #
 # Kills: 0        #
 # Lives: 0        #
@@ -2109,9 +2109,9 @@ Round 50
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---  |      --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --  |--- #
+# --      -     - #
 #                 #
 #    x  x  x      #
 #                 #
@@ -2125,8 +2125,8 @@ Round 50
 #                 #
 #    x  x  x      #
 #                 #
-# --     --   - - #
-# ---  | --   --- #
+# --      -     - #
+# ---    --  |--- #
 # ---   ---   --- #
 #       AAA       #
 #                 #
@@ -2139,11 +2139,11 @@ Round 50
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 51
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  51      #
 # Kills: 0        #
 # Lives: 0        #
@@ -2151,25 +2151,25 @@ Round 51
 ###################
 #                 #
 #       VVV       #
-# ---  |      --- #
-# ---         --- #
-# --          - - #
-#                 #
-#   x  x  x       #
-#                 #
-#   x  x  x       #
-#                 #
-#x  x  x  x       #
-#                 #
-#x  x  x  x       #
-#                 #
-#   x  x  x       #
-#                 #
-#   x  x  x       #
-#                 #
-# --     --   - - #
+# ---   ---  |--- #
 # ---    --   --- #
-# ---  |---   --- #
+# --      -     - #
+#                 #
+#   x  x  x       #
+#                 #
+#   x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#   x  x  x       #
+#                 #
+#   x  x  x       #
+#                 #
+# --      -     - #
+# ---    --   --- #
+# ---   ---  |--- #
 #       AAA       #
 #                 #
 ###################
@@ -2181,21 +2181,21 @@ Round 51
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 52
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  52      #
 # Kills: 0        #
 # Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
-#      |VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
+#       VVV  |    #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #   x  x  x       #
 #                 #
 #   x  x  x       #
@@ -2209,10 +2209,10 @@ Round 52
 #   x  x  x       #
 #                 #
 #   x  x  x       #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
-#      |AAA       #
+#       AAA  |    #
 #                 #
 ###################
 # Missiles: 0/1   #
@@ -2223,21 +2223,21 @@ Round 52
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 53
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  53      #
 # Kills: 0        #
 # Lives: 0        #
 # Missiles: 0/1   #
 ###################
-#      |          #
+#            |    #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --      -     - #
 #    x  x  x      #
 #                 #
 #    x  x  x      #
@@ -2251,11 +2251,11 @@ Round 53
 #    x  x  x      #
 #                 #
 #    x  x  x      #
-# --     --   - - #
+# --      -     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
-#      |          #
+#            |    #
 ###################
 # Missiles: 0/1   #
 # Lives: 0        #
@@ -2265,11 +2265,11 @@ Round 53
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 54
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  54      #
 # Kills: 0        #
 # Lives: 0        #
@@ -2277,9 +2277,9 @@ Round 54
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---         --- #
-# --     |    - - #
+# ---   ---   --- #
+# ---    --   --- #
+# --     |-     - #
 #     x  x  x     #
 #                 #
 #     x  x  x     #
@@ -2293,7 +2293,7 @@ Round 54
 #     x  x  x     #
 #                 #
 #     x  x  x     #
-# --      -   - - #
+# --     |-     - #
 # ---    --   --- #
 # ---   ---   --- #
 #       AAA       #
@@ -2307,11 +2307,11 @@ Round 54
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 55
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  55      #
 # Kills: 0        #
 # Lives: 0        #
@@ -2319,9 +2319,9 @@ Round 55
 ###################
 #                 #
 #       VVV       #
-# ---         --- #
-# ---    |    --- #
-# --          - - #
+# ---   ---   --- #
+# ---     -   --- #
+# --      -     - #
 #      x  x  x    #
 #                 #
 #      x  x  x    #
@@ -2335,8 +2335,8 @@ Round 55
 #      x  x  x    #
 #                 #
 #      x  x  x    #
-# --      -   - - #
-# ---    --   --- #
+# --      -     - #
+# ---     -   --- #
 # ---   ---   --- #
 #       AAA       #
 #                 #
@@ -2349,11 +2349,11 @@ Round 55
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 56
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  56      #
 # Kills: 0        #
 # Lives: 0        #
@@ -2361,9 +2361,9 @@ Round 56
 ###################
 #                 #
 #       VVV       #
-# ---    |    --- #
-# ---         --- #
-# --          - - #
+# ---   ---   --- #
+# ---     -   --- #
+# --      -     - #
 #       x  x  x   #
 #                 #
 #       x  x  x   #
@@ -2377,8 +2377,8 @@ Round 56
 #       x  x  x   #
 #                 #
 #       x  x  x   #
-# --      -   - - #
-# ---    --   --- #
+# --      -     - #
+# ---     -   --- #
 # ---   ---   --- #
 #       AAA       #
 #                 #
@@ -2391,21 +2391,21 @@ Round 56
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
-Player 2: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
 
 Round 57
 ###################
-# Player 2        #
+# Hide!!!         #
 # Round:  57      #
 # Kills: 0        #
 # Lives: 0        #
 # Missiles: 0/1   #
 ###################
 #                 #
-#                 #
-# ---         --- #
-# ---         --- #
-# --          - - #
+#       VVV       #
+# ---   ---   --- #
+# ---     -   --- #
+# --      -     - #
 #        x  x  x  #
 #                 #
 #        x  x  x  #
@@ -2419,8 +2419,8 @@ Round 57
 #        x  x  x  #
 #                 #
 #        x  x  x  #
-# --      -   - - #
-# ---    --   --- #
+# --      -     - #
+# ---     -   --- #
 # ---   ---   --- #
 #       AAA       #
 #                 #
@@ -2433,6 +2433,972 @@ Round 57
 ###################
 
 Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 58
+###################
+# Hide!!!         #
+# Round:  58      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---     -   --- #
+# --      -     - #
+#         x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#                 #
+#                 #
+#      x  x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#         x  x  x #
+# --      -     - #
+# ---     -   --- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  58      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 59
+###################
+# Hide!!!         #
+# Round:  59      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---     -   --- #
+# --      -     - #
+#          x  x  x#
+#                 #
+#          x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#                 #
+#                 #
+#       x  x  x  x#
+#                 #
+#          x  x  x#
+#                 #
+#          x  x  x#
+# --      -     - #
+# ---     -   --- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  59      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 60
+###################
+# Hide!!!         #
+# Round:  60      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---     -    -- #
+# --      -x  x -x#
+#                 #
+#          x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#       x  x  x  x#
+#                 #
+#          x  x  x#
+#                 #
+# --      -x  x -x#
+# ---     -    -- #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  60      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 61
+###################
+# Hide!!!         #
+# Round:  61      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---             #
+# --         x    #
+#                 #
+#         x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+# --         x    #
+# ---             #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  61      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Did nothing.
+Player 2: BuildShield          > Did nothing.
+
+Round 62
+###################
+# Hide!!!         #
+# Round:  62      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---             #
+# --        x     #
+#                 #
+#        x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#        x  x  x  #
+#                 #
+# --        x     #
+# ---             #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  62      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 63
+###################
+# Hide!!!         #
+# Round:  63      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---             #
+# --       x      #
+#                 #
+#       x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+# --       x      #
+# ---             #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  63      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 64
+###################
+# Hide!!!         #
+# Round:  64      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---             #
+# --      x       #
+#                 #
+#      x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+# --      x       #
+# ---             #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  64      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 65
+###################
+# Hide!!!         #
+# Round:  65      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---             #
+# --     x        #
+#                 #
+#     x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#     x  x  x     #
+#                 #
+# --     x        #
+# ---             #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  65      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 66
+###################
+# Hide!!!         #
+# Round:  66      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---             #
+# --    x         #
+#          |      #
+#    x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+#    x  x  x      #
+#          |      #
+# --    x         #
+# ---             #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  66      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 67
+###################
+# Hide!!!         #
+# Round:  67      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---             #
+# --   x   |      #
+#                 #
+#   x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#   x  x  x       #
+#                 #
+# --   x   |      #
+# ---             #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  67      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 68
+###################
+# Hide!!!         #
+# Round:  68      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---  x   |      #
+# --              #
+#   x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#                 #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#   x  x  x       #
+# --              #
+# ---  x   |      #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  68      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 69
+###################
+# Hide!!!         #
+# Round:  69      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---|  --- #
+# ---   x         #
+# --              #
+#    x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+#                 #
+#                 #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+#    x  x  x      #
+# --              #
+# ---   x         #
+# ---   ---|  --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  69      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 70
+###################
+# Hide!!!         #
+# Round:  70      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV|      #
+# ---   ---   --- #
+# ---    x        #
+# --              #
+#     x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#                 #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#     x  x  x     #
+# --              #
+# ---    x        #
+# ---   ---   --- #
+#       AAA|      #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  70      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 71
+###################
+# Hide!!!         #
+# Round:  71      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#          |      #
+#       VVV       #
+# ---   ---   --- #
+# ---     x       #
+# --              #
+#      x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#                 #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#      x  x  x    #
+# --              #
+# ---     x       #
+# ---   ---   --- #
+#       AAA       #
+#          |      #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  71      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 72
+###################
+# Hide!!!         #
+# Round:  72      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---      x      #
+# --          |   #
+#       x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#                 #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#       x  x  x   #
+# --          |   #
+# ---      x      #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  72      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 73
+###################
+# Hide!!!         #
+# Round:  73      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   --- #
+# ---       x |   #
+# --              #
+#        x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#                 #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#        x  x  x  #
+# --              #
+# ---       x |   #
+# ---   ---   --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  73      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 74
+###################
+# Hide!!!         #
+# Round:  74      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---    -- #
+# ---        x    #
+# --              #
+#         x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#                 #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#         x  x  x #
+# --              #
+# ---        x    #
+# ---   ---    -- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  74      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 75
+###################
+# Hide!!!         #
+# Round:  75      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---    -- #
+# ---         x   #
+# --              #
+#          x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#                 #
+#                 #
+#       x  x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#          x  x  x#
+# --              #
+# ---         x   #
+# ---   ---    -- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  75      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 76
+###################
+# Hide!!!         #
+# Round:  76      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---   x-- #
+# ---             #
+# --       x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#       x  x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+# --       x  x  x#
+# ---             #
+# ---   ---   x-- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  76      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 77
+###################
+# Hide!!!         #
+# Round:  77      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---  x -- #
+# ---             #
+# --      x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+# --      x  x  x #
+# ---             #
+# ---   ---  x -- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  77      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 78
+###################
+# Hide!!!         #
+# Round:  78      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   --- x  -- #
+# ---          |  #
+# --     x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+# --     x  x  x  #
+# ---          |  #
+# ---   --- x  -- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  78      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 79
+###################
+# Hide!!!         #
+# Round:  79      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---   ---x    - #
+# ---             #
+# --    x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+# --    x  x  x   #
+# ---             #
+# ---   ---x    - #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  79      #
+# Hide!!!         #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 80
+###################
+# Hide!!!         #
+# Round:  80      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#                 #
+#                 #
+# ---   -       - #
+# ---             #
+# --   x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+# --   x  x  x    #
+# ---             #
+# ---   -       - #
+#                 #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  80      #
+# Hide!!!         #
+###################
+
+Player 1: Nothing              > Ship is respawning.
 Player 2: Nothing              > Ship is respawning.
 Match result: Player 1 wins
-Win reason: Player 2 ran out of lives.
+Win reason: Match was a tie, so player 1 wins by default.
