@@ -1,0 +1,3572 @@
+
+Round 0
+###################
+# Player 2        #
+# Round:   0      #
+# Kills: 0        #
+# Lives: 2        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 2        #
+# Kills: 0        #
+# Round:   0      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: Nothing              > Did nothing.
+
+Round 1
+###################
+# Player 2        #
+# Round:   1      #
+# Kills: 0        #
+# Lives: 2        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#         x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 2        #
+# Kills: 0        #
+# Round:   1      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: Nothing              > Did nothing.
+
+Round 2
+###################
+# Player 2        #
+# Round:   2      #
+# Kills: 0        #
+# Lives: 2        #
+# Missiles: 0/1   #
+###################
+#                 #
+#        VVV      #
+# ---         --- #
+# ---         --- #
+# ---         --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#        x  x  x  #
+#                 #
+#        x  x  x  #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---         --- #
+# ---         --- #
+# ---    !    --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 1/1   #
+# Lives: 2        #
+# Kills: 0        #
+# Round:   2      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: MoveLeft             > Moved left.
+
+Round 3
+###################
+# Player 2        #
+# Round:   3      #
+# Kills: 0        #
+# Lives: 1        #
+# Missiles: 0/1   #
+###################
+#                 #
+#        VVV      #
+# ---    ---  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#       x  x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---         --- #
+# ---    !    --- #
+# ---         --- #
+#      AAA        #
+#                 #
+###################
+# Missiles: 1/1   #
+# Lives: 2        #
+# Kills: 0        #
+# Round:   3      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: BuildShield          > Built shields.
+
+Round 4
+###################
+# Player 2        #
+# Round:   4      #
+# Kills: 0        #
+# Lives: 1        #
+# Missiles: 0/1   #
+###################
+#                 #
+#        VVV      #
+# ---    ---  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#      x  x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---  --     --- #
+# ---  ---    --- #
+# ---  ---    --- #
+#      AAA        #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 1        #
+# Kills: 0        #
+# Round:   4      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildShield          > Built shields.
+Player 2: Nothing              > Did nothing.
+
+Round 5
+###################
+# Player 2        #
+# Round:   5      #
+# Kills: 0        #
+# Lives: 1        #
+# Missiles: 0/1   #
+###################
+#                 #
+#        VVV      #
+# ---    ---  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#     x  x  x     #
+#                 #
+#     x  x  x     #
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---  --     --- #
+# ---  ---    --- #
+# ---  ---    --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 1        #
+# Kills: 0        #
+# Round:   5      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: Nothing              > Did nothing.
+
+Round 6
+###################
+# Player 2        #
+# Round:   6      #
+# Kills: 0        #
+# Lives: 1        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---    ---  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#    |            #
+#    x  x  x      #
+#                 #
+#    x  x  x      #
+#    |            #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---  --     --- #
+# ---  ---    --- #
+# ---  ---    --- #
+#       AAA       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 1        #
+# Kills: 0        #
+# Round:   6      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: MoveRight            > Moved right.
+
+Round 7
+###################
+# Player 2        #
+# Round:   7      #
+# Kills: 0        #
+# Lives: 1        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---     --  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#                 #
+#                 #
+#                 #
+#    |            #
+#                 #
+#   x  x  x       #
+#                 #
+#   x  x  x       #
+#                 #
+#    |            #
+#                 #
+#                 #
+#                 #
+# ---  --     --- #
+# ---  ---    --- #
+# ---  ---    --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:   7      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Building a building.
+Player 2: Shoot                > Fired a missile.
+
+Round 8
+###################
+# Player 2        #
+# Round:   8      #
+# Kills: 0        #
+# Lives: 1        #
+# Missiles: 0/1   #
+###################
+#                 #
+#       VVV       #
+# ---     --  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#                 #
+#                 #
+#    |            #
+#                 #
+#                 #
+#  x  x  x        #
+#                 #
+#  x  x  x        #
+#                 #
+#                 #
+#    |            #
+#                 #
+#                 #
+# ---  --     --- #
+# ---  ---    --- #
+# ---  ---    --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:   8      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: Nothing              > Did nothing.
+
+Round 9
+###################
+# Player 2        #
+# Round:   9      #
+# Kills: 0        #
+# Lives: 1        #
+# Missiles: 0/1   #
+###################
+#                 #
+#        VVV      #
+# ---     --  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#                 #
+#    |            #
+#                 #
+#                 #
+#                 #
+# x  x  x         #
+#                 #
+# x  x  x         #
+#                 #
+#                 #
+#                 #
+#    |            #
+#                 #
+# ---  --     --- #
+# ---  ---    --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:   9      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: MoveLeft             > Moved left.
+
+Round 10
+###################
+# Player 2        #
+# Round:  10      #
+# Kills: 0        #
+# Lives: 1        #
+# Missiles: 0/1   #
+###################
+#                 #
+#        VVV      #
+# ---      -  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#    |            #
+#                 #
+#                 #
+#                 #
+#                 #
+#x  x  x          #
+#                 #
+#x  x  x          #
+#                 #
+#                 #
+#                 #
+#                 #
+#    |            #
+# ---  --     --- #
+# ---  ---    --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  10      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: Shoot                > Fired a missile.
+
+Round 11
+###################
+# Player 2        #
+# Round:  11      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---      -  --- #
+# ---    ---  --- #
+# ---|   ---  --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#x  x  x          #
+#                 #
+#                 #
+#                 #
+#x  x  x          #
+#                 #
+#                 #
+#                 #
+#                 #
+# ---| --     --- #
+# ---  ---    --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  11      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: BuildAlienFactory    > Building a building.
+
+Round 12
+###################
+# Player 2        #
+# Round:  12      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#       VVV       #
+# ---      -  --- #
+# ---|   ---  --- #
+# ---    ---  --- #
+#                 #
+#                 #
+#                 #
+# |               #
+# x  x  x         #
+#                 #
+#                 #
+#                 #
+# x  x  x         #
+# |               #
+#                 #
+#                 #
+#                 #
+# ---  --     --- #
+# ---| ---    --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  12      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: MoveRight            > Moved right.
+
+Round 13
+###################
+# Player 2        #
+# Round:  13      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#       VVV       #
+# ---|   i -  --- #
+# ---    ---  --- #
+# ---    ---  --- #
+#                 #
+#                 #
+# |               #
+#                 #
+#  x  x  x        #
+#                 #
+#                 #
+#                 #
+#  x  x  x        #
+#                 #
+# |               #
+#                 #
+#                 #
+# ---  --     --- #
+# ---  ---    --- #
+# ---| --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  13      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: Shoot                > Fired a missile.
+
+Round 14
+###################
+# Player 2        #
+# Round:  14      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#    |  VVV       #
+# ---    i -  --- #
+# ---     --  --- #
+# ---    ---  --- #
+#                 #
+# |               #
+#                 #
+#                 #
+#   x  x  x       #
+#                 #
+#                 #
+#                 #
+#   x  x  x       #
+#                 #
+#                 #
+# |               #
+#                 #
+# ---  --     --- #
+# ---  ---    --- #
+# ---  --!    --- #
+#    |  AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  14      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: Shoot                > Fired a missile.
+
+Round 15
+###################
+# Player 2        #
+# Round:  15      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#    |   XXX      #
+#       VVV       #
+# ---      -  --- #
+# ---    i--  --- #
+# ---    ---  --- #
+# |               #
+#                 #
+#                 #
+#                 #
+#    x  x  x      #
+#                 #
+#                 #
+#                 #
+#    x  x  x      #
+#                 #
+#                 #
+#                 #
+# |               #
+# ---  --     --- #
+# ---  --     --- #
+# ---  --     --- #
+#       AAA       #
+#    |  MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  15      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: Nothing              > Did nothing.
+
+Round 16
+###################
+# Player 2        #
+# Round:  16      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#       VVV       #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --  --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#     x  x  x     #
+#                 #
+#                 #
+#                 #
+#     x  x  x     #
+#                 #
+#                 #
+#                 #
+#                 #
+#  --  --     --- #
+# ---  --     --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  16      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 17
+###################
+# Player 2        #
+# Round:  17      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#       VVV       #
+# ---    i -  --- #
+# ---     --  --- #
+#  --     --  --- #
+#                 #
+#                 #
+#                 #
+#                 #
+#      x  x  x    #
+#                 #
+#                 #
+#                 #
+#      x  x  x    #
+#                 #
+#                 #
+#                 #
+#                 #
+#  --  --     --- #
+# ---  --     --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  17      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: Shoot                > Fired a missile.
+
+Round 18
+###################
+# Player 2        #
+# Round:  18      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---      -  --- #
+# ---    i--  --- #
+#  --     --  --- #
+#                 #
+#                 #
+#                 #
+#             |   #
+#       x  x  x   #
+#                 #
+#                 #
+#                 #
+#       x  x  x   #
+#             |   #
+#                 #
+#                 #
+#                 #
+#  --  --     --- #
+# ---  --     --- #
+# ---  --     --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  18      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: MoveLeft             > Moved left.
+
+Round 19
+###################
+# Player 2        #
+# Round:  19      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---      -  --- #
+# ---     --  --- #
+#  --    i--  --- #
+#                 #
+#                 #
+#             |   #
+#                 #
+#        x  x  x  #
+#                 #
+#                 #
+#                 #
+#        x  x  x  #
+#                 #
+#             |   #
+#                 #
+#                 #
+#  --  --     --- #
+# ---  --     --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  19      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: Nothing              > Did nothing.
+
+Round 20
+###################
+# Player 2        #
+# Round:  20      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --  --- #
+#        i        #
+#             |   #
+#                 #
+#                 #
+#         x  x  x #
+#                 #
+#                 #
+#                 #
+#         x  x  x #
+#                 #
+#                 #
+#             |   #
+#                 #
+#  --  --     --- #
+# ---  --     --- #
+# ---  --     --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  20      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 21
+###################
+# Player 2        #
+# Round:  21      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --  --- #
+#             |   #
+#        i        #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                 #
+#                 #
+#             |   #
+#  --  --     --- #
+# ---  --     --- #
+# ---  --     --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  21      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: Shoot                > Shot failed - too many missiles in flight.
+
+Round 22
+###################
+# Player 2        #
+# Round:  22      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --   -- #
+#                 #
+#                 #
+#        i        #
+#          x  x  x#
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                 #
+#                 #
+#  --  --      -- #
+# ---  --     --- #
+# ---  -- !   --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  22      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: Shoot                > Shot failed - too many missiles in flight.
+
+Round 23
+###################
+# Player 2        #
+# Round:  23      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --   -- #
+#                 #
+#                 #
+#                 #
+#        ix  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#                 #
+#                 #
+#  --  --      -- #
+# ---  -- !   --- #
+# ---  --     --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  23      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 24
+###################
+# Player 2        #
+# Round:  24      #
+# Kills: 0        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --   -- #
+#                 #
+#                 #
+#              |  #
+#        x  x  x  #
+#        i        #
+#        x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#        x  x  x  #
+#           |     #
+#                 #
+#                 #
+#  --  -- !    -- #
+# ---  --     --- #
+# ---  --     --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  24      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: MoveLeft             > Moved left.
+
+Round 25
+###################
+# Player 2        #
+# Round:  25      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --   -- #
+#                 #
+#              |  #
+#                 #
+#       x  x  x   #
+#                 #
+#          x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+#           |     #
+#         !       #
+#  --  --      -- #
+# ---  --     --- #
+# ---  -- !   --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 2/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  25      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: Nothing              > Did nothing.
+
+Round 26
+###################
+# Player 2        #
+# Round:  26      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --   -- #
+#              |  #
+#                 #
+#                 #
+#      x  x  x    #
+#                 #
+#         x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+#         !       #
+#           |     #
+#  --  --      -- #
+# ---  -- !   --- #
+# ---  --     --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 2/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  26      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: BuildAlienFactory    > Tried to build a building, but already had one.
+
+Round 27
+###################
+# Player 2        #
+# Round:  27      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --    - #
+#                 #
+#                 #
+#                 #
+#     x  x  x     #
+#                 #
+#        x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#     x  x  x     #
+#         !       #
+#                 #
+#                 #
+#  --  -- ! |  -- #
+# ---  --     --- #
+# ---  --     --- #
+#        AAA      #
+#       MMM       #
+###################
+# Missiles: 2/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  27      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Shot failed - too many missiles in flight.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 28
+###################
+# Player 2        #
+# Round:  28      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --    - #
+#                 #
+#                 #
+#                 #
+#    x  x  x      #
+#                 #
+#       x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+#    x  x !x      #
+#                 #
+#                 #
+#         !       #
+#  --  --      -- #
+# ---  --   | --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 2/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  28      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: BuildMissileController > Tried to build a building but didn't have enough lives.
+
+Round 29
+###################
+# Player 2        #
+# Round:  29      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --    - #
+#                 #
+#                 #
+#                 #
+#   x  x  x       #
+#                 #
+#      x  x       #
+#                 #
+#x  x  x  x       #
+#         !       #
+#   x  x  x       #
+#                 #
+#         !       #
+#                 #
+#  --  --      -- #
+# ---  --     --- #
+# ---  --   | --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 2/2   #
+# Lives: 0        #
+# Kills: 0        #
+# Round:  29      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: Nothing              > Did nothing.
+
+Round 30
+###################
+# Player 2        #
+# Round:  30      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#          VVV    #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --    - #
+#                 #
+#                 #
+#     |           #
+#  x  x  x        #
+#                 #
+#     x  x        #
+#                 #
+#                 #
+#x  x  x          #
+#                 #
+#   x  x          #
+#   |             #
+#                 #
+#  --  --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#       AAA |     #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 2        #
+# Round:  30      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: MoveLeft             > Moved left.
+
+Round 31
+###################
+# Player 2        #
+# Round:  31      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#           VVV   #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --    - #
+#                 #
+#     |           #
+#                 #
+# x  x  x         #
+#                 #
+#    x  x         #
+#                 #
+#                 #
+# x  x  x         #
+#                 #
+#    x  x         #
+#                 #
+#   |             #
+#  --  --      -- #
+# ---  --     --- #
+# ---  --!    --- #
+#       AAA       #
+#       MMM |     #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 2        #
+# Round:  31      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: MoveLeft             > Moved left.
+
+Round 32
+###################
+# Player 2        #
+# Round:  32      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#           VVV   #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --    - #
+#     |           #
+#                 #
+#                 #
+#x  x  x          #
+#                 #
+#   x  x          #
+#                 #
+#                 #
+#  x  x  x        #
+#                 #
+#     x  x        #
+#                 #
+#                 #
+#  -   --      -- #
+# ---  --!    --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 2        #
+# Round:  32      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: Nothing              > Did nothing.
+
+Round 33
+###################
+# Player 2        #
+# Round:  33      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#          VVV    #
+# ---      -  --- #
+# ---     --  --- #
+#  -- |   --    - #
+#                 #
+#                 #
+#x  x  x          #
+#                 #
+#   x  x          #
+#                 #
+#                 #
+#                 #
+#   x  x  x       #
+#                 #
+#      x  x       #
+#                 #
+#                 #
+#  -   --!     -- #
+# ---  --     --- #
+# ---  --     --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 2        #
+# Round:  33      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: MoveRight            > Moved right.
+
+Round 34
+###################
+# Player 2        #
+# Round:  34      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#          VVV    #
+# ---      -i --- #
+# --- |   --  --- #
+#  --     --    - #
+#                 #
+#                 #
+# x  x  x         #
+#                 #
+#    x  x         #
+#                 #
+#                 #
+#                 #
+#    x  x  x      #
+#                 #
+#       x  x      #
+#                 #
+#        !        #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 2        #
+# Round:  34      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: Shoot                > Fired a missile.
+
+Round 35
+###################
+# Player 2        #
+# Round:  35      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#           VVV   #
+# --- |    -  --- #
+# ---     --i --- #
+#  --     --    - #
+#                 #
+#                 #
+#  x  x  x        #
+#                 #
+#     x  x        #
+#                 #
+#                 #
+#                 #
+#     x  x  x     #
+#                 #
+#        x  x     #
+#        !        #
+#                 #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 2        #
+# Round:  35      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: MoveLeft             > Moved left.
+
+Round 36
+###################
+# Player 2        #
+# Round:  36      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#     |     VVV   #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --i   - #
+#                 #
+#         |       #
+#   x  x  x       #
+#                 #
+#      x  x       #
+#                 #
+#                 #
+#                 #
+#      x  x  x    #
+#                 #
+#            x    #
+#                 #
+#                 #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  36      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 37
+###################
+# Player 2        #
+# Round:  37      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#     |  XXX      #
+#           VVV   #
+# ---      -  --- #
+# ---     --  --- #
+#  --     --    - #
+#         | i     #
+#                 #
+#    x  x  x      #
+#                 #
+#       x  x      #
+#                 #
+#                 #
+#                 #
+#       x  x  x   #
+#                 #
+#             x   #
+#                 #
+#                 #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  37      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: Shoot                > Shot failed - too many missiles in flight.
+
+Round 38
+###################
+# Player 2        #
+# Round:  38      #
+# Kills: 1        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#          VVV    #
+# ---      -  --- #
+# ---     --  --- #
+#  --      -    - #
+#                 #
+#           i     #
+#     x  x  x     #
+#                 #
+#        x  x     #
+#                 #
+#                 #
+#                 #
+#        x  x  x  #
+#                 #
+#              x  #
+#                 #
+#                 #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  38      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: MoveRight            > Moved right.
+
+Round 39
+###################
+# Player 2        #
+# Round:  39      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --      -    - #
+#                 #
+#                 #
+#      x  x       #
+#                 #
+#         x  x    #
+#                 #
+#                 #
+#                 #
+#         x  x  x #
+#                 #
+#               x #
+#                 #
+#                 #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  39      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: MoveRight            > Moved right.
+
+Round 40
+###################
+# Player 2        #
+# Round:  40      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --      -    - #
+#                 #
+#                 #
+#       x  x      #
+#                 #
+#          x  x   #
+#                 #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                x#
+#                 #
+#                 #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#     AAA         #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  40      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: Nothing              > Did nothing.
+
+Round 41
+###################
+# Player 2        #
+# Round:  41      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---      -  --- #
+# ---     --  --- #
+#  --      -    - #
+#                 #
+#                 #
+#        x  x     #
+#                 #
+#           x  x  #
+#                 #
+#                 #
+#                 #
+#                 #
+#          x  x  x#
+#                 #
+#                x#
+#                 #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#     AAA         #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  41      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: BuildMissileController > Tried to build a building but didn't have enough lives.
+
+Round 42
+###################
+# Player 2        #
+# Round:  42      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---         --- #
+# ---     --  --- #
+#  --      -    - #
+#                 #
+#         |       #
+#         x  x    #
+#                 #
+#            x  x #
+#                 #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#               x #
+#               | #
+#  -   --      -- #
+# ---  --     --- #
+# ---  --     --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  42      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: Shoot                > Fired a missile.
+
+Round 43
+###################
+# Player 2        #
+# Round:  43      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---         --- #
+# ---     --  --- #
+#  --      -    - #
+#         |       #
+#                 #
+#          x  x   #
+#                 #
+#             x  x#
+#                 #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#        x  x  x  #
+#                 #
+#              x  #
+#                 #
+#  -   --      -  #
+# ---  --     --- #
+# ---  -      --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  43      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: BuildAlienFactory    > Tried to build a building, but already had one.
+
+Round 44
+###################
+# Player 2        #
+# Round:  44      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---         --- #
+# ---     --  --- #
+#  --     |-    - #
+#                 #
+#          x  x   #
+#                 #
+#             x  x#
+#                 #
+#                 #
+#                 #
+# x  x  x  x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+#             x   #
+#                 #
+#  -   --      -  #
+# ---  --     --- #
+# ---  -      --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  44      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: MoveRight            > Moved right.
+
+Round 45
+###################
+# Player 2        #
+# Round:  45      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---         --- #
+# ---      -  --- #
+#  --      -    - #
+#                 #
+#         x  x    #
+#                 #
+#            x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+#            x    #
+#                 #
+#  -   --      -  #
+# ---  --     --- #
+# ---  -!     --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  45      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: Nothing              > Did nothing.
+
+Round 46
+###################
+# Player 2        #
+# Round:  46      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---         --- #
+# ---      -  --- #
+#  --      -    - #
+#                 #
+#        x  x     #
+#                 #
+#           x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+#            x    #
+#  -   --      -  #
+# ---  -      --- #
+# ---  -      --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  46      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 47
+###################
+# Player 2        #
+# Round:  47      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---     i   --- #
+# ---      -  --- #
+#  --      -    - #
+#                 #
+#       x  x      #
+#                 #
+#          x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#                 #
+# x  x  x  x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+#             x   #
+#  -   --      -  #
+# ---  -      --- #
+# ---  -      --- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  47      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: Shoot                > Fired a missile.
+
+Round 48
+###################
+# Player 2        #
+# Round:  48      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#        VVV      #
+# ---         --- #
+# ---     i-  --- #
+#  --      -    - #
+#      |          #
+#      x  x       #
+#                 #
+#         x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#        x  x  x  #
+#           |     #
+#              x  #
+#  -   --      -  #
+# ---  -      --- #
+# ---  -      --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  48      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: BuildAlienFactory    > Tried to build a building, but already had one.
+
+Round 49
+###################
+# Player 2        #
+# Round:  49      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#       VVV       #
+# ---         --- #
+# ---      -  --- #
+#  --  |  i-    - #
+#                 #
+#     x  x        #
+#                 #
+#        x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#         x  x  x #
+#                 #
+#           |   x #
+#  -   --      -  #
+# ---  -      --- #
+# ---  - !    --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  49      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: MoveRight            > Moved right.
+
+Round 50
+###################
+# Player 2        #
+# Round:  50      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#       VVV       #
+# ---         --- #
+# ---  |   -  --- #
+#  --      -    - #
+#         i       #
+#    x  x         #
+#                 #
+#       x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+#                 #
+#    x  x  x  x  x#
+#                 #
+#          x  x  x#
+#                 #
+#                x#
+#  -   --   |  -  #
+# ---  - !    --- #
+# ---  -      --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  50      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: Nothing              > Did nothing.
+
+Round 51
+###################
+# Player 2        #
+# Round:  51      #
+# Kills: 2        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#       VVV       #
+# ---  |      --- #
+# ---      -  --- #
+#  --      -    - #
+#                 #
+#   x  x  i       #
+#                 #
+#      x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#                 #
+#                 #
+#    x  x  x  x  x#
+#                 #
+#          x  x  x#
+#                 #
+#  -   --!     - x#
+# ---  -    | --- #
+# ---  -      --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  51      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: BuildMissileController > Tried to build a building but didn't have enough lives.
+
+Round 52
+###################
+# Player 2        #
+# Round:  52      #
+# Kills: 3        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#      |VVV       #
+# ---    i    --- #
+# ---      -  --- #
+#  --      -    - #
+#   x  x          #
+#                 #
+#      x          #
+#                 #
+#x  x  x  x       #
+#                 #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#         x  x  x #
+#        !        #
+#  -   --      -x #
+# ---  -      --- #
+# ---  - !  | --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 2/2   #
+# Lives: 0        #
+# Kills: 3        #
+# Round:  52      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: Shoot                > Fired a missile.
+
+Round 53
+###################
+# Player 2        #
+# Round:  53      #
+# Kills: 3        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#      | XXX      #
+#        VVV      #
+# ---         --- #
+# ---    i -  --- #
+#  --      -    - #
+#    x  x         #
+#                 #
+#       x         #
+#                 #
+# x  x  x  x      #
+#                 #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#           x  x  #
+#                 #
+#  -   --         #
+# ---  - !        #
+# ---  -      --- #
+#       AAA |     #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 4        #
+# Round:  53      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: MoveLeft             > Moved left.
+
+Round 54
+###################
+# Player 2        #
+# Round:  54      #
+# Kills: 3        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---         --- #
+# ---      -  --- #
+#  -- |  i -    - #
+#     x  x        #
+#                 #
+#        x        #
+#                 #
+#  x  x  x  x     #
+#                 #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x  x  x  x   #
+#                 #
+#          x  x   #
+#             |   #
+#  -   --!        #
+# ---  -          #
+# ---  -      --- #
+#       AAA       #
+#       MMM |     #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 4        #
+# Round:  54      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: MoveLeft             > Moved left.
+
+Round 55
+###################
+# Player 2        #
+# Round:  55      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---         --- #
+# --- |    -  --- #
+#  --      -    - #
+#      x          #
+#                 #
+#         x       #
+#                 #
+#   x  x  x  x    #
+#                 #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#         x  x    #
+#        !        #
+#  -   --     |   #
+# ---  -          #
+# ---  -      --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 4        #
+# Round:  55      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 56
+###################
+# Player 2        #
+# Round:  56      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# --- |       --- #
+# ---      -  --- #
+#  --      -    - #
+#       x         #
+#                 #
+#          x      #
+#                 #
+#    x  x  x  x   #
+#                 #
+#                 #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#x  x  x  x  x    #
+#        !        #
+#         x  x    #
+#  -   --         #
+# ---  -      |   #
+# ---  -      --- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 4        #
+# Round:  56      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: BuildMissileController > Tried to build a building but didn't have enough lives.
+
+Round 57
+###################
+# Player 2        #
+# Round:  57      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 1/1   #
+###################
+#        XXX      #
+#     |   VVV     #
+# ---      i  --- #
+# ---      -  --- #
+#  --      -    - #
+#        x        #
+#                 #
+#           x     #
+#                 #
+#     x  x  x  x  #
+#                 #
+#                 #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x  x! x  x   #
+#                 #
+#          x  x   #
+#  -   --         #
+# ---  -          #
+# ---  -       -- #
+#       AAA       #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 4        #
+# Round:  57      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: Shoot                > Fired a missile.
+
+Round 58
+###################
+# Player 2        #
+# Round:  58      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#     |  XXX      #
+#          VVV    #
+# ---         --- #
+# ---         --- #
+#  --      -    - #
+#         x       #
+#                 #
+#            x    #
+#                 #
+#      x  x  x  x #
+#                 #
+#                 #
+#                 #
+#  x  x  x  x  x  #
+#        !        #
+#  x  x  x  x  x  #
+#                 #
+#           x  x  #
+#  -   --         #
+# ---  -          #
+# ---  -       -- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 4        #
+# Round:  58      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: MoveLeft             > Moved left.
+
+Round 59
+###################
+# Player 2        #
+# Round:  59      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---         --- #
+# ---         --- #
+#  --      -    - #
+#          x      #
+#                 #
+#             x   #
+#                 #
+#       x  x  x  x#
+#                 #
+#                 #
+#                 #
+#   x  x     x  x #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#            x  x #
+#  -   --         #
+# ---  -          #
+# ---  -       -- #
+#      AAA        #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  59      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building, but already had one.
+Player 2: MoveRight            > Moved right.
+
+Round 60
+###################
+# Player 2        #
+# Round:  60      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---         --- #
+# ---         --- #
+#  --           - #
+#                 #
+#             x   #
+#                 #
+#       x  x  x  x#
+#                 #
+#                 #
+#                 #
+#                 #
+#    x  x     x  x#
+#                 #
+#    x  x  x  x  x#
+#                 #
+#             x  x#
+#  -   --     |   #
+# ---  -          #
+# ---  -       -- #
+#     AAA         #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  60      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 61
+###################
+# Player 2        #
+# Round:  61      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---         --- #
+# ---         --- #
+#  --           - #
+#                 #
+#            x    #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#                 #
+#                 #
+#    x  x     x  x#
+#                 #
+#    x  x  x  x  x#
+#                 #
+#  -   --     x  x#
+# ---  -      |   #
+# ---  -       -- #
+#     AAA         #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  61      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: BuildMissileController > Tried to build a building but didn't have enough lives.
+
+Round 62
+###################
+# Player 2        #
+# Round:  62      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#         VVV     #
+# ---         --- #
+# ---         --- #
+#  --           - #
+#                 #
+#           x     #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x     x  x #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#  -   --    x  x #
+# ---  -          #
+# ---  -      |-- #
+#    AAA          #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  62      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: BuildAlienFactory    > Tried to build a building, but already had one.
+
+Round 63
+###################
+# Player 2        #
+# Round:  63      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#          VVV    #
+# ---         --- #
+# ---         --- #
+#  --           - #
+#                 #
+#          x      #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x  x     x  x  #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  -   --   x  x  #
+# ---  -          #
+# ---  -       -- #
+#    AAA      |   #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  63      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: MoveLeft             > Moved left.
+
+Round 64
+###################
+# Player 2        #
+# Round:  64      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#           VVV   #
+# ---         --- #
+# ---         --- #
+#  --           - #
+#                 #
+#         x       #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x     x  x   #
+#                 #
+# x  x  x  x  x   #
+#                 #
+#  -   --  x  x   #
+# ---  -          #
+# ---  -       -- #
+#    AAA          #
+#       MMM   |   #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  64      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: MoveLeft             > Moved left.
+
+Round 65
+###################
+# Player 2        #
+# Round:  65      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#           VVV   #
+# ---         --- #
+# ---         --- #
+#  --           - #
+#                 #
+#        x        #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#x  x     x  x    #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#  -   -- x  x    #
+# ---  -          #
+# ---  -       -- #
+#    AAA          #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  65      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: BuildMissileController > Tried to build a building but didn't have enough lives.
+
+Round 66
+###################
+# Player 2        #
+# Round:  66      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#           VVV   #
+# ---         --- #
+# ---         --- #
+#  --           - #
+#                 #
+#       x         #
+# |               #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#x  x     x  x    #
+#                 #
+#x  x  x  x  x    #
+#| -   --         #
+# ---  -  x  x    #
+# ---  -       -- #
+#   AAA           #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  66      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: BuildAlienFactory    > Tried to build a building, but already had one.
+
+Round 67
+###################
+# Player 2        #
+# Round:  67      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#           VVV   #
+# ---         --- #
+# ---         --- #
+#  --           - #
+#                 #
+# |    x          #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x     x  x   #
+#                 #
+# x  x  x  x  x   #
+#  -   --         #
+#|---  -   x  x   #
+# ---  -       -- #
+#    AAA          #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  67      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: Nothing              > Did nothing.
+
+Round 68
+###################
+# Player 2        #
+# Round:  68      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#            VVV  #
+# ---         --- #
+# ---         --- #
+#  --           - #
+# |    x          #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#                 #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x  x     x  x  #
+#                 #
+#  x  x  x  x  x  #
+#  -   --         #
+# ---  -    x  x  #
+#|---  -       -- #
+#    AAA          #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  68      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildShield          > Tried to build shields but didn't have enough lives.
+Player 2: MoveLeft             > Moved left.
+
+Round 69
+###################
+# Player 2        #
+# Round:  69      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#            VVV  #
+# ---         --- #
+# ---         --- #
+# |--           - #
+#       x         #
+#                 #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+#                 #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x     x  x #
+#                 #
+#   x  x  x  x  x #
+#  -   --         #
+# ---  -     x  x #
+# ---  -       -- #
+#|   AAA          #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  69      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: Nothing              > Did nothing.
+
+Round 70
+###################
+# Player 2        #
+# Round:  70      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#           VVV   #
+# ---         --- #
+#  --         --- #
+#  --           - #
+#        x        #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#                 #
+#                 #
+#    x  x  x  x  x#
+#                 #
+#    x  x     x  x#
+#                 #
+#    x  x  x  x  x#
+#  -   --         #
+# ---  -      x  x#
+# ---  -       -- #
+#     AAA         #
+#|      MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  70      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: MoveRight            > Moved right.
+
+Round 71
+###################
+# Player 2        #
+# Round:  71      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#            VVV  #
+# ---         --- #
+#  --         --- #
+#  --           - #
+#         x       #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#                 #
+#                 #
+#                 #
+#    x  x  x  x  x#
+#                 #
+#    x  x     x  x#
+#                 #
+#  - x     x  x  x#
+# ---             #
+# ---  -      x--x#
+#     AAA         #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  71      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: MoveLeft             > Moved left.
+
+Round 72
+###################
+# Player 2        #
+# Round:  72      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#             VVV #
+# ---         --- #
+#  --         --- #
+#  --           - #
+#          x      #
+#       |         #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x     x  x #
+#                 #
+#  -x     x  x  x #
+# ---     |       #
+# ---  -     x    #
+#     AAA         #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  72      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Did nothing.
+Player 2: MoveLeft             > Moved left.
+
+Round 73
+###################
+# Player 2        #
+# Round:  73      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#             VVV #
+# ---         --- #
+#  --         --- #
+#  --           - #
+#       |   x     #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x  x     x  x  #
+#                 #
+#        x  x  x  #
+#                 #
+# ---  -  | x     #
+#    AAA          #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  73      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveLeft             > Moved left.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 74
+###################
+# Player 2        #
+# Round:  74      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#             VVV #
+# ---         --- #
+#  --         --- #
+#  --   |       - #
+#            x    #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x     x  x   #
+#                 #
+#       x  x  x   #
+#                 #
+# ---  -   x      #
+#     AAA |       #
+#       MMM       #
+###################
+# Missiles: 0/2   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  74      #
+# Java QS Bot     #
+###################
+
+Player 1: MoveRight            > Moved right.
+Player 2: BuildAlienFactory    > Tried to build a building, but already had one.
+
+Round 75
+###################
+# Player 2        #
+# Round:  75      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#              VVV#
+# ---         --- #
+#  --   |     --- #
+#  --           - #
+#             x   #
+#                 #
+#       x  x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#x  x     x  x    #
+#                 #
+#      x  x  x    #
+#                 #
+# ---     x       #
+#     AAA         #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  75      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: MoveLeft             > Moved left.
+
+Round 76
+###################
+# Player 2        #
+# Round:  76      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#              VVV#
+# ---   |     --- #
+#  --         --- #
+#  --         x - #
+#                 #
+#       x  x  x  x#
+#                 #
+#       x  x  x  x#
+#                 #
+#                 #
+#                 #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#x  x  x  x  x    #
+#                 #
+#x  x     x  x    #
+#                 #
+#      x  x  x    #
+# ---             #
+#     AAA x       #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  76      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: MoveLeft             > Tried to move left, but collided with something.
+
+Round 77
+###################
+# Player 2        #
+# Round:  77      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#       |     VVV #
+# ---         --- #
+#  --         --- #
+#  --        x  - #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#      x  x  x  x #
+#                 #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x     x  x   #
+#                 #
+#       x  x  x   #
+# ---             #
+#     AAA  x      #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  77      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: MoveRight            > Moved right.
+
+Round 78
+###################
+# Player 2        #
+# Round:  78      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#       |XXX      #
+#             VVV #
+# ---         --- #
+#  --         --- #
+#  --       x   - #
+#              |  #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#     x  x  x  x  #
+#                 #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x  x     x  x  #
+#                 #
+#        x  x  x  #
+# ---          |  #
+#     AAA   x     #
+#                 #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  78      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building but didn't have enough lives.
+Player 2: BuildMissileController > Tried to build a building but didn't have enough lives.
+
+Round 79
+###################
+# Player 2        #
+# Round:  79      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#             VVV #
+# ---         --- #
+#  --         --- #
+#  --      x   |- #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#    x  x  x  x   #
+#                 #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x     x  x #
+#                 #
+#         x  x  x #
+# ---  !          #
+#     AAA    x |  #
+#                 #
+###################
+# Missiles: 1/1   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  79      #
+# Java QS Bot     #
+###################
+
+Player 1: Shoot                > Fired a missile.
+Player 2: BuildMissileController > Tried to build a building but didn't have enough lives.
+
+Round 80
+###################
+# Player 2        #
+# Round:  80      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#             VVV #
+# ---         --- #
+#  --         - - #
+#  --     x     - #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#   x  x  x  x    #
+#                 #
+#                 #
+#    x  x  x  x  x#
+#                 #
+#    x  x  x  x  x#
+#                 #
+#    x  x     x  x#
+#                 #
+#      !   x  x  x#
+# ---             #
+#     AAA     x   #
+#              |  #
+###################
+# Missiles: 1/1   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  80      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building but didn't have enough lives.
+Player 2: BuildAlienFactory    > Tried to build a building, but already had one.
+
+Round 81
+###################
+# Player 2        #
+# Round:  81      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#             VVV #
+# ---         --- #
+#  --         - - #
+#  --    x      - #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#  x  x  x  x     #
+#                 #
+#                 #
+#                 #
+#    x  x  x  x  x#
+#                 #
+#    x  x  x  x  x#
+#                 #
+#    x !x     x  x#
+#                 #
+# ---      x  x  x#
+#     AAA         #
+#             x   #
+###################
+# Missiles: 1/1   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  81      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 82
+###################
+# Player 2        #
+# Round:  82      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#             VVV #
+# ---         --- #
+#  --         - - #
+#  --   x       - #
+#                 #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+# x  x  x  x      #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x  x  x  x #
+#      !          #
+#   x  x     x  x #
+#                 #
+# ---     x  x  x #
+#     AAA         #
+#            x    #
+###################
+# Missiles: 1/1   #
+# Lives: 0        #
+# Kills: 5        #
+# Round:  82      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildAlienFactory    > Tried to build a building but didn't have enough lives.
+Player 2: BuildShield          > Tried to build shields but didn't have enough lives.
+
+Round 83
+###################
+# Player 2        #
+# Round:  83      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#              VVV#
+# ---         --- #
+#  --         - - #
+#  --  x        - #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x  x  x  x  x  #
+#                 #
+#  x     x  x  x  #
+#                 #
+#  x  x     x  x  #
+#                 #
+# ---    x  x  x  #
+#     AAA         #
+#           x     #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 6        #
+# Round:  83      #
+# Java QS Bot     #
+###################
+
+Player 1: BuildMissileController > Tried to build a building but didn't have enough lives.
+Player 2: MoveLeft             > Moved left.
+
+Round 84
+###################
+# Player 2        #
+# Round:  84      #
+# Kills: 4        #
+# Lives: 0        #
+# Missiles: 0/1   #
+###################
+#        XXX      #
+#             VVV #
+# ---         --- #
+#  --  x      - - #
+#| --           - #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#x  x  x  x       #
+#                 #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x  x  x  x  x   #
+#                 #
+# x     x  x  x   #
+#                 #
+# x  x     x  x   #
+#                 #
+# ---   x  x  x   #
+#                 #
+#          x      #
+###################
+# Missiles: 0/1   #
+# Lives: 0        #
+# Kills: 6        #
+# Round:  84      #
+# Java QS Bot     #
+###################
+
+Player 1: Nothing              > Ship is respawning.
+Player 2: MoveRight            > Moved right.
+Match result: Player 2 wins
+Win reason: Player 1 ran out of lives.
