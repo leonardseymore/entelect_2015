@@ -65,6 +65,7 @@ ENEMY_SPAWN_THRESHOLD = (16, 15)
 YOUR_SHIELD_FRONT = 19
 ENEMY_SHIELD_FRONT = 5
 
+INITIAL_LIVES = 3
 INITIAL_ALIEN_WAVE_SIZE = 3
 TIME_WAVE_SIZE_INCREASE = 40
 
@@ -105,14 +106,14 @@ def entity_to_symbol(entity):
     if not entity:
         return EMPTY_SYMBOL
 
-    text = entity['type']
+    text = entity.entity_type
     if text == MISSILE:
-        if entity['player_number'] == 1:
+        if entity.player_number == 1:
             return MISSILE_PLAYER1_SYMBOL
         else:
             return MISSILE_PLAYER2_SYMBOL
     elif text == SHIP:
-        if entity['player_number'] == 1:
+        if entity.player_number == 1:
             return SHIP_PLAYER1_SYMBOL
         else:
             return SHIP_PLAYER2_SYMBOL
