@@ -149,9 +149,9 @@ class State:
         if len(self.missiles) < self.missile_limit:
             actions.append(SHOOT)
         if self.lives > 0:
-            if self.alien_factory:
+            if not self.alien_factory:
                 actions.append(BUILD_ALIEN_FACTORY)
-            if self.missile_controller:
+            if not self.missile_controller:
                 actions.append(BUILD_MISSILE_CONTROLLER)
             actions.append(BUILD_SHIELD)
         actions.append(NOTHING)
