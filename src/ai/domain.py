@@ -74,14 +74,11 @@ class State:
             missile_controller = MissileController(None, your_missile_controller['X'] - offset_x, your_missile_controller['Y'] - offset_y, 1)
         alien_man = enemy['AlienManager']
         aliens_delta_x = alien_man['DeltaX']
-        aliens = []
-        for wave in alien_man['Waves']:
-            for enemy_alien in wave:
-                aliens.append(Alien(None, enemy_alien['X'] - offset_x, enemy_alien['Y'] - offset_y, 2))
         game_map = game_state['Map']
         shields = []
         bullets = []
         missiles = []
+        aliens = []
         your_field_end_x = 17
         your_field_end_y = 25
         for row_index in range(offset_y, your_field_end_y):
@@ -93,6 +90,8 @@ class State:
                     shields.append(Shield(None, cell['X'] - offset_x, cell['Y'] - offset_y, 1))
                 elif cell['Type'] == BULLET:
                     shields.append(Bullet(None, cell['X'] - offset_x, cell['Y'] - offset_y, 2))
+                elif cell['Type'] == ALIEN:
+                    aliens.append(Alien(None, cell['X'] - offset_x, cell['Y'] - offset_y, 2))
                 elif cell['Type'] == MISSILE:
                     missiles.append(Missile(None, cell['X'] - offset_x, cell['Y'] - offset_y, cell['PlayerNumber']))
         return State(round_number, round_limit, kills, lives, respawn_timer, missile_limit, wave_size,
@@ -130,6 +129,7 @@ class State:
                 existing_entity = self.get_entity(x, y)
                 if existing_entity:
                     entity.handle_collision(existing_entity)
+                    return False
                 self.playing_field[y][x] = entity
             elif action == 'remove':
                 if self.in_bounds(x, y):
@@ -223,14 +223,11 @@ class State:
         if self.respawn_timer > 0:
             self.respawn_timer -= 1
             if self.respawn_timer <= 0:
-                Ship(self, self.width / 2, self.height - 2).add()
+                Ship(self, self.width / 2, self.height - 2, 1).add()
 
     def __str__(self):
         playing_field = self.playing_field
-        text = ''
-        for x in range(0, PLAYING_FIELD_WIDTH + 2):
-            text += '+'
-        text += '\n'
+        text = '+++++++++++++++++%d+\n' % self.lives
         for y in range(0, PLAYING_FIELD_HEIGHT):
             text += '+'
             for x in range(0, PLAYING_FIELD_WIDTH):
@@ -240,9 +237,8 @@ class State:
                 else:
                     text += ' '
             text += '+\n'
-        for x in range(0, PLAYING_FIELD_WIDTH + 2):
-            text += '+'
-        text += '\n'
+
+        text += '+%03d/%d+++++++%03d+\n' % (self.round_number, self.round_limit, self.kills)
         return text
 
 
@@ -336,7 +332,7 @@ class Bullet(Entity):
 class Missile(Entity):
     def __init__(self, state, x, y, player_number):
         Entity.__init__(self, state, x, y, MISSILE, MISSILE_PLAYER1_SYMBOL if player_number == 1 else MISSILE_PLAYER2_SYMBOL, 1, player_number)
-        self.delta_y = 1 if player_number == 1 else -1
+        self.delta_y = -1 if player_number == 1 else 1
 
     def update(self):
         self.state.move_entity(self, self.x, self.y + self.delta_y)
