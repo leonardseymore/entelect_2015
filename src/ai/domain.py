@@ -1,4 +1,5 @@
 from ai.entelect import *
+import copy
 
 class State:
     def __init__(self, round_number, round_limit, kills, lives, respawn_timer, missile_limit, wave_size,
@@ -114,7 +115,8 @@ class State:
     def move_entity(self, entity, x, y):
         self.traverse_map('remove', entity, entity.x, entity.y)
         if self.traverse_map('add', entity, x, y):
-            print 'Moved %s -> %d:%d' % (entity, x, y)
+            if DEBUG:
+                print 'Moved %s -> %d:%d' % (entity, x, y)
             entity.x = x
             entity.y = y
 
@@ -136,6 +138,13 @@ class State:
                     self.playing_field[y][x] = None
         return True
 
+    def check_open(self, target_x, target_y, width):
+        for x in range(target_x, target_x + width):
+            y = target_y
+            if not self.in_bounds(x, y) or self.get_entity(x, y):
+                return False
+        return True
+
     def get_available_actions(self):
         ship = self.ship
         if not self.ship:
@@ -144,7 +153,7 @@ class State:
         actions = []
         if self.in_bounds(ship.x - 1, ship.y):
             actions.append(MOVE_LEFT)
-        if self.in_bounds(ship.x + ship.width + 1, ship.y):
+        if self.in_bounds(ship.x + ship.width, ship.y):
             actions.append(MOVE_RIGHT)
         if len(self.missiles) < self.missile_limit:
             actions.append(SHOOT)
@@ -215,9 +224,8 @@ class State:
             alien.update()
 
         # Update ships, executing their orders
-        if action == MOVE_LEFT:
-            if self.ship:
-                self.ship.perform_action(action)
+        if self.ship:
+            self.ship.perform_action(action)
 
         # Advance respawn timer and respawn ships if necessary.
         if self.respawn_timer > 0:
@@ -225,9 +233,15 @@ class State:
             if self.respawn_timer <= 0:
                 Ship(self, self.width / 2, self.height - 2, 1).add()
 
+    def clone(self):
+        return copy.deepcopy(self)
+
+    def __eq__(self, other):
+        return self.__str__() == other.__str__()
+
     def __str__(self):
         playing_field = self.playing_field
-        text = '+++++++++++++++++%d+\n' % self.lives
+        text = '+%03d/%d+++++++++%d+\n' % (self.round_number, self.round_limit, self.lives)
         for y in range(0, PLAYING_FIELD_HEIGHT):
             text += '+'
             for x in range(0, PLAYING_FIELD_WIDTH):
@@ -238,7 +252,7 @@ class State:
                     text += ' '
             text += '+\n'
 
-        text += '+%03d/%d+++++++%03d+\n' % (self.round_number, self.round_limit, self.kills)
+        text += '+++++++++++++++%03d+\n' % self.kills
         return text
 
 
@@ -262,10 +276,12 @@ class Entity:
         pass
 
     def handle_out_of_bounds(self, bottom):
-        print 'Out of bounds %s' % self
+        if DEBUG:
+            print 'Out of bounds %s' % self
 
     def handle_collision(self, other):
-        print 'Collision %s -> %s' % (self, other)
+        if DEBUG:
+            print 'Collision %s -> %s' % (self, other)
         self.destroy()
         other.destroy()
 
@@ -296,6 +312,14 @@ class Alien(Entity):
         if self in self.state.aliens:
             self.state.aliens.remove(self)
 
+    def handle_out_of_bounds(self, bottom):
+        Entity.handle_out_of_bounds(self, bottom)
+        if bottom:
+            self.state.lives -= 1
+            if self.state.ship:
+                self.state.ship.destroy()
+            self.destroy()
+
     def handle_collision(self, other):
         Entity.handle_collision(self, other)
         if other.entity_type == MISSILE and self.player_number != other.player_number:
@@ -304,7 +328,17 @@ class Alien(Entity):
             self.explode()
 
     def explode(self):
-        pass # TODO: explode
+        if DEBUG:
+            print '%s exploded' % self
+        for x in range(self.x - 1, self.x + 2):
+            for y in range(self.y - 1, self.y + 2):
+                if self.x == x and self.y == y:
+                    continue
+                entity = self.state.get_entity(x, y)
+                if entity:
+                    entity.destroy()
+                    if DEBUG:
+                        print '%s collateral damage to %s' % (self, entity)
 
 
 class Bullet(Entity):
@@ -413,5 +447,5 @@ class AlienFactory(Entity):
 
     def destroy(self):
         Entity.destroy(self)
-        self.wave_size -= 1
+        self.state.wave_size -= 1
         self.state.alien_factory = None

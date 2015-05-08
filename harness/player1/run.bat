@@ -1,1 +1,1 @@
-python -m bots.defense.main %1 
+python -m bots.strategy.main %1 

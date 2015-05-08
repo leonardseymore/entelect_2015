@@ -1,6 +1,7 @@
 import tkFileDialog
 from ui.widgets import *
 from ai.entelect import *
+from ai.strategy import *
 
 # scale up the renderer
 RENDER_SCALE_FACTOR = 32
@@ -10,8 +11,6 @@ class Application(Frame):
     game_state_file = None
     game_state = None
     game_states = None
-    blackboard = None
-    blackboards = None
     round_number = 0
 
     windows = {}
@@ -32,7 +31,6 @@ class Application(Frame):
         self.windows['prediction_info'] = KeyValueWindow(master, 'Prediction Information', None, '400x300')
         self.windows['player1_info'] = KeyValueWindow(master, 'Player 1 Information', lambda: self.game_state['Players'][0])
         self.windows['player2_info'] = KeyValueWindow(master, 'Player 2 Information', lambda: self.game_state['Players'][1])
-        self.windows['blackboard'] = BlackboardWindow(master, 'Blackboard', lambda: self.blackboard)
 
     # file dialog to load game state file
     def open_state_file(self):
@@ -44,14 +42,6 @@ class Application(Frame):
     def load_state_file(self, filename):
         self.game_state_file = filename
         self.game_states = load_harness_replay_states(filename)
-        self.blackboards = []
-        for game_state in self.game_states:
-            blackboard = Blackboard()
-            blackboard.set('game_state', game_state)
-            blackboard.set('rounds_in_replay', len(self.game_states))
-            field_analyst.run(blackboard)
-            # alien_expert.run(blackboard)
-            self.blackboards.append(blackboard)
         round_number = int(os.path.basename(os.path.dirname(filename)))
         self.load_round(round_number)
 
@@ -64,8 +54,7 @@ class Application(Frame):
         self.round_number = round_number
 
         self.game_state = self.game_states[round_number]
-        self.blackboard = self.blackboards[round_number]
-        self.labels['RoundNumber'].set('Round: %d/%d' % (self.blackboard.get('state')['round_number'], self.blackboard.get('state')['round_limit']))
+        self.labels['RoundNumber'].set('Round: %d/%d' % (self.game_state['RoundNumber'], self.game_state['RoundLimit']))
         self.redraw_canvas()
 
     # redraw canvas
@@ -76,7 +65,7 @@ class Application(Frame):
         self.canvas.delete(ALL)
         for layer in self.layers:
             if layer.enabled.get():
-                layer.load_game_state(self.game_state, self.blackboard)
+                layer.load_game_state(self.game_state)
 
     # tries to load the previous state
     def load_prev_state(self):
@@ -140,10 +129,6 @@ class Application(Frame):
             layer_menu.add_checkbutton(label=layer.name, variable=layer.enabled, command=self.redraw_canvas)
         menu.add_cascade(label='Layers', menu=layer_menu)
 
-        expert_menu = Menu(menu, tearoff=0)
-        expert_menu.add_command(label='Show Blackboard', command=lambda: self.windows['blackboard'].show(self.blackboard))
-        menu.add_cascade(label='Blackboard', menu=expert_menu)
-
         self.master.config(menu=menu)
 
 # frame to render on a canvas layer
@@ -154,7 +139,6 @@ class Layer():
     enabled = None
     callback = None
     game_state = None
-    blackboard = None
     width = 0
     height = 0
 
@@ -168,13 +152,12 @@ class Layer():
         self.height = MAP_HEIGHT * RENDER_SCALE_FACTOR
 
     # reload canvas with new game state
-    def load_game_state(self, game_state, blackboard):
+    def load_game_state(self, game_state):
         self.game_state = game_state
-        self.blackboard = blackboard
-        self.render(self.canvas, blackboard)
+        self.render(self.canvas)
 
     # base class to implement layer specific
-    def render(self, canvas, blackboard):
+    def render(self, canvas):
         return
 
 
@@ -182,7 +165,7 @@ class Layer():
 class LayerCellBase(Layer):
 
     # reload canvas with new game state
-    def render(self, canvas, blackboard):
+    def render(self, canvas):
         game_map = self.game_state['Map']
         for row_index, row in enumerate(game_map['Rows']):
             for column_index, cell in enumerate(row):
@@ -219,8 +202,8 @@ class LayerEntities(LayerCellBase):
         self.entities = []
         self.enabled.set(False)
 
-    def render(self, canvas, blackboard):
-        LayerCellBase.render(self, canvas, blackboard)
+    def render(self, canvas):
+        LayerCellBase.render(self, canvas)
 
     def delete_entities(self, canvas):
         for entity in self.entities:
@@ -256,8 +239,8 @@ class LayerLabels(LayerCellBase):
         Layer.__init__(self, canvas, 'Labels')
         self.labels = []
 
-    def render(self, canvas, blackboard):
-        LayerCellBase.render(self, canvas, blackboard)
+    def render(self, canvas):
+        LayerCellBase.render(self, canvas)
 
     def delete_labels(self, canvas):
         for label in self.labels:
