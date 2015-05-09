@@ -229,7 +229,7 @@ class MoveAcrossBoard(Task):
 
         if state.ship.x < 4:
             ship_delta_x = 1
-        elif state.ship.x > 11:
+        elif state.ship.x > 10:
             ship_delta_x = -1
 
         save_obj('ship_delta_x', ship_delta_x)

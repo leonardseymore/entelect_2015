@@ -6,17 +6,6 @@ def evaluate_state(state):
     result = 0
     result += state.lives * 2
     result += state.kills
-    result += len(state.shields)
-    bbox = state.get_alien_bbox()
-    result -= (abs(bbox['right'] - bbox['left']) * abs(bbox['top'] - bbox['bottom'])) * 10
-    if state.ship:
-        result += 10000
-    if state.alien_factory:
-        result += 50
-    if state.missile_controller:
-        result += 10
-    if state.ship:
-        result -= abs(state.ship.x - PLAYING_FIELD_WIDTH / 2 - 1)
     return result
 
 def search_best_action(state, actions, max_depth):
