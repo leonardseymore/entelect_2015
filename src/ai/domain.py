@@ -157,12 +157,12 @@ class State:
             actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
             actions.append(MOVE_RIGHT)
-        if self.lives > 0:
-            if not self.alien_factory:
-                actions.append(BUILD_ALIEN_FACTORY)
-            if not self.missile_controller:
-                actions.append(BUILD_MISSILE_CONTROLLER)
-            actions.append(BUILD_SHIELD)
+        # if self.lives > 0:
+        #     if not self.alien_factory:
+        #         actions.append(BUILD_ALIEN_FACTORY)
+        #     if not self.missile_controller:
+        #         actions.append(BUILD_MISSILE_CONTROLLER)
+        #     actions.append(BUILD_SHIELD)
         actions.append(NOTHING)
         return actions
 
@@ -232,7 +232,7 @@ class State:
         if self.respawn_timer > 0:
             self.respawn_timer -= 1
             if self.respawn_timer <= 0:
-                Ship(self, self.width / 2, self.height - 2, 1).add()
+                Ship(self, self.width / 2 - 1, self.height - 2, 1).add()
 
     def clone(self):
         return copy.deepcopy(self)

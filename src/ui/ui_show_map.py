@@ -39,9 +39,12 @@ class Application(Frame):
         if filename:
             self.load_state_file(filename)
 
-    # file dialog to load game state file
     def predict_states(self):
         print_predicted_states(State.from_game_state(self.game_state))
+
+    def print_best_action(self):
+        action = plan_action(State.from_game_state(self.game_state), 5)
+        print 'Best action: %s' % action
 
     # file dialog to load game state file
     def load_state_file(self, filename):
@@ -129,6 +132,7 @@ class Application(Frame):
         state_menu.add_command(label="Show Player 1 Info", command=lambda: self.windows['player1_info'].show(self.game_state['Players'][0]))
         state_menu.add_command(label="Show Player 2 Info", command=lambda: self.windows['player2_info'].show(self.game_state['Players'][1]))
         state_menu.add_command(label="Predict States", command=self.predict_states)
+        state_menu.add_command(label="Best Action", command=self.print_best_action)
         menu.add_cascade(label='State', menu=state_menu)
 
         layer_menu = Menu(menu, tearoff=0)

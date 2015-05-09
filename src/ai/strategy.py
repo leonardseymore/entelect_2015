@@ -322,7 +322,7 @@ class SearchBestAction(Task):
 
     def run(self, blackboard):
         state = blackboard.get('state')
-        action = search_best_action(state, self.max_depth)
+        action = plan_action(state, self.max_depth)
         if action:
             blackboard.set('action', action)
             return True

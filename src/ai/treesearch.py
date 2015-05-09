@@ -1,44 +1,64 @@
 import sys
 from ai.entelect import *
 from ai.strategy import *
+from copy import *
 
-DEBUG_TREE_SEARCH = True
-
-def evaluate_state(state):
+def evaluate_discontentment(state):
     result = 0
-    result += state.lives * 2
-    result += state.kills
+    result -= state.lives
+    result -= state.kills
+    result -= len(state.shields)
+    result += len(state.aliens)
     if state.ship:
-        result += 100
+        result -= 1000
     return result
 
-def search_best_action(state, max_depth):
-    return search_best_action_recurse(state, max_depth, -sys.maxint)[1]
+class Model:
+    def __init__(self, state):
+        self.state = state
+        self.actions = state.get_available_actions()
+        self.action_idx = 0
 
-def search_best_action_recurse(state, max_depth, alpha, current_depth=0):
-    if state.lives < 0 or current_depth == max_depth:
-        return evaluate_state(state), None
+    def get_next_action(self):
+        if self.action_idx >= len(self.actions):
+            return None
+        next_action = self.actions[self.action_idx]
+        self.action_idx += 1
+        return next_action
+
+    def apply_action(self, action):
+        self.state.update(action)
+        self.actions = self.state.get_available_actions()
+        self.action_idx = 0
+
+    def clone(self):
+        return deepcopy(self)
+
+def plan_action(state, max_depth):
+    models = [None] * (max_depth + 1)
+    actions = [None] * max_depth
+
+    models[0] = Model(state)
+    current_depth = 0
 
     best_action = None
-    best_score = -sys.maxint
+    best_value = sys.maxint
 
-    for i, action in enumerate(state.get_available_actions()):
-        new_state = state.clone()
-        new_state.update(action)
+    while current_depth >= 0:
+        current_value = evaluate_discontentment(models[current_depth].state)
+        if current_depth >= max_depth:
+            if current_value < best_value:
+                best_value = current_value
+                best_action = actions[0]
+            current_depth -= 1
+            continue
 
-        if DEBUG_TREE_SEARCH:
-            print '\t' * current_depth, i, action
-
-        current_score, current_action = search_best_action_recurse(new_state, max_depth, max(best_score, alpha), current_depth + 1)
-
-        if current_score > best_score:
-            best_score = current_score
-            best_action = action
-
-        if best_score < alpha:
-            print 'BEST %d %d %s' % (best_score, alpha, best_action)
-            return best_score, best_action
-
-    if DEBUG_TREE_SEARCH:
-        print '\t' * current_depth, best_score, best_action
-    return best_score, best_action
+        next_action = models[current_depth].get_next_action()
+        if next_action:
+            models[current_depth + 1] = models[current_depth].clone()
+            actions[current_depth] = next_action
+            models[current_depth + 1].apply_action(next_action)
+            current_depth += 1
+        else:
+            current_depth -= 1
+    return best_action

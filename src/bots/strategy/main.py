@@ -55,7 +55,7 @@ behavior = Selector(
             Sequence(
                 MoveAcrossBoard(),
                 IsMoveDangerous(),
-                SearchBestAction(8)
+                SearchBestAction(5)
             )
         )
     )
