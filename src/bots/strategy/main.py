@@ -1,5 +1,4 @@
 from ai.domain import *
-from ai.treesearch import *
 from ai.strategy import *
 
 game_state = load_state()
@@ -23,6 +22,18 @@ def build(build_action):
 
 behavior = Selector(
     Sequence(
+        Inverter(HasShip()),
+        SetAction(NOTHING)
+    ),
+    Sequence(
+        InDanger(),
+        SearchBestAction()
+    ),
+    Sequence(
+        Selector(
+            IsStartingRound(),
+            CanKill()
+        ),
         HasMissile(),
         SetAction(SHOOT)
     ),
@@ -30,12 +41,21 @@ behavior = Selector(
         HasSpareLives(),
         Selector(
             Sequence(
-                Inverter(HasAlienFactory()),
-                build(BUILD_ALIEN_FACTORY)
-            ),
-            Sequence(
                 Inverter(HasMissileController()),
                 build(BUILD_MISSILE_CONTROLLER)
+            ),
+            Sequence(
+                Inverter(HasAlienFactory()),
+                build(BUILD_ALIEN_FACTORY)
+            )
+        )
+    ),
+    Sequence(
+        Selector(
+            Sequence(
+                MoveAcrossBoard(),
+                IsMoveDangerous(),
+                SearchBestAction(6)
             )
         )
     )

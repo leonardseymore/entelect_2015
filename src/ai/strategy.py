@@ -1,4 +1,5 @@
 from ai.entelect import *
+from ai.treesearch import *
 
 #
 # Blackboard
@@ -126,6 +127,11 @@ class HasSpareLives(Task):
         state = blackboard.get('state')
         return state.lives > 0
 
+class HasShip(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        return state.ship is not None
+
 class SetSafestBuildingLocation(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
@@ -156,6 +162,130 @@ class MoveToSafestBuildingLocation(Task):
             blackboard.set('action', MOVE_RIGHT)
         return True
 
+class AtLocation(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        loc = blackboard.get('loc')
+        return state.ship.x == loc
+
+class SetLocation(Task):
+    def __init__(self, loc, *children):
+        Task.__init__(self, *children)
+        self.loc = loc
+
+    def run(self, blackboard):
+        blackboard.set('loc', self.loc)
+        return True
+
+class MoveToLocation(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        if blackboard.get('loc') < state.ship.x:
+            blackboard.set('action', MOVE_LEFT)
+        else:
+            blackboard.set('action', MOVE_RIGHT)
+        return True
+
+class SetLocationToMiddle(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        blackboard.set('loc', PLAYING_FIELD_WIDTH / 2 - 1)
+        return True
+
+class MoveAgainstAlienWave(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        if state.aliens_delta_x < 0:
+            blackboard.set('action', MOVE_RIGHT)
+        else:
+            blackboard.set('action', MOVE_LEFT)
+        return True
+
+class MoveWithAlienWave(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        if state.aliens_delta_x > 0:
+            blackboard.set('action', MOVE_RIGHT)
+        else:
+            blackboard.set('action', MOVE_LEFT)
+        return True
+
+class MoveToAlienWaveLeft(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        if state.aliens_delta_x > 0:
+            blackboard.set('action', MOVE_RIGHT)
+        else:
+            blackboard.set('action', MOVE_LEFT)
+        return True
+
+class MoveAcrossBoard(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        ship_delta_x = load_obj('ship_delta_x')
+
+        if not ship_delta_x:
+            ship_delta_x = -1 * state.aliens_delta_x
+
+        if state.ship.x < 4:
+            ship_delta_x = 1
+        elif state.ship.x > 11:
+            ship_delta_x = -1
+
+        save_obj('ship_delta_x', ship_delta_x)
+
+        if ship_delta_x > 0:
+            blackboard.set('action', MOVE_RIGHT)
+        else:
+            blackboard.set('action', MOVE_LEFT)
+        return True
+
+class MoveToHighestThreatZone(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        columns = {}
+        for alien in state.aliens:
+            if not columns.has_key(alien.x):
+                columns[alien.x] = {'height': alien.y}
+            else:
+                if columns[alien.x]['height'] < alien.y:
+                    columns[alien.x]['height'] = alien.y
+
+        longest_column = None
+        longest_column_x = None
+        for column_x in columns:
+            column = columns[column_x]
+            if longest_column is None or column['height'] > longest_column['height']:
+                longest_column_x = column_x
+                longest_column = column
+
+        if not longest_column_x:
+            return False
+
+        dist = abs(state.ship.x - longest_column_x)
+        if dist > 2:
+            if state.ship.x < longest_column_x:
+                blackboard.set('action', MOVE_RIGHT)
+            else:
+                blackboard.set('action', MOVE_LEFT)
+        else:
+            return False
+        return True
+
+class IsMoveDangerous(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        next_state = state.clone()
+        action = blackboard.get('action')
+        next_state.update(action)
+        for i in range(0, 3): # predict i gonna move into bad situation
+            if next_state.lives < state.lives:
+                print 'Bad idea to action %s' % action
+                return True
+            next_state.update(NOTHING)
+        print 'Not bad idea to action %s' % action
+        return False
+
 class SetAction(Task):
     def __init__(self, action, *children):
         Task.__init__(self, *children)
@@ -170,11 +300,68 @@ class HasMissile(Task):
         state = blackboard.get('state')
         return len(state.missiles) < state.missile_limit
 
-class SafeToFire(Task):
+class IsStartingRound(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
-        return len(state.missiles) < state.missile_limit
+        return state.round_number == 0
 
+class CanKill(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        next_state = state.clone()
+        next_state.update(SHOOT)
+        for i in range(0, 10): # predict missile up to spawn row
+            next_state.update(NOTHING)
+            if next_state.kills > state.kills + len(state.missiles):
+                return True
+        return False
+
+class InDanger(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        next_state = state.clone()
+        for i in range(0, 4): # predict if bullet or missile gonna kill me
+            if next_state.lives < state.lives:
+                return True
+            next_state.update(NOTHING)
+        return False
+
+class AvoidDanger(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+
+        best_option = None
+        best_option_cost = -1
+        for option in [NOTHING, MOVE_LEFT, MOVE_RIGHT, SHOOT]:
+            next_state = state.clone()
+            next_state.update(option)
+            option_cost = 0
+            for i in range(0, 3): # predict if bullet or missile gonna kill me if i move left
+                if next_state.lives < state.lives:
+                    continue
+                option_cost += 1
+            print 'i %d option_cost %d' % (i, option_cost)
+            if best_option is None or best_option_cost > option_cost:
+                best_option = option
+                best_option_cost = option_cost
+        print 'Avoid danger by: %s' % best_option
+        blackboard.set('action', best_option)
+        return True
+
+class SearchBestAction(Task):
+    def __init__(self, max_depth=3, *children):
+        Task.__init__(self, *children)
+        self.max_depth = max_depth
+
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        actions = [MOVE_LEFT, MOVE_RIGHT, SHOOT]
+        action = search_best_action(state, actions, self.max_depth)
+        if action:
+            blackboard.set('action', action)
+            return True
+        else:
+            return False
 #
 # EXPERTS
 #

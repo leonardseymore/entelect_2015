@@ -2,6 +2,7 @@ import tkFileDialog
 from ui.widgets import *
 from ai.entelect import *
 from ai.strategy import *
+from ai.domain import *
 
 # scale up the renderer
 RENDER_SCALE_FACTOR = 32
@@ -37,6 +38,10 @@ class Application(Frame):
         filename = tkFileDialog.askopenfilename(initialdir=REPLAY_DIR, filetypes=[("State files", "state.json")])
         if filename:
             self.load_state_file(filename)
+
+    # file dialog to load game state file
+    def predict_states(self):
+        print_predicted_states(State.from_game_state(self.game_state))
 
     # file dialog to load game state file
     def load_state_file(self, filename):
@@ -115,6 +120,7 @@ class Application(Frame):
 
         file_menu = Menu(menu, tearoff=0)
         file_menu.add_command(label="Load State File", command=self.open_state_file)
+
         file_menu.add_command(label="Exit", command=self.master.quit)
         menu.add_cascade(label='File', menu=file_menu)
 
@@ -122,6 +128,7 @@ class Application(Frame):
         state_menu.add_command(label="Show Game Info", command=lambda: self.windows['game_info'].show(self.game_state))
         state_menu.add_command(label="Show Player 1 Info", command=lambda: self.windows['player1_info'].show(self.game_state['Players'][0]))
         state_menu.add_command(label="Show Player 2 Info", command=lambda: self.windows['player2_info'].show(self.game_state['Players'][1]))
+        state_menu.add_command(label="Predict States", command=self.predict_states)
         menu.add_cascade(label='State', menu=state_menu)
 
         layer_menu = Menu(menu, tearoff=0)
@@ -200,7 +207,6 @@ class LayerEntities(LayerCellBase):
     def __init__(self, canvas):
         Layer.__init__(self, canvas, 'Entities')
         self.entities = []
-        self.enabled.set(False)
 
     def render(self, canvas):
         LayerCellBase.render(self, canvas)

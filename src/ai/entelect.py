@@ -11,6 +11,8 @@
 
 import os.path
 import json
+import pickle
+import tempfile
 
 DEBUG = False
 
@@ -174,3 +176,27 @@ def load_harness_replay_states(filename, replaytype='file'):
     for state_file in state_files:
         states.append(load_state(state_file))
     return states
+
+def save_obj(key, value):
+    out = open(os.path.join(tempfile.gettempdir(), key), 'wb')
+    pickle.dump(value, out)
+    out.close()
+
+def load_obj(key):
+    filename = os.path.join(tempfile.gettempdir(), key)
+    if not os.path.exists(filename):
+        return None
+    return pickle.load(open(os.path.join(tempfile.gettempdir(), key), 'rb'))
+
+def remove_obj(key):
+    filename = os.path.join(tempfile.gettempdir(), key)
+    if os.path.exists(filename):
+        os.remove(filename)
+
+def print_predicted_states(state):
+    print state
+    next_state = state.clone()
+    while next_state.lives >= 0 and next_state.round_number < state.round_limit:
+        next_state.update(NOTHING)
+        print next_state
+        next_state = next_state.clone()

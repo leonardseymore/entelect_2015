@@ -188,11 +188,13 @@ class State:
 
         # Update the alien commander to spawn new aliens and give aliens orders
         bbox = self.get_alien_bbox()
-        spawn_x = 16
-        spawn_y = 1
+        spawn_x = 15
+        spawn_y = 3
+
         if (bbox['right'], bbox['top']) == (spawn_x, spawn_y):
+            print 'SPAWN BITCH'
             for i in range(0, self.wave_size):
-                Alien(self, spawn_x - (i * 3), spawn_y, 2).add()
+                Alien(self, spawn_x - (i * 3), 1, 2).add()
 
         bbox = self.get_alien_bbox()
         delta_x = self.aliens_delta_x
@@ -241,7 +243,7 @@ class State:
 
     def __str__(self):
         playing_field = self.playing_field
-        text = '+%03d/%d+++++++++%d+\n' % (self.round_number, self.round_limit, self.lives)
+        text = '+%03d/%d+++++++:)%d+\n' % (self.round_number, self.round_limit, self.lives)
         for y in range(0, PLAYING_FIELD_HEIGHT):
             text += '+'
             for x in range(0, PLAYING_FIELD_WIDTH):
@@ -252,7 +254,7 @@ class State:
                     text += ' '
             text += '+\n'
 
-        text += '+++++++++++++++%03d+\n' % self.kills
+        text += '+!%d/%d+++++++++x%03d+\n' % (len(self.missiles), self.missile_limit, self.kills)
         return text
 
 
