@@ -240,38 +240,6 @@ class MoveAcrossBoard(Task):
             blackboard.set('action', MOVE_LEFT)
         return True
 
-class MoveToHighestThreatZone(Task):
-    def run(self, blackboard):
-        state = blackboard.get('state')
-        columns = {}
-        for alien in state.aliens:
-            if not columns.has_key(alien.x):
-                columns[alien.x] = {'height': alien.y}
-            else:
-                if columns[alien.x]['height'] < alien.y:
-                    columns[alien.x]['height'] = alien.y
-
-        longest_column = None
-        longest_column_x = None
-        for column_x in columns:
-            column = columns[column_x]
-            if longest_column is None or column['height'] > longest_column['height']:
-                longest_column_x = column_x
-                longest_column = column
-
-        if not longest_column_x:
-            return False
-
-        dist = abs(state.ship.x - longest_column_x)
-        if dist > 2:
-            if state.ship.x < longest_column_x:
-                blackboard.set('action', MOVE_RIGHT)
-            else:
-                blackboard.set('action', MOVE_LEFT)
-        else:
-            return False
-        return True
-
 class IsMoveDangerous(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
@@ -283,7 +251,6 @@ class IsMoveDangerous(Task):
                 print 'Bad idea to action %s' % action
                 return True
             next_state.update(NOTHING)
-        print 'Not bad idea to action %s' % action
         return False
 
 class SetAction(Task):
@@ -355,8 +322,7 @@ class SearchBestAction(Task):
 
     def run(self, blackboard):
         state = blackboard.get('state')
-        actions = [MOVE_LEFT, MOVE_RIGHT, SHOOT]
-        action = search_best_action(state, actions, self.max_depth)
+        action = search_best_action(state, self.max_depth)
         if action:
             blackboard.set('action', action)
             return True

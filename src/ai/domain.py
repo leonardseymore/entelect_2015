@@ -151,12 +151,12 @@ class State:
             return [NOTHING]
 
         actions = []
+        if len(self.missiles) < self.missile_limit:
+            actions.append(SHOOT)
         if self.in_bounds(ship.x - 1, ship.y):
             actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
             actions.append(MOVE_RIGHT)
-        if len(self.missiles) < self.missile_limit:
-            actions.append(SHOOT)
         if self.lives > 0:
             if not self.alien_factory:
                 actions.append(BUILD_ALIEN_FACTORY)
@@ -192,7 +192,6 @@ class State:
         spawn_y = 3
 
         if (bbox['right'], bbox['top']) == (spawn_x, spawn_y):
-            print 'SPAWN BITCH'
             for i in range(0, self.wave_size):
                 Alien(self, spawn_x - (i * 3), 1, 2).add()
 
