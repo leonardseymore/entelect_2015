@@ -16,7 +16,7 @@ class Blackboard():
 
     # gets a value recursively up the blackboard hierarchy
     def get(self, key):
-        if self.data.has_key(key):
+        if key in self.data:
             return self.data[key]
         elif self.parent:
             return self.parent.get(key)
@@ -29,7 +29,7 @@ class Blackboard():
             tree = {}
 
         for key in self.data:
-            if not tree.has_key(key):
+            if key not in tree:
                 tree[key] = self.data[key]
 
         if self.parent:
@@ -132,35 +132,40 @@ class HasShip(Task):
         state = blackboard.get('state')
         return state.ship is not None
 
+# this is only true at the beginning of the game
 class SetSafestBuildingLocation(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
-        safe_locs = [1, PLAYING_FIELD_WIDTH - 4]
+        if state.player_number_real == 2:
+            safe_locs = [1, PLAYING_FIELD_WIDTH - 4]
+        else:
+            safe_locs = [PLAYING_FIELD_WIDTH - 4, 1]
         closest = None
         for safe_loc in safe_locs:
             if state.check_open(safe_loc, PLAYING_FIELD_HEIGHT - 1, 3):
-                if closest is None or abs(safe_loc - state.ship.x) < closest:
+                if closest is None:
                     closest = safe_loc
         if closest:
-            blackboard.set('safe_build_loc', closest)
+            blackboard.set('loc', closest)
             return True
         return False
 
-class AtSafestBuildingLocation(Task):
+class SetSafestBuildingLocation(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
-        safe_building_loc = blackboard.get('safe_build_loc')
-        return state.ship.x == safe_building_loc
-
-class MoveToSafestBuildingLocation(Task):
-    def run(self, blackboard):
-        state = blackboard.get('state')
-        safe_building_loc = blackboard.get('safe_build_loc')
-        if safe_building_loc < state.ship.x:
-            blackboard.set('action', MOVE_LEFT)
+        if state.player_number_real == 2:
+            safe_locs = [1, PLAYING_FIELD_WIDTH - 4]
         else:
-            blackboard.set('action', MOVE_RIGHT)
-        return True
+            safe_locs = [PLAYING_FIELD_WIDTH - 4, 1]
+        closest = None
+        for safe_loc in safe_locs:
+            if state.check_open(safe_loc, PLAYING_FIELD_HEIGHT - 1, 3):
+                if closest is None:
+                    closest = safe_loc
+        if closest:
+            blackboard.set('loc', closest)
+            return True
+        return False
 
 class AtLocation(Task):
     def run(self, blackboard):
@@ -322,7 +327,7 @@ class SearchBestAction(Task):
 
     def run(self, blackboard):
         state = blackboard.get('state')
-        action = plan_action(state, self.max_depth)
+        action = search_best_action(state, self.max_depth)
         if action:
             blackboard.set('action', action)
             return True

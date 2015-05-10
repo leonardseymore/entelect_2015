@@ -2,12 +2,13 @@ from ai.entelect import *
 import copy
 
 class State:
-    def __init__(self, round_number, round_limit, kills, lives, respawn_timer, missile_limit, wave_size,
+    def __init__(self, player_number_real, round_number, round_limit, kills, lives, respawn_timer, missile_limit, wave_size,
                  ship, alien_factory, missile_controller, aliens_delta_x, aliens, shields, missiles, bullets):
         self.playing_field = [[None for x in range(PLAYING_FIELD_WIDTH)] for y in range(PLAYING_FIELD_HEIGHT)]
         self.width = PLAYING_FIELD_WIDTH
         self.height = PLAYING_FIELD_HEIGHT
 
+        self.player_number_real = player_number_real
         self.round_number = round_number
         self.round_limit = round_limit
         self.kills = kills
@@ -55,6 +56,7 @@ class State:
         round_number = game_state['RoundNumber']
         round_limit = game_state['RoundLimit']
         you = game_state['Players'][0]
+        player_number_real = you['PlayerNumberReal']
         enemy = game_state['Players'][1]
         kills = you['Kills']
         lives = you['Lives']
@@ -80,22 +82,26 @@ class State:
         bullets = []
         missiles = []
         aliens = []
-        your_field_end_x = 17
+        your_field_end_x = 18
         your_field_end_y = 25
-        for row_index in range(offset_y, your_field_end_y):
-            for column_index in range(offset_x, your_field_end_x):
+        for row_index in reversed(range(offset_y, your_field_end_y)):
+            for column_index in reversed(range(offset_x, your_field_end_x)):
                 cell = game_map['Rows'][row_index][column_index]
                 if not cell:
                     continue
+
+                x = cell['X'] - offset_x
+                y = cell['Y'] - offset_y
                 if cell['Type'] == SHIELD:
-                    shields.append(Shield(None, cell['X'] - offset_x, cell['Y'] - offset_y, 1))
+                    shields.append(Shield(None, x, y, 1))
                 elif cell['Type'] == BULLET:
-                    shields.append(Bullet(None, cell['X'] - offset_x, cell['Y'] - offset_y, 2))
+                    shields.append(Bullet(None, x, y, 2))
                 elif cell['Type'] == ALIEN:
-                    aliens.append(Alien(None, cell['X'] - offset_x, cell['Y'] - offset_y, 2))
+                    alien = Alien(None, x, y, 2)
+                    aliens.append(alien)
                 elif cell['Type'] == MISSILE:
-                    missiles.append(Missile(None, cell['X'] - offset_x, cell['Y'] - offset_y, cell['PlayerNumber']))
-        return State(round_number, round_limit, kills, lives, respawn_timer, missile_limit, wave_size,
+                    missiles.append(Missile(None, x, y, cell['PlayerNumber']))
+        return State(player_number_real, round_number, round_limit, kills, lives, respawn_timer, missile_limit, wave_size,
                      ship, alien_factory, missile_controller, aliens_delta_x, aliens, shields, missiles, bullets)
 
     def in_bounds(self, x, y):
@@ -157,13 +163,28 @@ class State:
             actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
             actions.append(MOVE_RIGHT)
-        # if self.lives > 0:
-        #     if not self.alien_factory:
-        #         actions.append(BUILD_ALIEN_FACTORY)
-        #     if not self.missile_controller:
-        #         actions.append(BUILD_MISSILE_CONTROLLER)
-        #     actions.append(BUILD_SHIELD)
+        if self.lives > 0:
+            if not self.alien_factory:
+                actions.append(BUILD_ALIEN_FACTORY)
+            if not self.missile_controller:
+                actions.append(BUILD_MISSILE_CONTROLLER)
+            actions.append(BUILD_SHIELD)
         actions.append(NOTHING)
+        return actions
+
+    def get_available_evade_actions(self):
+        ship = self.ship
+        if not self.ship:
+            return [NOTHING]
+
+        actions = []
+        # if len(self.missiles) < self.missile_limit:
+        #     actions.append(SHOOT)
+        actions.append(NOTHING)
+        if self.in_bounds(ship.x - 1, ship.y):
+            actions.append(MOVE_LEFT)
+        if self.in_bounds(ship.x + ship.width, ship.y):
+            actions.append(MOVE_RIGHT)
         return actions
 
     def get_alien_bbox(self):
@@ -443,10 +464,8 @@ class AlienFactory(Entity):
 
     def add(self):
         if Entity.add(self):
-            self.state.wave_size += 1
             self.state.alien_factory = self
 
     def destroy(self):
         Entity.destroy(self)
-        self.state.wave_size -= 1
         self.state.alien_factory = None

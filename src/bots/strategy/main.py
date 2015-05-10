@@ -12,8 +12,8 @@ def build(build_action):
         SetSafestBuildingLocation(),
         Selector(
             Sequence(
-                Inverter(AtSafestBuildingLocation()),
-                MoveToSafestBuildingLocation()
+                Inverter(AtLocation()),
+                MoveToLocation()
             ),
             SetAction(build_action)
         )
@@ -27,7 +27,7 @@ behavior = Selector(
     ),
     Sequence(
         InDanger(),
-        SearchBestAction()
+        SearchBestAction(5)
     ),
     Sequence(
         Selector(

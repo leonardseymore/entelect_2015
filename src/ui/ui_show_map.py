@@ -42,8 +42,11 @@ class Application(Frame):
     def predict_states(self):
         print_predicted_states(State.from_game_state(self.game_state))
 
+    def print_playing_field(self):
+        print State.from_game_state(self.game_state)
+
     def print_best_action(self):
-        action = plan_action(State.from_game_state(self.game_state), 5)
+        action = search_best_action(State.from_game_state(self.game_state), 5)
         print 'Best action: %s' % action
 
     # file dialog to load game state file
@@ -131,8 +134,9 @@ class Application(Frame):
         state_menu.add_command(label="Show Game Info", command=lambda: self.windows['game_info'].show(self.game_state))
         state_menu.add_command(label="Show Player 1 Info", command=lambda: self.windows['player1_info'].show(self.game_state['Players'][0]))
         state_menu.add_command(label="Show Player 2 Info", command=lambda: self.windows['player2_info'].show(self.game_state['Players'][1]))
-        state_menu.add_command(label="Predict States", command=self.predict_states)
-        state_menu.add_command(label="Best Action", command=self.print_best_action)
+        state_menu.add_command(label="Print Predict States", command=self.predict_states)
+        state_menu.add_command(label="Print Playing Field", command=self.print_playing_field)
+        state_menu.add_command(label="Print Best Action", command=self.print_best_action)
         menu.add_cascade(label='State', menu=state_menu)
 
         layer_menu = Menu(menu, tearoff=0)
