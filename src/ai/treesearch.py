@@ -8,6 +8,7 @@ def evaluate_state(state):
     result = 0
     result += state.lives * 2
     result += state.kills
+    result += len(state.missiles)
     if state.ship:
         result += 100
     return result

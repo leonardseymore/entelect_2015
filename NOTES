@@ -121,5 +121,21 @@ i: Opponent's Missiles
 24#                 # <-- Your building row
 25################### <-- If an alien reaches this row you lose
 
+
+01+090/200+++++++:)0+
+02+                 +
+03+                 +
+04+ x  x  x  x  x   +
+05+                 +
+06+ x  x  x  x  x   +
+07+                 +
+08+    x  x  x  x   + <- Invasion imminent
+09+       |         +
+10+ -           x   +
+11+ ---         --- +
+12+         AAA     +
+13+ XXX         MMM +
+14+!0/3+++++++++x014+
+
 Useful links
 http://www.rafekettler.com/magicmethods.html

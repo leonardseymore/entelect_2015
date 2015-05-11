@@ -12,6 +12,8 @@ class State:
         self.round_number = round_number
         self.round_limit = round_limit
         self.kills = kills
+        self.extremity_kills = 0
+        self.front_line_kills = 0
         self.lives = lives
         self.respawn_timer = respawn_timer
         self.missile_limit = missile_limit
@@ -49,6 +51,8 @@ class State:
             alien.state = self
             alien.add()
 
+        self.alien_bbox = self.calculate_alien_bbox()
+
     @staticmethod
     def from_game_state(game_state):
         offset_x = 1
@@ -60,8 +64,8 @@ class State:
         enemy = game_state['Players'][1]
         kills = you['Kills']
         lives = you['Lives']
-        respawn_timer = you['RespawnTimer'] 
-        missile_limit = you['MissileLimit'] 
+        respawn_timer = you['RespawnTimer']
+        missile_limit = you['MissileLimit']
         wave_size = enemy['AlienWaveSize']
         your_ship = you['Ship']
         ship = None
@@ -187,8 +191,9 @@ class State:
             actions.append(MOVE_RIGHT)
         return actions
 
-    def get_alien_bbox(self):
-        bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1}
+    def calculate_alien_bbox(self):
+        bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1,
+                'right_weight': 0, 'bottom_weight': 0, 'left_weight': 0}
         for alien in self.aliens:
             x = alien.x
             y = alien.y
@@ -200,7 +205,25 @@ class State:
                 bbox['left'] = x
             if bbox['right'] == -1 or x > bbox['right']:
                 bbox['right'] = x
+
+        for alien in self.aliens:
+            if alien.x == bbox['left']:
+                bbox['left_weight'] += 1
+            if alien.x == bbox['right']:
+                bbox['right_weight'] += 1
+            if alien.y == bbox['bottom']:
+                bbox['bottom_weight'] += 1
+                alien.at_front_line = True
+            else:
+                alien.at_front_line = False
+            alien.at_extremity = alien.x == bbox['left'] \
+                                 or alien.x == bbox['right'] \
+                                 or alien.y == bbox['bottom']
+
         return bbox
+
+    def update_bbox(self):
+        self.alien_bbox = self.calculate_alien_bbox()
 
     def update(self, action):
         self.round_number += 1
@@ -208,24 +231,29 @@ class State:
             self.wave_size += 1
 
         # Update the alien commander to spawn new aliens and give aliens orders
-        bbox = self.get_alien_bbox()
         spawn_x = 15
         spawn_y = 3
 
-        if (bbox['right'], bbox['top']) == (spawn_x, spawn_y):
+        if (self.alien_bbox['right'], self.alien_bbox['top']) == (spawn_x, spawn_y):
             for i in range(0, self.wave_size):
                 Alien(self, spawn_x - (i * 3), 1, 2).add()
+        elif len(self.aliens) == 0:
+            for i in range(0, self.wave_size):
+                if self.aliens_delta_x > 0:
+                    Alien(self, 1 + (i * 3), 1, 2).add()
+                else:
+                    Alien(self, spawn_x - (i * 3), 1, 2).add()
 
-        bbox = self.get_alien_bbox()
+        self.update_bbox()
         delta_x = self.aliens_delta_x
         delta_y = 0
         if self.aliens_delta_x == -1:
-            if bbox['left'] == 0:
+            if self.alien_bbox['left'] == 0:
                 delta_x = 0
                 delta_y = 1
                 self.aliens_delta_x = 1
         if self.aliens_delta_x == 1:
-            if bbox['right'] == self.width - 1:
+            if self.alien_bbox['right'] == self.width - 1:
                 delta_x = 0
                 delta_y = 1
                 self.aliens_delta_x = -1
@@ -321,6 +349,8 @@ class Alien(Entity):
         Entity.__init__(self, state, x, y, ALIEN, ALIEN_SYMBOL, 1, player_number)
         self.delta_y = -1 if player_number == 1 else 1
         self.delta_x = -1
+        self.at_extremity = False
+        self.at_front_line = False
 
     def update(self):
         self.state.move_entity(self, self.x + self.delta_x, self.y + self.delta_y)
@@ -346,6 +376,11 @@ class Alien(Entity):
         Entity.handle_collision(self, other)
         if other.entity_type == MISSILE and self.player_number != other.player_number:
             self.state.kills += 1
+            if self.at_front_line:
+                self.state.front_line_kills += 1
+            if self.at_extremity:
+                self.state.extremity_kills += 1
+                self.state.update_bbox()
         elif other.entity_type == SHIELD:
             self.explode()
 
@@ -401,6 +436,11 @@ class Missile(Entity):
         Entity.handle_collision(self, other)
         if other.entity_type == ALIEN and self.player_number != other.player_number:
             self.state.kills += 1
+            if other.at_front_line:
+                self.state.front_line_kills += 1
+            if other.at_extremity:
+                self.state.extremity_kills += 1
+                self.state.update_bbox()
 
     def add(self):
         if Entity.add(self):

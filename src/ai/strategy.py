@@ -104,7 +104,6 @@ class Inverter(Decorator):
     def run(self, blackboard=None):
         return not self.child.run(blackboard)
 
-
 # inject blackboard into child task
 class BlackboardManager(Decorator):
     def run(self, blackboard=None):
@@ -133,23 +132,6 @@ class HasShip(Task):
         return state.ship is not None
 
 # this is only true at the beginning of the game
-class SetSafestBuildingLocation(Task):
-    def run(self, blackboard):
-        state = blackboard.get('state')
-        if state.player_number_real == 2:
-            safe_locs = [1, PLAYING_FIELD_WIDTH - 4]
-        else:
-            safe_locs = [PLAYING_FIELD_WIDTH - 4, 1]
-        closest = None
-        for safe_loc in safe_locs:
-            if state.check_open(safe_loc, PLAYING_FIELD_HEIGHT - 1, 3):
-                if closest is None:
-                    closest = safe_loc
-        if closest:
-            blackboard.set('loc', closest)
-            return True
-        return False
-
 class SetSafestBuildingLocation(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
@@ -197,47 +179,32 @@ class SetLocationToMiddle(Task):
         blackboard.set('loc', PLAYING_FIELD_WIDTH / 2 - 1)
         return True
 
-class MoveAgainstAlienWave(Task):
-    def run(self, blackboard):
-        state = blackboard.get('state')
-        if state.aliens_delta_x < 0:
-            blackboard.set('action', MOVE_RIGHT)
-        else:
-            blackboard.set('action', MOVE_LEFT)
-        return True
-
-class MoveWithAlienWave(Task):
-    def run(self, blackboard):
-        state = blackboard.get('state')
-        if state.aliens_delta_x > 0:
-            blackboard.set('action', MOVE_RIGHT)
-        else:
-            blackboard.set('action', MOVE_LEFT)
-        return True
-
-class MoveToAlienWaveLeft(Task):
-    def run(self, blackboard):
-        state = blackboard.get('state')
-        if state.aliens_delta_x > 0:
-            blackboard.set('action', MOVE_RIGHT)
-        else:
-            blackboard.set('action', MOVE_LEFT)
-        return True
-
 class MoveAcrossBoard(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
-        ship_delta_x = load_obj('ship_delta_x')
+        ship_delta_x = load_obj('%d_ship_delta_x' % state.player_number_real)
 
         if not ship_delta_x:
-            ship_delta_x = -1 * state.aliens_delta_x
+            if state.ship.x > PLAYING_FIELD_WIDTH / 2 - 1:
+                ship_delta_x = -1
+            else:
+                ship_delta_x = 1
 
-        if state.ship.x < 4:
-            ship_delta_x = 1
-        elif state.ship.x > 10:
-            ship_delta_x = -1
+        entity = state.get_entity(state.ship.x + 1, state.ship.y - 1)
 
-        save_obj('ship_delta_x', ship_delta_x)
+        if entity and entity.entity_type == SHIELD:
+            if state.ship.x > PLAYING_FIELD_WIDTH / 2 - 1:
+                ship_delta_x = -1
+            else:
+                ship_delta_x = 1
+        else:
+            if state.ship.x <= 1:
+                ship_delta_x = 1
+            elif state.ship.x >= PLAYING_FIELD_WIDTH - 4:
+                ship_delta_x = -1
+
+        print state.round_number, 'SHIELD', state.ship, entity, 'DELTA', ship_delta_x
+        save_obj('%d_ship_delta_x' % state.player_number_real, ship_delta_x)
 
         if ship_delta_x > 0:
             blackboard.set('action', MOVE_RIGHT)
@@ -277,7 +244,7 @@ class IsStartingRound(Task):
         state = blackboard.get('state')
         return state.round_number == 0
 
-class CanKill(Task):
+class Kill(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
         next_state = state.clone()
@@ -285,8 +252,58 @@ class CanKill(Task):
         for i in range(0, 10): # predict missile up to spawn row
             next_state.update(NOTHING)
             if next_state.kills > state.kills + len(state.missiles):
+                blackboard.set('kill_cost', i)
                 return True
         return False
+
+class KillExtremity(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        next_state = state.clone()
+        next_state.update(SHOOT)
+        for i in range(0, 10): # predict missile up to spawn row
+            next_state.update(NOTHING)
+            if next_state.extremity_kills > state.extremity_kills + len(state.missiles):
+                blackboard.set('kill_cost', i)
+                return True
+        return False
+
+class KillFrontLine(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        next_state = state.clone()
+        next_state.update(SHOOT)
+        for i in range(0, 10): # predict missile up to spawn row
+            next_state.update(NOTHING)
+            if next_state.front_line_kills > state.front_line_kills + len(state.missiles):
+                blackboard.set('kill_cost', i)
+                return True
+        return False
+
+class IsInvasionImminent(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        return state.alien_bbox['bottom'] > 7
+        return False
+
+class SetMoveToFrontLineAvg(Task):
+    def run(self, blackboard):
+        state = blackboard.get('state')
+        total = 0
+        count = 0
+        next_state = state.clone()
+        next_state.update(SHOOT)
+        for i in range(0, 10): # predict missile up to spawn row
+            next_state.update(NOTHING)
+            for alien in next_state.aliens:
+                if alien.at_front_line:
+                    total += alien.x
+                    count += 1
+        avg = total / count
+        print avg
+        blackboard.set('loc', avg - 1)
+        return True
+
 
 class InDanger(Task):
     def run(self, blackboard):

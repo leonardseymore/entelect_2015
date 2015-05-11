@@ -32,7 +32,7 @@ behavior = Selector(
     Sequence(
         Selector(
             IsStartingRound(),
-            CanKill()
+            Kill()
         ),
         HasMissile(),
         SetAction(SHOOT)
