@@ -284,12 +284,14 @@ class KillFrontLine(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
         next_state = state.clone()
-        next_state.update(SHOOT)
-        for i in range(0, 10): # predict missile up to spawn row
-            next_state.update(NOTHING)
+        next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
+        for i in range(0, 20):
+            for tracer_hit in next_state.tracer_hits:
+                pass
             if next_state.front_line_kills > state.front_line_kills + len(state.missiles):
                 blackboard.set('kill_cost', i)
                 return True
+            next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
         return False
 
 class IsInvasionImminent(Task):

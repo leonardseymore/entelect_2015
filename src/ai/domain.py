@@ -1,5 +1,6 @@
 from ai.entelect import *
 import copy
+import random
 
 class State:
     def __init__(self, player_number_real, round_number, round_limit, kills, lives, respawn_timer, missile_limit, wave_size,
@@ -37,6 +38,8 @@ class State:
         self.missiles = []
         self.bullets = []
         self.aliens = []
+        self.tracers = []
+        self.tracer_hits = []
 
         for shield in shields:
             shield.state = self
@@ -101,7 +104,7 @@ class State:
                 elif cell['Type'] == BULLET:
                     shields.append(Bullet(None, x, y, 2))
                 elif cell['Type'] == ALIEN:
-                    alien = Alien(None, x, y, 2)
+                    alien = Alien(None, x, y, 2, cell['Id'])
                     aliens.append(alien)
                 elif cell['Type'] == MISSILE:
                     missiles.append(Missile(None, x, y, cell['PlayerNumber']))
@@ -141,7 +144,8 @@ class State:
                 existing_entity = self.get_entity(x, y)
                 if existing_entity:
                     entity.handle_collision(existing_entity)
-                    return False
+                    if existing_entity.entity_type != TRACER:
+                        return False
                 self.playing_field[y][x] = entity
             elif action == 'remove':
                 if self.in_bounds(x, y):
@@ -181,14 +185,13 @@ class State:
         if not self.ship:
             return [NOTHING]
 
-        actions = []
-        # if len(self.missiles) < self.missile_limit:
-        #     actions.append(SHOOT)
-        actions.append(NOTHING)
+        actions = [NOTHING]
         if self.in_bounds(ship.x - 1, ship.y):
             actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
             actions.append(MOVE_RIGHT)
+        # if len(self.missiles) < self.missile_limit:
+        #     actions.append(SHOOT)
         return actions
 
     def calculate_alien_bbox(self):
@@ -216,33 +219,26 @@ class State:
                 alien.at_front_line = True
             else:
                 alien.at_front_line = False
-            alien.at_extremity = alien.x == bbox['left'] \
-                                 or alien.x == bbox['right'] \
-                                 or alien.y == bbox['bottom']
+            alien.at_extremity = alien.x == bbox['left'] or alien.x == bbox['right'] or alien.y == bbox['bottom']
 
         return bbox
 
     def update_bbox(self):
         self.alien_bbox = self.calculate_alien_bbox()
 
-    def update(self, action):
+    def update(self, action, guess_bullets=False, add_tracers=False, tracer_starting_round=0):
         self.round_number += 1
         if self.round_number == 40:
             self.wave_size += 1
 
+        self.update_bbox()
         # Update the alien commander to spawn new aliens and give aliens orders
-        spawn_x = 15
-        spawn_y = 3
-
-        if (self.alien_bbox['right'], self.alien_bbox['top']) == (spawn_x, spawn_y):
-            for i in range(0, self.wave_size):
-                Alien(self, spawn_x - (i * 3), 1, 2).add()
-        elif len(self.aliens) == 0:
+        if len(self.aliens) == 0 or self.alien_bbox['top'] == 3:
             for i in range(0, self.wave_size):
                 if self.aliens_delta_x > 0:
-                    Alien(self, 1 + (i * 3), 1, 2).add()
+                    Alien(self, (i * 3), 1, 2).add()
                 else:
-                    Alien(self, spawn_x - (i * 3), 1, 2).add()
+                    Alien(self, 16 - (i * 3), 1, 2).add()
 
         self.update_bbox()
         delta_x = self.aliens_delta_x
@@ -257,9 +253,17 @@ class State:
                 delta_x = 0
                 delta_y = 1
                 self.aliens_delta_x = -1
+        guessed_bullet = False
         for alien in self.aliens:
             alien.delta_x = delta_x
             alien.delta_y = delta_y
+
+            if guess_bullets and not guessed_bullet and alien.at_front_line and self.round_number % 6 == 0:
+                guessed_bullet = True
+                alien.shoot = True
+            else:
+                alien.shoot = False
+
 
         # Update missiles, moving them forward
         for missile in self.missiles[:]:
@@ -268,6 +272,19 @@ class State:
         # Update alien bullets, moving them forward
         for bullet in self.bullets[:]:
             bullet.update()
+
+        for tracer in self.tracers[:]:
+            tracer.update()
+
+        if add_tracers and self.ship:
+            for x in range(1, PLAYING_FIELD_WIDTH - 2):
+                y = PLAYING_FIELD_HEIGHT - 3
+                entity = self.get_entity(x, y)
+                if entity and entity.entity_type == SHIELD:
+                    continue
+                if abs(self.ship.x + 1 - x) < self.round_number - tracer_starting_round:
+                    tracer = Tracer(self, x, y, 1, x)
+                    tracer.add()
 
         # Update aliens, executing their move & shoot orders
         for alien in self.aliens[:]:
@@ -322,9 +339,6 @@ class Entity:
     def add(self):
         return self.state.add_entity(self)
 
-    def update(self):
-        pass
-
     def handle_out_of_bounds(self, bottom):
         if DEBUG:
             print 'Out of bounds %s' % self
@@ -332,6 +346,8 @@ class Entity:
     def handle_collision(self, other):
         if DEBUG:
             print 'Collision %s -> %s' % (self, other)
+        if other.entity_type == TRACER:
+            return
         self.destroy()
         other.destroy()
 
@@ -345,15 +361,29 @@ class Shield(Entity):
 
 
 class Alien(Entity):
-    def __init__(self, state, x, y, player_number):
+    def __init__(self, state, x, y, player_number, alien_id=None):
         Entity.__init__(self, state, x, y, ALIEN, ALIEN_SYMBOL, 1, player_number)
+        self.alien_id = alien_id
         self.delta_y = -1 if player_number == 1 else 1
         self.delta_x = -1
         self.at_extremity = False
         self.at_front_line = False
+        self.shoot = False
+        self.behind_shield = False
 
     def update(self):
         self.state.move_entity(self, self.x + self.delta_x, self.y + self.delta_y)
+        behind_shield = False
+        for y in range(2, 5):
+            entity = self.state.get_entity(self.x, PLAYING_FIELD_HEIGHT - y)
+            if entity and entity.entity_type == SHIELD:
+                behind_shield = True
+        self.behind_shield = behind_shield
+
+        if self.shoot:
+            bullet = Bullet(self.state, self.x, self.y + 1, self.player_number)
+            bullet.add()
+            print self.state.round_number, 'guess bullet: ', bullet
 
     def add(self):
         if Entity.add(self):
@@ -381,6 +411,8 @@ class Alien(Entity):
             if self.at_extremity:
                 self.state.extremity_kills += 1
                 self.state.update_bbox()
+        elif other.entity_type == TRACER:
+            self.state.tracer_hits.append(other)
         elif other.entity_type == SHIELD:
             self.explode()
 
@@ -419,6 +451,33 @@ class Bullet(Entity):
         if self in self.state.bullets:
             self.state.bullets.remove(self)
 
+class Tracer(Entity):
+    def __init__(self, state, x, y, player_number, starting_x):
+        Entity.__init__(self, state, x, y, TRACER, TRACER_SYMBOL, 1, player_number)
+        self.delta_y = -1 if player_number == 1 else 1
+        self.starting_x = starting_x
+        self.alien_id = None
+
+    def update(self):
+        self.state.move_entity(self, self.x, self.y + self.delta_y)
+
+    def handle_out_of_bounds(self, bottom):
+        Entity.handle_out_of_bounds(self, bottom)
+        self.destroy()
+
+    def handle_collision(self, other):
+        if other.entity_type == ALIEN:
+            self.alien_id = other.alien_id
+            self.state.tracer_hits.append(self)
+        self.destroy()
+
+    def add(self):
+        if Entity.add(self):
+            self.state.tracers.append(self)
+
+    def destroy(self):
+        if self in self.state.tracers:
+            self.state.tracers.remove(self)
 
 class Missile(Entity):
     def __init__(self, state, x, y, player_number):
@@ -478,7 +537,7 @@ class Ship(Entity):
         elif action == BUILD_MISSILE_CONTROLLER:
             MissileController(self.state, self.x, self.y + 1, self.player_number).add()
         elif action == BUILD_SHIELD:
-            pass # TODO: build shield array
+            pass  # TODO: build shield array
 
 
 class MissileController(Entity):

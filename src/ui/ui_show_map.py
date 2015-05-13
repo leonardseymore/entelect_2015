@@ -42,6 +42,9 @@ class Application(Frame):
     def predict_states(self):
         print_predicted_states(State.from_game_state(self.game_state))
 
+    def predict_states10(self):
+        print_predicted_states(State.from_game_state(self.game_state), 10)
+
     def print_playing_field(self):
         print State.from_game_state(self.game_state)
 
@@ -135,6 +138,7 @@ class Application(Frame):
         state_menu.add_command(label="Show Player 1 Info", command=lambda: self.windows['player1_info'].show(self.game_state['Players'][0]))
         state_menu.add_command(label="Show Player 2 Info", command=lambda: self.windows['player2_info'].show(self.game_state['Players'][1]))
         state_menu.add_command(label="Print Predict States", command=self.predict_states)
+        state_menu.add_command(label="Print Predict 10 States", command=self.predict_states10)
         state_menu.add_command(label="Print Playing Field", command=self.print_playing_field)
         state_menu.add_command(label="Print Best Action", command=self.print_best_action)
         menu.add_cascade(label='State', menu=state_menu)

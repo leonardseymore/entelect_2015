@@ -33,6 +33,7 @@ MISSILE = 'Missile'
 BULLET = 'Bullet'
 ALIEN_FACTORY = 'AlienFactory'
 MISSILE_CONTROLLER = 'MissileController'
+TRACER = 'Tracer'
 
 WALL_SYMBOL = '#'
 ALIEN_SYMBOL = 'x'
@@ -45,6 +46,7 @@ MISSILE_PLAYER2_SYMBOL = 'i'
 BULLET_SYMBOL = '|'
 ALIEN_FACTORY_SYMBOL = 'X'
 MISSILE_CONTROLLER_SYMBOL = 'M'
+TRACER_SYMBOL = '@'
 
 MAP_WIDTH = 19
 MAP_HEIGHT = 25
@@ -193,10 +195,11 @@ def remove_obj(key):
     if os.path.exists(filename):
         os.remove(filename)
 
-def print_predicted_states(state):
+def print_predicted_states(state, limit=200):
     print state
     next_state = state.clone()
-    while next_state.lives >= 0 and next_state.round_number < state.round_limit:
+    while limit > 0 and next_state.lives >= 0 and next_state.round_number < state.round_limit:
         next_state.update(NOTHING)
         print next_state
         next_state = next_state.clone()
+        limit -= 1
