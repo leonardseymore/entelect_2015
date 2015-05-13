@@ -245,6 +245,18 @@ class IsStartingRound(Task):
         return state.round_number == 0
 
 class Kill(Task):
+    def run(self, blackboard=None):
+        return Sequence(
+            Selector(
+                IsStartingRound(),
+                CanKill()
+            ),
+            HasMissile(),
+            SetAction(SHOOT)
+        ).run(blackboard)
+
+
+class CanKill(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
         next_state = state.clone()

@@ -51,13 +51,9 @@ behavior = Selector(
         )
     ),
     Sequence(
-        Selector(
-            Sequence(
-                MoveAcrossBoard(),
-                IsMoveDangerous(),
-                SearchBestAction(5)
-            )
-        )
+        MoveAcrossBoard(),
+        IsMoveDangerous(),
+        SearchBestAction(5)
     )
 )
 
