@@ -51,7 +51,8 @@ behavior = Selector(
         )
     ),
     Sequence(
-        MoveAcrossBoard(),
+        HasMissile(),
+        KillTracer(),
         IsMoveDangerous(),
         SearchBestAction(5)
     )

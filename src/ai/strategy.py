@@ -48,25 +48,37 @@ class Task():
 
     # abstract method to be implemented
     def run(self, blackboard=None):
+        print self
         return
+
+    def __str__(self):
+        return self.__class__.__name__
 
 
 # selector runs children until a child evals to true
 class Selector(Task):
     def run(self, blackboard=None):
+        Task.run(self, blackboard)
         for c in self.children:
             if c.run(blackboard):
                 return True
         return False
 
+    def __str__(self):
+        return '?'
+
 
 # sequence runs children until a child evals to false
 class Sequence(Task):
     def run(self, blackboard=None):
+        Task.run(self, blackboard)
         for c in self.children:
             if not c.run(blackboard):
                 return False
         return True
+
+    def __str__(self):
+        return '->'
 
 
 # decorator conditionally executes child
@@ -84,6 +96,7 @@ class Limit(Decorator):
         self.run_so_far = 0
 
     def run(self, blackboard=None):
+        Task.run(self, blackboard)
         if self.run_so_far >= self.run_limit:
             return False
         self.run_so_far += 1
@@ -93,6 +106,7 @@ class Limit(Decorator):
 # run a child task until it fails
 class UntilFail(Decorator):
     def run(self, blackboard=None):
+        Task.run(self, blackboard)
         while True:
             if not self.child.run(blackboard):
                 break
@@ -102,38 +116,48 @@ class UntilFail(Decorator):
 # flip the return value of task
 class Inverter(Decorator):
     def run(self, blackboard=None):
+        Task.run(self, blackboard)
         return not self.child.run(blackboard)
+
+    def __str__(self):
+        return '~'
 
 # inject blackboard into child task
 class BlackboardManager(Decorator):
     def run(self, blackboard=None):
+        Task.run(self, blackboard)
         new_blackboard = Blackboard(blackboard)
         return self.child.run(new_blackboard)
 
 # domain specific
 class HasAlienFactory(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.alien_factory is not None
 
 class HasMissileController(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.missile_controller is not None
 
 class HasSpareLives(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.lives > 0
 
 class HasShip(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.ship is not None
 
 # this is only true at the beginning of the game
 class SetSafestBuildingLocation(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         if state.player_number_real == 2:
             safe_locs = [1, PLAYING_FIELD_WIDTH - 4]
@@ -165,22 +189,37 @@ class SetLocation(Task):
         return True
 
 class MoveToLocation(Task):
+    def __init__(self, loc=None, *children):
+        Task.__init__(self, *children)
+        self.loc = loc
+
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
-        if blackboard.get('loc') < state.ship.x:
+        loc = self.loc
+        if not loc:
+            loc = blackboard.get('loc')
+        if loc < state.ship.x:
             blackboard.set('action', MOVE_LEFT)
-        else:
+        elif loc > state.ship.x:
             blackboard.set('action', MOVE_RIGHT)
-        return True
+        else:
+            return True
+        return False
+
+    def __str__(self):
+        return 'MoveToLocation(%s)' % self.loc
 
 class SetLocationToMiddle(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         blackboard.set('loc', PLAYING_FIELD_WIDTH / 2 - 1)
         return True
 
 class MoveAcrossBoard(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         ship_delta_x = load_obj('%d_ship_delta_x' % state.player_number_real)
 
@@ -214,6 +253,7 @@ class MoveAcrossBoard(Task):
 
 class IsMoveDangerous(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
         action = blackboard.get('action')
@@ -231,21 +271,25 @@ class SetAction(Task):
         self.action = action
 
     def run(self, blackboard):
+        Task.run(self, blackboard)
         blackboard.set('action', self.action)
         return True
 
 class HasMissile(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         return len(state.missiles) < state.missile_limit
 
 class IsStartingRound(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.round_number == 0
 
 class Kill(Task):
     def run(self, blackboard=None):
+        Task.run(self, blackboard)
         return Sequence(
             Selector(
                 IsStartingRound(),
@@ -258,6 +302,7 @@ class Kill(Task):
 
 class CanKill(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(SHOOT)
@@ -270,6 +315,7 @@ class CanKill(Task):
 
 class KillExtremity(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(SHOOT)
@@ -282,26 +328,64 @@ class KillExtremity(Task):
 
 class KillFrontLine(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
         for i in range(0, 20):
             for tracer_hit in next_state.tracer_hits:
                 pass
-            if next_state.front_line_kills > state.front_line_kills + len(state.missiles):
-                blackboard.set('kill_cost', i)
-                return True
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
         return False
 
+class WaitTillRound(Task):
+    def __init__(self, round_number, *children):
+        Task.__init__(self, *children)
+        self.round_number = round_number
+
+    def run(self, blackboard):
+        Task.run(self, blackboard)
+        state = blackboard.get('state')
+        return state.round_number >= self.round_number
+
+    def __str__(self):
+        return 'WaitTillRound(%s)' % self.round_number
+
+class KillTracer(Task):
+    def run(self, blackboard):
+        Task.run(self, blackboard)
+        state = blackboard.get('state')
+        next_state = state.clone()
+        next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
+        tracer_hit = None
+        for i in range(0, 10):
+            next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
+        if len(next_state.tracer_hits) > 0:
+            print next_state.tracer_hits
+            tracer_hit = sorted(next_state.tracer_hits, key=lambda t: abs(state.ship.x - t.starting_x))[0]
+            tracer_hit = next_state.tracer_hits[0]
+        if not tracer_hit:
+            return False
+        print(state.ship)
+        Sequence(
+            MoveToLocation(tracer_hit.starting_x - 1),
+            WaitTillRound(tracer_hit.starting_round - 1),
+            SetAction(SHOOT)
+        ).run(blackboard)
+        print('HIT %s' % tracer_hit)
+
+        return True
+
 class IsInvasionImminent(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.alien_bbox['bottom'] > 7
         return False
 
 class SetMoveToFrontLineAvg(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         total = 0
         count = 0
@@ -321,6 +405,7 @@ class SetMoveToFrontLineAvg(Task):
 
 class InDanger(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
         for i in range(0, 4): # predict if bullet or missile gonna kill me
@@ -331,6 +416,7 @@ class InDanger(Task):
 
 class AvoidDanger(Task):
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
 
         best_option = None
@@ -357,6 +443,7 @@ class SearchBestAction(Task):
         self.max_depth = max_depth
 
     def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
         action = search_best_action(state, self.max_depth)
         if action:

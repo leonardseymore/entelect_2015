@@ -1,1 +1,1 @@
-python -m bots.strategy.main %1 
+python -m bots.tracer.main %1 

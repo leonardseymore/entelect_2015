@@ -190,8 +190,8 @@ class State:
             actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
             actions.append(MOVE_RIGHT)
-        # if len(self.missiles) < self.missile_limit:
-        #     actions.append(SHOOT)
+        if len(self.missiles) < self.missile_limit:
+            actions.append(SHOOT)
         return actions
 
     def calculate_alien_bbox(self):
@@ -283,7 +283,7 @@ class State:
                 if entity and entity.entity_type == SHIELD:
                     continue
                 if abs(self.ship.x + 1 - x) < self.round_number - tracer_starting_round:
-                    tracer = Tracer(self, x, y, 1, x)
+                    tracer = Tracer(self, x, y, 1, self.round_number, x)
                     tracer.add()
 
         # Update aliens, executing their move & shoot orders
@@ -452,9 +452,10 @@ class Bullet(Entity):
             self.state.bullets.remove(self)
 
 class Tracer(Entity):
-    def __init__(self, state, x, y, player_number, starting_x):
+    def __init__(self, state, x, y, player_number, starting_round, starting_x):
         Entity.__init__(self, state, x, y, TRACER, TRACER_SYMBOL, 1, player_number)
         self.delta_y = -1 if player_number == 1 else 1
+        self.starting_round = starting_round
         self.starting_x = starting_x
         self.alien_id = None
 
@@ -478,6 +479,9 @@ class Tracer(Entity):
     def destroy(self):
         if self in self.state.tracers:
             self.state.tracers.remove(self)
+
+    def __str__(self):
+        return "%s@%d:%d - starting_round=%s, starting_x=%d" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x)
 
 class Missile(Entity):
     def __init__(self, state, x, y, player_number):
