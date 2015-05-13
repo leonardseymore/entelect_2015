@@ -39,6 +39,7 @@ class State:
         self.bullets = []
         self.aliens = []
         self.tracers = []
+        self.tracer_bullets = []
         self.tracer_hits = []
 
         for shield in shields:
@@ -144,7 +145,7 @@ class State:
                 existing_entity = self.get_entity(x, y)
                 if existing_entity:
                     entity.handle_collision(existing_entity)
-                    if existing_entity.entity_type != TRACER:
+                    if existing_entity.entity_type != TRACER and existing_entity.entity_type != TRACER_BULLET:
                         return False
                 self.playing_field[y][x] = entity
             elif action == 'remove':
@@ -190,8 +191,8 @@ class State:
             actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
             actions.append(MOVE_RIGHT)
-        if len(self.missiles) < self.missile_limit:
-            actions.append(SHOOT)
+        # if len(self.missiles) < self.missile_limit:
+        #     actions.append(SHOOT)
         return actions
 
     def calculate_alien_bbox(self):
@@ -226,7 +227,7 @@ class State:
     def update_bbox(self):
         self.alien_bbox = self.calculate_alien_bbox()
 
-    def update(self, action, guess_bullets=False, add_tracers=False, tracer_starting_round=0):
+    def update(self, action, add_tracers=True, tracer_starting_round=0):
         self.round_number += 1
         if self.round_number == 40:
             self.wave_size += 1
@@ -253,17 +254,17 @@ class State:
                 delta_x = 0
                 delta_y = 1
                 self.aliens_delta_x = -1
-        guessed_bullet = False
         for alien in self.aliens:
             alien.delta_x = delta_x
             alien.delta_y = delta_y
 
-            if guess_bullets and not guessed_bullet and alien.at_front_line and self.round_number % 6 == 0:
-                guessed_bullet = True
-                alien.shoot = True
-            else:
-                alien.shoot = False
-
+        if add_tracers:
+            if len(self.aliens) > 0:
+                if self.round_number % 6 == 0:
+                    self.set_alien_shoot_odds()
+                else:
+                    for alien in self.aliens:
+                        alien.shoot_odds = 0
 
         # Update missiles, moving them forward
         for missile in self.missiles[:]:
@@ -300,6 +301,66 @@ class State:
             if self.respawn_timer <= 0:
                 Ship(self, self.width / 2 - 1, self.height - 2, 1).add()
 
+    def select_shooting_alien(self):
+        shoot_at_player = random.randint(0, 2) < 1 # 66% random, 33% at player
+        if shoot_at_player:
+            return self.shoot_at_player(), 0.333
+        else:
+            return self.shoot_at_random()
+
+    def shoot_at_player(self):
+        front_line = filter(lambda alien: alien.at_front_line, self.aliens)
+        closest_alien = None
+        closest_distance = 100
+        target_x = PLAYING_FIELD_WIDTH / 2
+        if self.ship:
+            target_x = self.ship.x
+
+        for alien in front_line:
+            distance = abs(alien.x + alien.delta_x - target_x)
+            if distance >= closest_distance:
+                continue
+
+            closest_alien = alien
+            closest_distance = distance
+        return closest_alien
+
+    def shoot_at_random(self):
+        exclude_alien = self.shoot_at_player()
+        trigger_happy = self.trigger_happy_aliens()
+        trigger_happy.remove(exclude_alien)
+        return random.choice(trigger_happy), 0.666 / len(trigger_happy)
+
+    def trigger_happy_aliens(self):
+        if len(self.aliens) == 0:
+            return None
+        second_line_y = self.alien_bbox['bottom'] - 2
+        aliens = []
+        front_line = filter(lambda alien: alien.at_front_line, self.aliens)
+        for alien in front_line:
+            aliens.append(alien)
+        second_line = filter(lambda alien: alien.y == second_line_y, self.aliens)
+        for alien in second_line:
+            entity_in_front = self.get_entity(alien.x, alien.y + 2)
+            if entity_in_front is None or entity_in_front.entity_type != ALIEN:
+                aliens.append(alien)
+        return aliens
+
+    def set_alien_shoot_odds(self):
+        for alien in self.aliens:
+            alien.shoot_odds = 0
+        if len(self.aliens) == 1:
+            self.aliens[0].shoot_odds = 1.0
+            return
+
+        closest_alien = self.shoot_at_player()
+        closest_alien.shoot_odds = 0.333
+        trigger_happy = self.trigger_happy_aliens()
+        trigger_happy.remove(closest_alien)
+        for alien in trigger_happy:
+            alien.shoot_odds = 0.666 / len(trigger_happy)
+
+
     def clone(self):
         return copy.deepcopy(self)
 
@@ -321,7 +382,6 @@ class State:
 
         text += '+!%d/%d+++++++++x%03d+\n' % (len(self.missiles), self.missile_limit, self.kills)
         return text
-
 
 class Entity:
     def __init__(self, state, x, y, entity_type, symbol, width, player_number):
@@ -346,7 +406,7 @@ class Entity:
     def handle_collision(self, other):
         if DEBUG:
             print 'Collision %s -> %s' % (self, other)
-        if other.entity_type == TRACER:
+        if other.entity_type == TRACER or other.entity_type == TRACER_BULLET:
             return
         self.destroy()
         other.destroy()
@@ -368,7 +428,7 @@ class Alien(Entity):
         self.delta_x = -1
         self.at_extremity = False
         self.at_front_line = False
-        self.shoot = False
+        self.shoot_odds = 0
         self.behind_shield = False
 
     def update(self):
@@ -380,10 +440,9 @@ class Alien(Entity):
                 behind_shield = True
         self.behind_shield = behind_shield
 
-        if self.shoot:
-            bullet = Bullet(self.state, self.x, self.y + 1, self.player_number)
-            bullet.add()
-            print self.state.round_number, 'guess bullet: ', bullet
+        if self.shoot_odds > 0:
+            tracer_bullet = TracerBullet(self.state, self.x, self.y + 1, 2, self.shoot_odds)
+            tracer_bullet.add()
 
     def add(self):
         if Entity.add(self):
@@ -451,6 +510,36 @@ class Bullet(Entity):
         if self in self.state.bullets:
             self.state.bullets.remove(self)
 
+class TracerBullet(Entity):
+    def __init__(self, state, x, y, player_number, shoot_odds):
+        Entity.__init__(self, state, x, y, TRACER_BULLET, TRACER_BULLET_SYMBOL, 1, player_number)
+        self.delta_y = 1 if player_number == 1 else -1
+        self.shoot_odds = shoot_odds
+
+    def update(self):
+        self.state.move_entity(self, self.x, self.y + self.delta_y)
+
+    def handle_out_of_bounds(self, bottom):
+        Entity.handle_out_of_bounds(self, bottom)
+        self.destroy()
+
+    def handle_collision(self, other):
+        if other.entity_type == TRACER:
+            other.reach_dest_odds -= self.shoot_odds
+        else:
+            self.destroy()
+
+    def add(self):
+        if Entity.add(self):
+            self.state.tracer_bullets.append(self)
+
+    def destroy(self):
+        if self in self.state.tracer_bullets:
+            self.state.tracer_bullets.remove(self)
+
+    def __str__(self):
+        return "%s@%d:%d - shoot_odds=%s" % (self.__class__.__name__, self.x, self.y, self.shoot_odds)
+
 class Tracer(Entity):
     def __init__(self, state, x, y, player_number, starting_round, starting_x):
         Entity.__init__(self, state, x, y, TRACER, TRACER_SYMBOL, 1, player_number)
@@ -458,6 +547,7 @@ class Tracer(Entity):
         self.starting_round = starting_round
         self.starting_x = starting_x
         self.alien_id = None
+        self.reach_dest_odds = 1.0
 
     def update(self):
         self.state.move_entity(self, self.x, self.y + self.delta_y)
@@ -470,7 +560,11 @@ class Tracer(Entity):
         if other.entity_type == ALIEN:
             self.alien_id = other.alien_id
             self.state.tracer_hits.append(self)
-        self.destroy()
+
+        if other.entity_type == TRACER_BULLET:
+            self.reach_dest_odds -= other.shoot_odds
+        else:
+            self.destroy()
 
     def add(self):
         if Entity.add(self):
@@ -481,7 +575,7 @@ class Tracer(Entity):
             self.state.tracers.remove(self)
 
     def __str__(self):
-        return "%s@%d:%d - starting_round=%s, starting_x=%d" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x)
+        return "%s@%d:%d - starting_round=%s, starting_x=%d, reach_dest_odds=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.reach_dest_odds)
 
 class Missile(Entity):
     def __init__(self, state, x, y, player_number):

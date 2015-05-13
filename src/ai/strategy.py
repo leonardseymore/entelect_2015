@@ -361,9 +361,9 @@ class KillTracer(Task):
         for i in range(0, 10):
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
         if len(next_state.tracer_hits) > 0:
-            print next_state.tracer_hits
-            tracer_hit = sorted(next_state.tracer_hits, key=lambda t: abs(state.ship.x - t.starting_x))[0]
-            tracer_hit = next_state.tracer_hits[0]
+            tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
+            # tracer_hit = next_state.tracer_hits[0]
+
         if not tracer_hit:
             return False
         print(state.ship)
