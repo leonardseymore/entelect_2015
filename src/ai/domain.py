@@ -526,8 +526,7 @@ class TracerBullet(Entity):
     def handle_collision(self, other):
         if other.entity_type == TRACER:
             other.reach_dest_odds -= self.shoot_odds
-        else:
-            self.destroy()
+        self.destroy()
 
     def add(self):
         if Entity.add(self):
@@ -560,7 +559,6 @@ class Tracer(Entity):
         if other.entity_type == ALIEN:
             self.alien_id = other.alien_id
             self.state.tracer_hits.append(self)
-
         if other.entity_type == TRACER_BULLET:
             self.reach_dest_odds -= other.shoot_odds
         else:

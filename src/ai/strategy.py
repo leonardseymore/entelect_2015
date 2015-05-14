@@ -1,6 +1,8 @@
 from ai.entelect import *
 from ai.treesearch import *
 
+DEBUG_STRATEGY = False
+
 #
 # Blackboard
 #
@@ -48,7 +50,8 @@ class Task():
 
     # abstract method to be implemented
     def run(self, blackboard=None):
-        print self
+        if DEBUG_STRATEGY:
+            print self
         return
 
     def __str__(self):
@@ -242,7 +245,8 @@ class MoveAcrossBoard(Task):
             elif state.ship.x >= PLAYING_FIELD_WIDTH - 4:
                 ship_delta_x = -1
 
-        print state.round_number, 'SHIELD', state.ship, entity, 'DELTA', ship_delta_x
+        if DEBUG_STRATEGY:
+            print state.round_number, 'SHIELD', state.ship, entity, 'DELTA', ship_delta_x
         save_obj('%d_ship_delta_x' % state.player_number_real, ship_delta_x)
 
         if ship_delta_x > 0:
@@ -260,7 +264,8 @@ class IsMoveDangerous(Task):
         next_state.update(action)
         for i in range(0, 3): # predict i gonna move into bad situation
             if next_state.lives < state.lives:
-                print 'Bad idea to action %s' % action
+                if DEBUG_STRATEGY:
+                    print 'Bad idea to action %s' % action
                 return True
             next_state.update(NOTHING)
         return False
@@ -310,6 +315,22 @@ class CanKill(Task):
             next_state.update(NOTHING)
             if next_state.kills > state.kills + len(state.missiles):
                 blackboard.set('kill_cost', i)
+                return True
+        return False
+
+class CanShootBullet(Task):
+    def __init__(self, dist=3, *children):
+        Task.__init__(self, *children)
+        self.dist = dist
+
+    def run(self, blackboard):
+        Task.run(self, blackboard)
+        state = blackboard.get('state')
+        x = state.ship.x + 1
+        for y in range(state.ship.y - self.dist, state.ship.y - 1):
+            entity = state.get_entity(x, y)
+            if entity and entity.entity_type == BULLET:
+                print 'CAN SHOOT', entity
                 return True
         return False
 
@@ -363,7 +384,9 @@ class KillTracer(Task):
         if len(next_state.tracer_hits) > 0:
             tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
             # tracer_hit = next_state.tracer_hits[0]
-
+        print 'Tracer hits: %s' % next_state.tracer_hits
+        for t in filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits):
+            print t
         if not tracer_hit:
             return False
         print(state.ship)
@@ -372,7 +395,8 @@ class KillTracer(Task):
             WaitTillRound(tracer_hit.starting_round - 1),
             SetAction(SHOOT)
         ).run(blackboard)
-        print('HIT %s' % tracer_hit)
+        if DEBUG_STRATEGY:
+            print('HIT %s' % tracer_hit)
 
         return True
 
@@ -398,7 +422,6 @@ class SetMoveToFrontLineAvg(Task):
                     total += alien.x
                     count += 1
         avg = total / count
-        print avg
         blackboard.set('loc', avg - 1)
         return True
 
@@ -408,7 +431,7 @@ class InDanger(Task):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
-        for i in range(0, 4): # predict if bullet or missile gonna kill me
+        for i in range(0, 3): # predict if bullet or missile gonna kill me
             if next_state.lives < state.lives:
                 return True
             next_state.update(NOTHING)
@@ -429,11 +452,13 @@ class AvoidDanger(Task):
                 if next_state.lives < state.lives:
                     continue
                 option_cost += 1
-            print 'i %d option_cost %d' % (i, option_cost)
+            if DEBUG_STRATEGY:
+                print 'i %d option_cost %d' % (i, option_cost)
             if best_option is None or best_option_cost > option_cost:
                 best_option = option
                 best_option_cost = option_cost
-        print 'Avoid danger by: %s' % best_option
+        if DEBUG_STRATEGY:
+            print 'Avoid danger by: %s' % best_option
         blackboard.set('action', best_option)
         return True
 

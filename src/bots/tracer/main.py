@@ -30,16 +30,21 @@ behavior = Selector(
         SearchBestAction(5)
     ),
     Sequence(
-        Selector(
-            IsStartingRound(),
-            Kill()
-        ),
         HasMissile(),
+        CanShootBullet(),
         SetAction(SHOOT)
     ),
     Sequence(
         HasSpareLives(),
         Selector(
+            Sequence(
+                Selector(
+                    IsStartingRound(),
+                    Kill()
+                ),
+                HasMissile(),
+                SetAction(SHOOT)
+            ),
             Sequence(
                 Inverter(HasMissileController()),
                 build(BUILD_MISSILE_CONTROLLER)
@@ -50,12 +55,7 @@ behavior = Selector(
             )
         )
     ),
-    Sequence(
-        HasMissile(),
-        KillTracer(),
-        IsMoveDangerous(),
-        SearchBestAction(5)
-    )
+    KillTracer()
 )
 
 behavior.run(blackboard)
