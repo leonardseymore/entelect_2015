@@ -17,7 +17,7 @@ class State:
         self.front_line_kills = 0
         self.lives = lives
         self.respawn_timer = respawn_timer
-        self.missile_limit = missile_limit
+        self.missile_limit = 1
         self.wave_size = wave_size
         self.aliens_delta_x = aliens_delta_x
 
@@ -129,8 +129,6 @@ class State:
     def move_entity(self, entity, x, y):
         self.traverse_map('remove', entity, entity.x, entity.y)
         if self.traverse_map('add', entity, x, y):
-            if DEBUG:
-                print 'Moved %s -> %d:%d' % (entity, x, y)
             entity.x = x
             entity.y = y
 
@@ -165,13 +163,19 @@ class State:
         if not self.ship:
             return [NOTHING]
 
+        next_state = self.clone()
+        next_state.update(NOTHING)
+
         actions = []
+        assert self.missile_limit <= 2
         if len(self.missiles) < self.missile_limit:
             actions.append(SHOOT)
         if self.in_bounds(ship.x - 1, ship.y):
-            actions.append(MOVE_LEFT)
+            if not next_state.get_entity(ship.x - 1, ship.y):
+                actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
-            actions.append(MOVE_RIGHT)
+            if not next_state.get_entity(ship.x + ship.width, ship.y):
+                actions.append(MOVE_RIGHT)
         if self.lives > 0:
             if not self.alien_factory:
                 actions.append(BUILD_ALIEN_FACTORY)
@@ -186,13 +190,18 @@ class State:
         if not self.ship:
             return [NOTHING]
 
+        next_state = self.clone()
+        next_state.update(NOTHING)
+
         actions = [NOTHING]
         if self.in_bounds(ship.x - 1, ship.y):
-            actions.append(MOVE_LEFT)
+            if not next_state.get_entity(ship.x - 1, ship.y):
+                actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
-            actions.append(MOVE_RIGHT)
-        # if len(self.missiles) < self.missile_limit:
-        #     actions.append(SHOOT)
+            if not next_state.get_entity(ship.x + ship.width, ship.y):
+                actions.append(MOVE_RIGHT)
+        if len(self.missiles) < self.missile_limit:
+            actions.append(SHOOT)
         return actions
 
     def calculate_alien_bbox(self):
@@ -400,12 +409,9 @@ class Entity:
         return self.state.add_entity(self)
 
     def handle_out_of_bounds(self, bottom):
-        if DEBUG:
-            print 'Out of bounds %s' % self
+        pass
 
     def handle_collision(self, other):
-        if DEBUG:
-            print 'Collision %s -> %s' % (self, other)
         if other.entity_type == TRACER or other.entity_type == TRACER_BULLET:
             return
         self.destroy()
@@ -476,18 +482,14 @@ class Alien(Entity):
             self.explode()
 
     def explode(self):
-        if DEBUG:
-            print '%s exploded' % self
-        for x in range(self.x - 1, self.x + 2):
-            for y in range(self.y - 1, self.y + 2):
+        for x in range(self.x - 1 + self.delta_x, self.x + 2 + self.delta_y):
+            for y in range(self.y - 1 + self.delta_x, self.y + 2 + self.delta_y):
+                print x, y
                 if self.x == x and self.y == y:
                     continue
                 entity = self.state.get_entity(x, y)
                 if entity:
                     entity.destroy()
-                    if DEBUG:
-                        print '%s collateral damage to %s' % (self, entity)
-
 
 class Bullet(Entity):
     def __init__(self, state, x, y, player_number):

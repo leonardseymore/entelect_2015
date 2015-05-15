@@ -6,6 +6,7 @@ from ai.strategy import *
 def evaluate_state(state):
     result = 0
     result += state.lives * 5
+    result += state.kills
     if state.ship:
         result += 100
         if state.ship.x > 3 or state.ship.x < 11:

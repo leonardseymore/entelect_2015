@@ -39,14 +39,7 @@ class BotTracer(Bot):
             ),
             Sequence(
                 InDanger(),
-                Selector(
-                    Sequence(
-                        HasMissile(),
-                        CanShootBullet(),
-                        SetAction(SHOOT)
-                    ),
-                    SearchBestAction(5)
-                )
+                SearchBestAction(4)
             ),
             Sequence(
                 HasSpareLives(),
@@ -69,7 +62,11 @@ class BotTracer(Bot):
                     )
                 )
             ),
-            KillTracer()
+            Sequence(
+                KillTracer(),
+                IsMoveDangerous(),
+                SearchBestAction(4)
+            )
         )
 
         behavior.run(blackboard)
