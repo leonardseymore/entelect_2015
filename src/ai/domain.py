@@ -227,7 +227,7 @@ class State:
     def update_bbox(self):
         self.alien_bbox = self.calculate_alien_bbox()
 
-    def update(self, action, add_tracers=True, tracer_starting_round=0):
+    def update(self, action, add_tracers=False, tracer_starting_round=0):
         self.round_number += 1
         if self.round_number == 40:
             self.wave_size += 1

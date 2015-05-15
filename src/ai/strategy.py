@@ -1,7 +1,7 @@
 from ai.entelect import *
 from ai.treesearch import *
 
-DEBUG_STRATEGY = False
+
 
 #
 # Blackboard
@@ -50,7 +50,7 @@ class Task():
 
     # abstract method to be implemented
     def run(self, blackboard=None):
-        if DEBUG_STRATEGY:
+        if DEBUG:
             print self
         return
 
@@ -245,7 +245,7 @@ class MoveAcrossBoard(Task):
             elif state.ship.x >= PLAYING_FIELD_WIDTH - 4:
                 ship_delta_x = -1
 
-        if DEBUG_STRATEGY:
+        if DEBUG:
             print state.round_number, 'SHIELD', state.ship, entity, 'DELTA', ship_delta_x
         save_obj('%d_ship_delta_x' % state.player_number_real, ship_delta_x)
 
@@ -264,7 +264,7 @@ class IsMoveDangerous(Task):
         next_state.update(action)
         for i in range(0, 3): # predict i gonna move into bad situation
             if next_state.lives < state.lives:
-                if DEBUG_STRATEGY:
+                if DEBUG:
                     print 'Bad idea to action %s' % action
                 return True
             next_state.update(NOTHING)
@@ -327,10 +327,11 @@ class CanShootBullet(Task):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         x = state.ship.x + 1
-        for y in range(state.ship.y - self.dist, state.ship.y - 1):
+        for y in range(state.ship.y - self.dist, state.ship.y):
+            print x, y
             entity = state.get_entity(x, y)
+            print entity
             if entity and entity.entity_type == BULLET:
-                print 'CAN SHOOT', entity
                 return True
         return False
 
@@ -384,18 +385,14 @@ class KillTracer(Task):
         if len(next_state.tracer_hits) > 0:
             tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
             # tracer_hit = next_state.tracer_hits[0]
-        print 'Tracer hits: %s' % next_state.tracer_hits
-        for t in filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits):
-            print t
         if not tracer_hit:
             return False
-        print(state.ship)
         Sequence(
             MoveToLocation(tracer_hit.starting_x - 1),
             WaitTillRound(tracer_hit.starting_round - 1),
             SetAction(SHOOT)
         ).run(blackboard)
-        if DEBUG_STRATEGY:
+        if DEBUG:
             print('HIT %s' % tracer_hit)
 
         return True
@@ -431,8 +428,10 @@ class InDanger(Task):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
-        for i in range(0, 3): # predict if bullet or missile gonna kill me
+        for i in range(0, 4): # predict if bullet or missile gonna kill me
             if next_state.lives < state.lives:
+                if DEBUG:
+                    print 'In danger baby'
                 return True
             next_state.update(NOTHING)
         return False
@@ -452,12 +451,12 @@ class AvoidDanger(Task):
                 if next_state.lives < state.lives:
                     continue
                 option_cost += 1
-            if DEBUG_STRATEGY:
+            if DEBUG:
                 print 'i %d option_cost %d' % (i, option_cost)
             if best_option is None or best_option_cost > option_cost:
                 best_option = option
                 best_option_cost = option_cost
-        if DEBUG_STRATEGY:
+        if DEBUG:
             print 'Avoid danger by: %s' % best_option
         blackboard.set('action', best_option)
         return True

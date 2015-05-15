@@ -3,6 +3,7 @@ from ui.widgets import *
 from ai.entelect import *
 from ai.strategy import *
 from ai.domain import *
+from bots.bot import *
 
 # scale up the renderer
 RENDER_SCALE_FACTOR = 32
@@ -32,11 +33,15 @@ class Application(Frame):
         self.windows['prediction_info'] = KeyValueWindow(master, 'Prediction Information', None, '400x300')
         self.windows['player1_info'] = KeyValueWindow(master, 'Player 1 Information', lambda: self.game_state['Players'][0])
         self.windows['player2_info'] = KeyValueWindow(master, 'Player 2 Information', lambda: self.game_state['Players'][1])
+        filename = load_obj('ui_last_statefile')
+        if filename:
+            self.load_state_file(filename)
 
     # file dialog to load game state file
     def open_state_file(self):
         filename = tkFileDialog.askopenfilename(initialdir=REPLAY_DIR, filetypes=[("State files", "state.json")])
         if filename:
+            save_obj('ui_last_statefile', filename)
             self.load_state_file(filename)
 
     def predict_states(self):
@@ -51,6 +56,10 @@ class Application(Frame):
     def print_best_action(self):
         action = search_best_action(State.from_game_state(self.game_state), 5)
         print 'Best action: %s' % action
+
+    def print_bot(self, bot):
+        action = bot.get_action(self.game_state)
+        print 'Action: %s' % action
 
     # file dialog to load game state file
     def load_state_file(self, filename):
@@ -142,6 +151,11 @@ class Application(Frame):
         state_menu.add_command(label="Print Playing Field", command=self.print_playing_field)
         state_menu.add_command(label="Print Best Action", command=self.print_best_action)
         menu.add_cascade(label='State', menu=state_menu)
+
+        bot_menu = Menu(menu, tearoff=0)
+        for bot in all_bots:
+            bot_menu.add_command(label=bot.name, command=lambda b=bot: self.print_bot(b))
+        menu.add_cascade(label='Bots', menu=bot_menu)
 
         layer_menu = Menu(menu, tearoff=0)
         for layer in self.layers:
