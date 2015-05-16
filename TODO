@@ -1,2 +1,40 @@
 2. See if its good to leave a lone alien to make spawn slower
 1. Alien spawn issue when kill all DONE
+
+###################
+# Tracer          #
+# Round:  74      #
+# Kills: 11       #
+# Lives: 0        #
+# Missiles: 2/2   #
+###################
+# XXX         MMM #
+#            VVV  #
+# ---         - -x# <- WATCH FOR THIS SCENARIO!
+# ---             #
+#  --        i   x#
+#                 #
+#    x        x  x#
+#          i      #
+#    x  x  x  x  x#
+#                 #
+#                 #
+#                 #
+#                 #
+#                 #
+#    x  x  x  x  x#
+#          !      #
+#    x        x  x#
+#                 #
+#  --        !   x#
+# ---             #
+# ---         - -x#
+#           AAA   #
+# XXX         MMM #
+###################
+# Missiles: 2/2   #
+# Lives: 0        #
+# Kills: 11       #
+# Round:  74      #
+# Tracer          #
+###################

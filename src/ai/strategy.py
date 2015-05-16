@@ -383,8 +383,10 @@ class KillTracer(Task):
         for i in range(0, 10):
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
         if len(next_state.tracer_hits) > 0:
-            # tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
-            tracer_hit = next_state.tracer_hits[0]
+            tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
+            # tracer_hit = next_state.tracer_hits[0]
+        for t in next_state.tracer_hits:
+            print  '%s' % t
         if not tracer_hit:
             return False
         Sequence(

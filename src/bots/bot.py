@@ -76,4 +76,63 @@ class BotTracer(Bot):
             action = NOTHING
         return action
 
-all_bots = [BotTracer()]
+class BotHaywired(Bot):
+    def get_action(self, game_state):
+        state = State.from_game_state(game_state)
+
+        blackboard = Blackboard()
+        blackboard.set('state', state)
+
+        def build(build_action):
+            build_behavior = Sequence(
+                SetSafestBuildingLocation(),
+                Selector(
+                    Sequence(
+                        Inverter(AtLocation()),
+                        Inverter(MoveToLocation())
+                    ),
+                    SetAction(build_action)
+                )
+            )
+            return build_behavior
+
+        behavior = Selector(
+            Sequence(
+                Inverter(HasShip()),
+                SetAction(NOTHING)
+            ),
+            Sequence(
+                InDanger(),
+                SearchBestAction(4)
+            ),
+            Sequence(
+                HasSpareLives(),
+                Selector(
+                    Sequence(
+                        KillTracer()
+                    ),
+                    Sequence(
+                        Inverter(HasMissileController()),
+                        build(BUILD_MISSILE_CONTROLLER)
+                    ),
+                    Sequence(
+                        Inverter(HasAlienFactory()),
+                        build(BUILD_ALIEN_FACTORY)
+                    )
+                )
+            ),
+            Sequence(
+                KillTracer(),
+                IsMoveDangerous(),
+                SearchBestAction(4)
+            )
+        )
+
+        behavior.run(blackboard)
+        action = blackboard.get('action')
+
+        if not action:
+            action = NOTHING
+        return action
+
+all_bots = [BotTracer(), BotHaywired()]

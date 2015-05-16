@@ -14,7 +14,7 @@ import json
 import pickle
 import tempfile
 
-DEBUG = True
+DEBUG = False
 
 NOTHING = 'Nothing'
 MOVE_LEFT = 'MoveLeft'
