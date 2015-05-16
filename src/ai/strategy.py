@@ -125,6 +125,12 @@ class Inverter(Decorator):
     def __str__(self):
         return '~'
 
+class AlwaysTrue(Decorator):
+    def run(self, blackboard=None):
+        Task.run(self, blackboard)
+        self.child.run(blackboard)
+        return True
+
 # inject blackboard into child task
 class BlackboardManager(Decorator):
     def run(self, blackboard=None):
@@ -360,6 +366,19 @@ class KillFrontLine(Task):
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
         return False
 
+class AtRound(Task):
+    def __init__(self, round_number, *children):
+        Task.__init__(self, *children)
+        self.round_number = round_number
+
+    def run(self, blackboard):
+        Task.run(self, blackboard)
+        state = blackboard.get('state')
+        return state.round_number == self.round_number
+
+    def __str__(self):
+        return 'AtRound(%s)' % self.round_number
+
 class WaitTillRound(Task):
     def __init__(self, round_number, *children):
         Task.__init__(self, *children)
@@ -373,7 +392,7 @@ class WaitTillRound(Task):
     def __str__(self):
         return 'WaitTillRound(%s)' % self.round_number
 
-class KillTracer(Task):
+class KillTracerNoWait(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
@@ -385,8 +404,30 @@ class KillTracer(Task):
         if len(next_state.tracer_hits) > 0:
             tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
             # tracer_hit = next_state.tracer_hits[0]
+        print state.ship
         for t in next_state.tracer_hits:
             print  '%s' % t
+        if not tracer_hit:
+            return False
+        return Sequence(
+            HasMissile(),
+            SetLocation(tracer_hit.starting_x - 1),
+            AtLocation(),
+            AtRound(tracer_hit.starting_round - 1),
+            SetAction(SHOOT)
+        ).run(blackboard)
+
+class KillTracer(Task):
+    def run(self, blackboard):
+        Task.run(self, blackboard)
+        state = blackboard.get('state')
+        next_state = state.clone()
+        next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
+        tracer_hit = None
+        for i in range(0, 10):
+            next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
+        if len(next_state.tracer_hits) > 0:
+            tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
         if not tracer_hit:
             return False
         Sequence(
@@ -395,9 +436,6 @@ class KillTracer(Task):
             HasMissile(),
             SetAction(SHOOT)
         ).run(blackboard)
-        if DEBUG:
-            print('HIT %s' % tracer_hit)
-
         return True
 
 class IsInvasionImminent(Task):

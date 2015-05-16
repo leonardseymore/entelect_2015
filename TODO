@@ -38,3 +38,41 @@
 # Round:  74      #
 # Tracer          #
 ###################
+
+###################
+# Strategy        #
+# Round: 102      #
+# Kills: 16       #
+# Lives: 0        #
+# Missiles: 2/2   #
+###################
+# XXX         MMM #
+#           VVV   #
+# ---         --- #
+#             --- #
+# x           x-- #
+#           i     #
+# x        xi x   #
+#                 #
+# x     x  x  x   #
+#                 #
+# x  x  x  x  x   #
+#                 #
+#                 #
+#   x  x  x  x  x #
+#                 #
+#   x  x  x     x #
+#                 #
+#   x  x  x       #
+#         !       #
+#      x          #
+#   -  |      --- # <-- DIS BAD
+#      AAA        #
+# XXX         MMM #
+###################
+# Missiles: 1/2   #
+# Lives: 0        #
+# Kills: 20       #
+# Round: 102      #
+# Haywired        #
+###################

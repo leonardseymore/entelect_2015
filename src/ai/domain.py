@@ -427,10 +427,11 @@ class Entity:
         pass
 
     def handle_collision(self, other):
-        if other.entity_type == TRACER or other.entity_type == TRACER_BULLET:
+        if other.entity_type == TRACER:
             return
         if other.entity_type == TRACER_BULLET:
             self.get_shot_odds += other.shoot_odds
+            return
         self.destroy()
         other.destroy()
 
@@ -520,6 +521,11 @@ class Bullet(Entity):
         Entity.handle_out_of_bounds(self, bottom)
         self.destroy()
 
+    def handle_collision(self, other):
+        Entity.handle_collision(self, other)
+        if other.entity_type == TRACER_BULLET:
+            other.reach_dest_odds = 0.0
+
     def add(self):
         if Entity.add(self):
             self.state.bullets.append(self)
@@ -548,6 +554,8 @@ class TracerBullet(Entity):
     def handle_collision(self, other):
         if other.entity_type == TRACER:
             other.reach_dest_odds -= self.shoot_odds
+        elif (other.entity_type == MISSILE or other.entity_type == BULLET) and other.player_number != self.player_number:
+            other.reach_dest_odds = 0.0
         self.destroy()
 
     def add(self):
@@ -580,9 +588,12 @@ class Tracer(Entity):
         if other.entity_type == ALIEN:
             self.alien_id = other.alien_id
             self.state.tracer_hits.append(self)
-        if other.entity_type == TRACER_BULLET:
+        elif other.entity_type == BULLET:
+            self.reach_dest_odds = 0.0
+        elif other.entity_type == TRACER_BULLET:
             self.reach_dest_odds -= other.shoot_odds
-            print 'HIT TRACER BULLET: %s -> %s' % (self, other)
+            if DEBUG:
+                print 'HIT TRACER BULLET: %s -> %s' % (self, other)
         else:
             self.destroy()
 

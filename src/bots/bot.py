@@ -109,7 +109,13 @@ class BotHaywired(Bot):
                 HasSpareLives(),
                 Selector(
                     Sequence(
-                        KillTracer()
+                        KillTracerNoWait(),
+                        AlwaysTrue(
+                            Sequence(
+                                IsMoveDangerous(),
+                                SearchBestAction(4)
+                            )
+                        )
                     ),
                     Sequence(
                         Inverter(HasMissileController()),
@@ -123,8 +129,12 @@ class BotHaywired(Bot):
             ),
             Sequence(
                 KillTracer(),
-                IsMoveDangerous(),
-                SearchBestAction(4)
+                AlwaysTrue(
+                    Sequence(
+                        IsMoveDangerous(),
+                        SearchBestAction(4)
+                    )
+                )
             )
         )
 

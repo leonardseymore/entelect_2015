@@ -1,1 +1,1 @@
-python -m bots.tracer.main %1 
+python -m bots.haywired.main %1 
