@@ -495,6 +495,7 @@ class Alien(Entity):
                 self.state.extremity_kills += 1
                 self.state.update_bbox()
         elif other.entity_type == TRACER:
+            other.energy = PLAYING_FIELD_HEIGHT - 3 - self.y
             self.state.tracer_hits.append(other)
         elif other.entity_type == SHIELD:
             self.explode()
@@ -502,7 +503,6 @@ class Alien(Entity):
     def explode(self):
         for x in range(self.x - 1 + self.delta_x, self.x + 2 + self.delta_y):
             for y in range(self.y - 1 + self.delta_x, self.y + 2 + self.delta_y):
-                print x, y
                 if self.x == x and self.y == y:
                     continue
                 entity = self.state.get_entity(x, y)
@@ -574,8 +574,8 @@ class Tracer(Entity):
         self.delta_y = -1 if player_number == 1 else 1
         self.starting_round = starting_round
         self.starting_x = starting_x
-        self.alien_id = None
         self.reach_dest_odds = 1.0
+        self.energy = 0
 
     def update(self):
         self.state.move_entity(self, self.x, self.y + self.delta_y)
@@ -586,7 +586,7 @@ class Tracer(Entity):
 
     def handle_collision(self, other):
         if other.entity_type == ALIEN:
-            self.alien_id = other.alien_id
+            self.energy = PLAYING_FIELD_HEIGHT - 3 - other.y
             self.state.tracer_hits.append(self)
         elif other.entity_type == BULLET:
             self.reach_dest_odds = 0.0
@@ -606,7 +606,7 @@ class Tracer(Entity):
             self.state.tracers.remove(self)
 
     def __str__(self):
-        return "%s@%d:%d - starting_round=%s, starting_x=%d, reach_dest_odds=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.reach_dest_odds)
+        return "%s@%d:%d - starting_round=%s, starting_x=%d, reach_dest_odds=%s, energy=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.reach_dest_odds, self.energy)
 
 class Missile(Entity):
     def __init__(self, state, x, y, player_number):

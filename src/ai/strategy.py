@@ -269,9 +269,9 @@ class IsMoveDangerous(Task):
         action = blackboard.get('action')
         next_state.update(action)
         for i in range(0, 3): # predict i gonna move into bad situation
+            print next_state
             if next_state.lives < state.lives:
-                if DEBUG:
-                    print 'Bad idea to action %s' % action
+                print 'Dangerous action %s' % action
                 return True
             next_state.update(NOTHING)
         return False
@@ -392,28 +392,65 @@ class WaitTillRound(Task):
     def __str__(self):
         return 'WaitTillRound(%s)' % self.round_number
 
-class KillTracerNoWait(Task):
+class SetTracer(Task):
+    def __init__(self, prioritize=False, *children):
+        Task.__init__(self, *children)
+        self.prioritize = prioritize
+
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
-        tracer_hit = None
         for i in range(0, 10):
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
-        if len(next_state.tracer_hits) > 0:
-            tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
-            # tracer_hit = next_state.tracer_hits[0]
-        print state.ship
+
         for t in next_state.tracer_hits:
-            print  '%s' % t
+            print '%s' % t
+
+        if len(next_state.tracer_hits) == 0:
+            print 'No tracer hits found'
+            return False
+
+        # only choose to shoot 100% odd aliens
+        candidates = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)
+        if len(candidates) == 0:
+            print 'No tracer candidates found'
+            return False
+
+        if self.prioritize:
+            min_energy = min(candidates, key=lambda t: t.energy).energy
+            max_energy = max(candidates, key=lambda t: t.energy).energy
+            if max_energy - min_energy > 5:
+                candidates = sorted(candidates, key=lambda t: (t.starting_round, t.energy, abs(t.starting_x - state.ship.x)))
+            # candidates = sorted(candidates, key=lambda t: (t.energy, t.starting_round, abs(t.starting_x - state.ship.x)))
+            # candidates = sorted(candidates, key=lambda t: (abs(t.starting_x - state.ship.x)))
+            pass
+
+        print 'BY ENERGY'
+        for t in candidates:
+            print '%s' % t
+
+        tracer_hit = candidates[0]
+        print state.ship
+
         if not tracer_hit:
             return False
+        blackboard.set('tracer', tracer_hit)
+        return True
+
+class KillTracerNoWait(Task):
+    def run(self, blackboard):
+        Task.run(self, blackboard)
+        state = blackboard.get('state')
+        if not SetTracer().run(blackboard):
+            return False
+        tracer = blackboard.get('tracer')
         return Sequence(
             HasMissile(),
-            SetLocation(tracer_hit.starting_x - 1),
+            SetLocation(tracer.starting_x - 1),
             AtLocation(),
-            AtRound(tracer_hit.starting_round - 1),
+            AtRound(tracer.starting_round - 1),
             SetAction(SHOOT)
         ).run(blackboard)
 
@@ -421,22 +458,15 @@ class KillTracer(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
-        next_state = state.clone()
-        next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
-        tracer_hit = None
-        for i in range(0, 10):
-            next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
-        if len(next_state.tracer_hits) > 0:
-            tracer_hit = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)[0]
-        if not tracer_hit:
+        if not SetTracer(prioritize=False).run(blackboard):
             return False
-        Sequence(
-            MoveToLocation(tracer_hit.starting_x - 1),
-            WaitTillRound(tracer_hit.starting_round - 1),
+        tracer = blackboard.get('tracer')
+        return Sequence(
+            MoveToLocation(tracer.starting_x - 1),
+            WaitTillRound(tracer.starting_round - 1),
             HasMissile(),
             SetAction(SHOOT)
         ).run(blackboard)
-        return True
 
 class IsInvasionImminent(Task):
     def run(self, blackboard):

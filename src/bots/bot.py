@@ -96,45 +96,39 @@ class BotHaywired(Bot):
             )
             return build_behavior
 
-        behavior = Selector(
-            Sequence(
-                Inverter(HasShip()),
-                SetAction(NOTHING)
-            ),
-            Sequence(
-                InDanger(),
-                SearchBestAction(4)
-            ),
-            Sequence(
-                HasSpareLives(),
-                Selector(
-                    Sequence(
-                        KillTracerNoWait(),
-                        AlwaysTrue(
-                            Sequence(
-                                IsMoveDangerous(),
-                                SearchBestAction(4)
-                            )
+        behavior = Sequence(
+            AlwaysTrue(Selector(
+                Sequence(
+                    Inverter(HasShip()),
+                    SetAction(NOTHING)
+                ),
+                Sequence(
+                    InDanger(),
+                    SearchBestAction(4)
+                ),
+                Sequence(
+                    HasSpareLives(),
+                    Selector(
+                        Sequence(
+                            KillTracerNoWait()
+                        ),
+                        Sequence(
+                            Inverter(HasMissileController()),
+                            build(BUILD_MISSILE_CONTROLLER)
+                        ),
+                        Sequence(
+                            Inverter(HasAlienFactory()),
+                            build(BUILD_ALIEN_FACTORY)
                         )
-                    ),
-                    Sequence(
-                        Inverter(HasMissileController()),
-                        build(BUILD_MISSILE_CONTROLLER)
-                    ),
-                    Sequence(
-                        Inverter(HasAlienFactory()),
-                        build(BUILD_ALIEN_FACTORY)
                     )
+                ),
+                Sequence(
+                    KillTracer(),
                 )
-            ),
+            )),
             Sequence(
-                KillTracer(),
-                AlwaysTrue(
-                    Sequence(
-                        IsMoveDangerous(),
-                        SearchBestAction(4)
-                    )
-                )
+                IsMoveDangerous(),
+                SearchBestAction(4)
             )
         )
 
