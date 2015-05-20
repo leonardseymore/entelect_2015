@@ -3,37 +3,42 @@ import copy
 from ai.entelect import *
 from ai.strategy import *
 
-def evaluate_state(state):
+def evaluate_state(state, include_tracers):
     result = 0
     result += state.lives * 5
-    result += state.kills
+    result += state.extremity_kills * 3
+    result += state.kills * 2
+    result -= len(state.missiles)
+    print len(state.missiles)
     if state.ship:
+        if include_tracers:
+            result -= state.ship.get_shot_odds * 100
         result += 100
         if state.ship.x > 3 or state.ship.x < 11:
             result += 1000
     return result
 
-def search_best_action(state, max_depth):
-    return search_best_action_recurse(state, max_depth, 0, [])[1]
+def search_best_action(state, max_depth, include_tracers=False):
+    return search_best_action_recurse(state, max_depth, include_tracers, 0, [])[1]
 
-def search_best_action_recurse(state, max_depth, current_depth=0, actions=None):
+def search_best_action_recurse(state, max_depth, include_tracers, current_depth, actions):
     if state.lives < 0 or current_depth == max_depth:
-        return evaluate_state(state), None
+        return evaluate_state(state, include_tracers), None
 
     best_action = None
     best_score = -sys.maxint
 
     for i, action in enumerate(state.get_available_evade_actions()):
         new_state = state.clone()
-        new_state.update(action)
+        new_state.update(action, include_tracers)
         actions.append(action)
 
         if DEBUG:
             print new_state
         if DEBUG:
-            print 'D', current_depth + 1, 'E', evaluate_state(new_state), ' -> '.join(actions)
+            print 'D', current_depth + 1, 'E', evaluate_state(new_state, include_tracers), ' -> '.join(actions)
 
-        current_score, current_action = search_best_action_recurse(new_state, max_depth, current_depth + 1, actions)
+        current_score, current_action = search_best_action_recurse(new_state, max_depth, include_tracers, current_depth + 1, actions)
         actions.pop()
 
         if not new_state.ship:

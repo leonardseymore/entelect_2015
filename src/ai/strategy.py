@@ -39,6 +39,9 @@ class Blackboard():
 
         return tree
 
+    def __str__(self):
+        return '%s' % self.get_obj()
+
 #
 # BEHAVIOR
 #
@@ -106,16 +109,6 @@ class Limit(Decorator):
         return self.child.run(blackboard)
 
 
-# run a child task until it fails
-class UntilFail(Decorator):
-    def run(self, blackboard=None):
-        Task.run(self, blackboard)
-        while True:
-            if not self.child.run(blackboard):
-                break
-        return True
-
-
 # flip the return value of task
 class Inverter(Decorator):
     def run(self, blackboard=None):
@@ -162,6 +155,12 @@ class HasShip(Task):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.ship is not None
+
+class FirstWaveKilled(Task):
+    def run(self, blackboard):
+        Task.run(self, blackboard)
+        state = blackboard.get('state')
+        return state.kills >= 3
 
 # this is only true at the beginning of the game
 class SetSafestBuildingLocation(Task):
@@ -219,48 +218,6 @@ class MoveToLocation(Task):
     def __str__(self):
         return 'MoveToLocation(%s)' % self.loc
 
-class SetLocationToMiddle(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
-        state = blackboard.get('state')
-        blackboard.set('loc', PLAYING_FIELD_WIDTH / 2 - 1)
-        return True
-
-class MoveAcrossBoard(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
-        state = blackboard.get('state')
-        ship_delta_x = load_obj('%d_ship_delta_x' % state.player_number_real)
-
-        if not ship_delta_x:
-            if state.ship.x > PLAYING_FIELD_WIDTH / 2 - 1:
-                ship_delta_x = -1
-            else:
-                ship_delta_x = 1
-
-        entity = state.get_entity(state.ship.x + 1, state.ship.y - 1)
-
-        if entity and entity.entity_type == SHIELD:
-            if state.ship.x > PLAYING_FIELD_WIDTH / 2 - 1:
-                ship_delta_x = -1
-            else:
-                ship_delta_x = 1
-        else:
-            if state.ship.x <= 1:
-                ship_delta_x = 1
-            elif state.ship.x >= PLAYING_FIELD_WIDTH - 4:
-                ship_delta_x = -1
-
-        if DEBUG:
-            print state.round_number, 'SHIELD', state.ship, entity, 'DELTA', ship_delta_x
-        save_obj('%d_ship_delta_x' % state.player_number_real, ship_delta_x)
-
-        if ship_delta_x > 0:
-            blackboard.set('action', MOVE_RIGHT)
-        else:
-            blackboard.set('action', MOVE_LEFT)
-        return True
-
 class IsMoveDangerous(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
@@ -269,8 +226,7 @@ class IsMoveDangerous(Task):
         action = blackboard.get('action')
         next_state.update(action)
         for i in range(0, 3): # predict i gonna move into bad situation
-            print next_state
-            if next_state.lives < state.lives:
+            if not next_state.ship or next_state.lives < state.lives:
                 print 'Dangerous action %s' % action
                 return True
             next_state.update(NOTHING)
@@ -334,9 +290,7 @@ class CanShootBullet(Task):
         state = blackboard.get('state')
         x = state.ship.x + 1
         for y in range(state.ship.y - self.dist, state.ship.y):
-            print x, y
             entity = state.get_entity(x, y)
-            print entity
             if entity and entity.entity_type == BULLET:
                 return True
         return False
@@ -393,17 +347,16 @@ class WaitTillRound(Task):
         return 'WaitTillRound(%s)' % self.round_number
 
 class SetTracer(Task):
-    def __init__(self, prioritize=False, *children):
+    def __init__(self, *children):
         Task.__init__(self, *children)
-        self.prioritize = prioritize
 
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
-        next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
         for i in range(0, 10):
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
+            print next_state
 
         for t in next_state.tracer_hits:
             print '%s' % t
@@ -417,23 +370,15 @@ class SetTracer(Task):
         if len(candidates) == 0:
             print 'No tracer candidates found'
             return False
-
-        if self.prioritize:
-            min_energy = min(candidates, key=lambda t: t.energy).energy
-            max_energy = max(candidates, key=lambda t: t.energy).energy
-            if max_energy - min_energy > 5:
-                candidates = sorted(candidates, key=lambda t: (t.starting_round, t.energy, abs(t.starting_x - state.ship.x)))
-            # candidates = sorted(candidates, key=lambda t: (t.energy, t.starting_round, abs(t.starting_x - state.ship.x)))
-            # candidates = sorted(candidates, key=lambda t: (abs(t.starting_x - state.ship.x)))
-            pass
-
-        print 'BY ENERGY'
-        for t in candidates:
-            print '%s' % t
-
-        tracer_hit = candidates[0]
+        print 'CANDIDATES'
+        candidates = sorted(candidates, key=lambda c: (abs(state.ship.x - t.starting_x) + t.energy))
+        for candidate in candidates:
+            print '%s' % candidate
         print state.ship
 
+
+
+        tracer_hit = candidates[0]
         if not tracer_hit:
             return False
         blackboard.set('tracer', tracer_hit)
@@ -458,22 +403,22 @@ class KillTracer(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
-        if not SetTracer(prioritize=False).run(blackboard):
+        if not SetTracer().run(blackboard):
             return False
         tracer = blackboard.get('tracer')
-        return Sequence(
+        Sequence(
             MoveToLocation(tracer.starting_x - 1),
             WaitTillRound(tracer.starting_round - 1),
             HasMissile(),
             SetAction(SHOOT)
         ).run(blackboard)
+        return True
 
 class IsInvasionImminent(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.alien_bbox['bottom'] > 7
-        return False
 
 class SetMoveToFrontLineAvg(Task):
     def run(self, blackboard):
@@ -531,40 +476,43 @@ class AvoidDanger(Task):
         return True
 
 class SearchBestAction(Task):
-    def __init__(self, max_depth=3, *children):
+    def __init__(self, max_depth=3, include_tracers=False, *children):
         Task.__init__(self, *children)
         self.max_depth = max_depth
+        self.include_tracers = include_tracers
 
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
-        action = search_best_action(state, self.max_depth)
+        action = search_best_action(state, self.max_depth, self.include_tracers)
         if action:
             blackboard.set('action', action)
             return True
         else:
             return False
-#
-# EXPERTS
-#
 
-# expert base class
-class Expert():
-    def __init__(self):
-        pass
-
-    # modify blackboard as expert sees fit
+class IsAlienTooClose(Task):
     def run(self, blackboard):
-        pass
-
-class ExpertOptimizer(Expert):
-    def run(self, blackboard):
+        Task.run(self, blackboard)
         state = blackboard.get('state')
-        actions = state.get_available_actions()
-        if len(actions) > 2 and NOTHING in actions:
-            actions.remove(NOTHING)
-        blackboard.set('actions', actions)
+        next_state = state.clone()
+        next_state.update(NOTHING)
+        # x  x  x         # -> delta_x = 1
+        #                 #
+        #    x  AAA       #
+        # XXX         MMM #
+        ###################
+        if not next_state.ship:
+            return True
 
-# field_analyst = FieldAnalystExpert()
-# alien_expert = AlienExpert()
-# experts = {'field_analyst': field_analyst, 'alien': alien_expert}
+        for x in range(next_state.ship.x - 1, next_state.ship.x + next_state.ship.width + 1):
+            for y in [next_state.ship.y -1, next_state.ship.y - 2]:
+                entity = next_state.get_entity(x, y)
+                if entity and entity.entity_type == ALIEN:
+                    print 'Alien too close!', entity
+                    return True
+        return False
+
+
+strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), IsInvasionImminent(), IsAlienTooClose(),
+              SetTracer()]

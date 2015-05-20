@@ -115,6 +115,12 @@ class State:
     def in_bounds(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
 
+    def is_tracer_bullet_x(self, x):
+        for tracer_bullet in self.tracer_bullets:
+            if tracer_bullet.x == x:
+                return True
+        return None
+
     def get_tracer_bullet(self, x, y):
         for tracer_bullet in self.tracer_bullets:
             if tracer_bullet.x == x and tracer_bullet.y == y:
@@ -203,14 +209,15 @@ class State:
         next_state.update(NOTHING)
 
         actions = [NOTHING]
+        if len(self.missiles) < self.missile_limit:
+            print 'LEN', len(self.missiles), 'LIM', self.missile_limit
+            actions.append(SHOOT)
         if self.in_bounds(ship.x - 1, ship.y):
             if not next_state.get_entity(ship.x - 1, ship.y):
                 actions.append(MOVE_LEFT)
         if self.in_bounds(ship.x + ship.width, ship.y):
             if not next_state.get_entity(ship.x + ship.width, ship.y):
                 actions.append(MOVE_RIGHT)
-        if len(self.missiles) < self.missile_limit:
-            actions.append(SHOOT)
         return actions
 
     def calculate_alien_bbox(self):
@@ -285,7 +292,7 @@ class State:
                         alien.shoot_odds = 0
 
         # Update missiles, moving them forward
-        for missile in self.missiles[:]:
+        for missile in sorted(self.missiles, key=lambda m: m.y):
             missile.update()
 
         # Update alien bullets, moving them forward
@@ -428,6 +435,7 @@ class Entity:
 
     def handle_collision(self, other):
         if other.entity_type == TRACER:
+            # other.destroy() # TODO: is this right?
             return
         if other.entity_type == TRACER_BULLET:
             self.get_shot_odds += other.shoot_odds
@@ -592,8 +600,6 @@ class Tracer(Entity):
             self.reach_dest_odds = 0.0
         elif other.entity_type == TRACER_BULLET:
             self.reach_dest_odds -= other.shoot_odds
-            if DEBUG:
-                print 'HIT TRACER BULLET: %s -> %s' % (self, other)
         else:
             self.destroy()
 
@@ -621,6 +627,7 @@ class Missile(Entity):
         self.destroy()
 
     def handle_collision(self, other):
+        print self, other
         Entity.handle_collision(self, other)
         if other.entity_type == ALIEN and self.player_number != other.player_number:
             self.state.kills += 1
@@ -635,6 +642,7 @@ class Missile(Entity):
             self.state.missiles.append(self)
 
     def destroy(self):
+        print "WTF", self
         Entity.destroy(self)
         if self in self.state.missiles:
             self.state.missiles.remove(self)

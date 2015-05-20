@@ -61,6 +61,12 @@ class Application(Frame):
         action = bot.get_action(self.game_state)
         print 'Action: %s' % action
 
+    def print_strategy(self, strategy):
+        blackboard = Blackboard()
+        blackboard.set('state', State.from_game_state(self.game_state))
+        result = strategy.run(blackboard)
+        print 'Result: %s, Blackboard: %s' % (result, blackboard)
+
     # file dialog to load game state file
     def load_state_file(self, filename):
         self.game_state_file = filename
@@ -156,6 +162,11 @@ class Application(Frame):
         for bot in all_bots:
             bot_menu.add_command(label=bot.name, command=lambda b=bot: self.print_bot(b))
         menu.add_cascade(label='Bots', menu=bot_menu)
+
+        strategy_menu = Menu(menu, tearoff=0)
+        for stratey in strategies:
+            strategy_menu.add_command(label=stratey, command=lambda s=stratey: self.print_strategy(s))
+        menu.add_cascade(label='Strategy', menu=strategy_menu)
 
         layer_menu = Menu(menu, tearoff=0)
         for layer in self.layers:
