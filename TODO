@@ -76,3 +76,7 @@
 # Round: 102      #
 # Haywired        #
 ###################
+
+- Destroy tracers in tree search
+- If no tracers hit, search further
+- Linger solo alien if enemy has alien factory and you don't

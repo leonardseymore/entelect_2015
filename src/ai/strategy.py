@@ -391,9 +391,11 @@ class KillTracerNoWait(Task):
         if not SetTracer().run(blackboard):
             return False
         tracer = blackboard.get('tracer')
+        loc = tracer.starting_x - 1
+        blackboard.set('loc', loc)
         return Sequence(
             HasMissile(),
-            SetLocation(tracer.starting_x - 1),
+            SetLocation(loc),
             AtLocation(),
             AtRound(tracer.starting_round - 1),
             SetAction(SHOOT)
@@ -406,8 +408,10 @@ class KillTracer(Task):
         if not SetTracer().run(blackboard):
             return False
         tracer = blackboard.get('tracer')
+        loc = tracer.starting_x - 1
+        blackboard.set('loc', loc)
         Sequence(
-            MoveToLocation(tracer.starting_x - 1),
+            MoveToLocation(loc),
             WaitTillRound(tracer.starting_round - 1),
             HasMissile(),
             SetAction(SHOOT)
@@ -476,15 +480,19 @@ class AvoidDanger(Task):
         return True
 
 class SearchBestAction(Task):
-    def __init__(self, max_depth=3, include_tracers=False, *children):
+    def __init__(self, max_depth=3, include_tracers=False, include_loc=True, *children):
         Task.__init__(self, *children)
         self.max_depth = max_depth
         self.include_tracers = include_tracers
+        self.include_loc = include_loc
 
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
-        action = search_best_action(state, self.max_depth, self.include_tracers)
+        loc = None
+        if self.include_loc:
+            loc = blackboard.get('loc')
+        action = search_best_action(state, self.max_depth, self.include_tracers, loc)
         if action:
             blackboard.set('action', action)
             return True
