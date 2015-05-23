@@ -491,6 +491,9 @@ class SearchBestAction(Task):
         else:
             return False
 
+    def __str__(self):
+        return 'SearchBestAction(include_tracers=%s, max_depth=%s)' % (self.include_tracers, self.max_depth)
+
 class IsAlienTooClose(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
@@ -514,5 +517,5 @@ class IsAlienTooClose(Task):
         return False
 
 
-strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), IsInvasionImminent(), IsAlienTooClose(),
+strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True), IsInvasionImminent(), IsAlienTooClose(),
               SetTracer()]

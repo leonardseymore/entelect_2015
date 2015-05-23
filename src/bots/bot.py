@@ -76,7 +76,7 @@ class BotHaywired(Bot):
             standard_behavior
         )
 
-        standard_behavior.run(blackboard)
+        behavior.run(blackboard)
         action = blackboard.get('action')
 
         if not action:

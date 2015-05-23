@@ -210,7 +210,6 @@ class State:
 
         actions = [NOTHING]
         if len(self.missiles) < self.missile_limit:
-            print 'LEN', len(self.missiles), 'LIM', self.missile_limit
             actions.append(SHOOT)
         if self.in_bounds(ship.x - 1, ship.y):
             if not next_state.get_entity(ship.x - 1, ship.y):
@@ -322,6 +321,9 @@ class State:
         # Update ships, executing their orders
         if self.ship:
             self.ship.perform_action(action)
+
+        for tracer_bullet in self.tracer_bullets[:]:
+            tracer_bullet.update()
 
         # Advance respawn timer and respawn ships if necessary.
         if self.respawn_timer > 0:
@@ -548,23 +550,27 @@ class TracerBullet(Entity):
         Entity.__init__(self, state, x, y, TRACER_BULLET, TRACER_BULLET_SYMBOL, 1, player_number)
         self.delta_y = -1 if player_number == 1 else 1
         self.shoot_odds = shoot_odds
+        self.is_new = True
 
     def update(self):
-        self.y += self.delta_y
+        if not self.is_new:
+            self.y += self.delta_y
+            self.is_new = False
         entity = self.state.get_entity(self.x, self.y)
         if entity:
             entity.handle_collision(self)
+
 
     def handle_out_of_bounds(self, bottom):
         Entity.handle_out_of_bounds(self, bottom)
         self.destroy()
 
     def handle_collision(self, other):
+        other.get_shot_odds += self.shoot_odds
         if other.entity_type == TRACER:
             other.reach_dest_odds -= self.shoot_odds
         elif (other.entity_type == MISSILE or other.entity_type == BULLET) and other.player_number != self.player_number:
             other.reach_dest_odds = 0.0
-        self.destroy()
 
     def add(self):
         self.state.tracer_bullets.append(self)
@@ -642,7 +648,6 @@ class Missile(Entity):
             self.state.missiles.append(self)
 
     def destroy(self):
-        print "WTF", self
         Entity.destroy(self)
         if self in self.state.missiles:
             self.state.missiles.remove(self)

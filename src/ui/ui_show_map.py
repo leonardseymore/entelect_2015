@@ -164,8 +164,8 @@ class Application(Frame):
         menu.add_cascade(label='Bots', menu=bot_menu)
 
         strategy_menu = Menu(menu, tearoff=0)
-        for stratey in strategies:
-            strategy_menu.add_command(label=stratey, command=lambda s=stratey: self.print_strategy(s))
+        for strategy in strategies:
+            strategy_menu.add_command(label=strategy, command=lambda s=strategy: self.print_strategy(s))
         menu.add_cascade(label='Strategy', menu=strategy_menu)
 
         layer_menu = Menu(menu, tearoff=0)
