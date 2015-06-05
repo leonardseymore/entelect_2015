@@ -1,1 +1,1 @@
-python -m bots.haywired.main %1 
+BasicBot.exe %1
