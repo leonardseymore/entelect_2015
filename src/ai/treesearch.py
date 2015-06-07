@@ -63,3 +63,83 @@ def search_best_action_recurse(state, starting_round, max_depth, include_tracers
     if DEBUG:
         print 'Best tree search action: ', current_depth + 1, best_score, best_action
     return best_score, best_action
+
+#
+# TRACER OPTIMISATION
+#
+
+def sim_kill_candidate(state, candidate):
+    if not state.ship or state.round_number >= candidate.starting_round:
+        return None
+
+    next_state = state.clone()
+    if len(state.missiles) < state.missile_limit and state.ship.x + 1 == candidate.starting_x and state.round_number == candidate.starting_round - 1:
+        next_state.update(SHOOT)
+        return next_state
+
+    action = NOTHING
+    if state.ship.x + 1 > candidate.starting_x:
+        action = MOVE_LEFT
+    elif state.ship.x + 1 < candidate.starting_x:
+        action = MOVE_RIGHT
+
+    next_state.update(action)
+    return sim_kill_candidate(next_state, candidate)
+
+def evaluate_kill(state):
+    new_state = state.clone()
+    while new_state.ship:
+        new_state.update(NOTHING)
+    return len(new_state.aliens)
+
+def get_candidates(state, look_ahead=12):
+    next_state = state.clone()
+    for i in range(0, look_ahead):
+        next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
+        # print next_state
+
+    if len(next_state.tracer_hits) == 0:
+        print 'No tracer hits found'
+        return []
+
+    # only choose to shoot 100% odd aliens
+    candidates = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)
+    if len(candidates) == 0:
+        print 'No tracer candidates found'
+        return []
+
+    print 'CANDIDATES', candidates
+    return candidates
+
+def search_best_candidate(state, max_depth):
+    return search_best_candidate_recurse(state, 0, max_depth, [])[1]
+
+def search_best_candidate_recurse(state, current_depth, max_depth, candidates):
+    if current_depth == max_depth:
+        return evaluate_kill(state), None
+
+    best_candidate = None
+    best_score = sys.maxint
+
+    for i, candidate in enumerate(get_candidates(state)):
+        new_state = sim_kill_candidate(state, candidate)
+        if not new_state:
+            continue
+        candidates.append(candidate)
+
+        if DEBUG:
+            print '-' * 19
+            if new_state:
+                print evaluate_kill(new_state), ' -> ', candidates
+            # print new_state
+
+        current_score, current_candidate = search_best_candidate_recurse(new_state, current_depth + 1, max_depth, candidates)
+        candidates.pop()
+
+        if current_score < best_score:
+            best_score = current_score
+            best_candidate = candidate
+
+    if DEBUG:
+        print 'Best tree search candidate: ', current_depth + 1, best_score, best_candidate
+    return best_score, best_candidate

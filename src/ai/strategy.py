@@ -524,6 +524,11 @@ class IsAlienTooClose(Task):
                     return True
         return False
 
+class IsSoleSurvivor(Task):
+    def run(self, blackboard):
+        Task.run(self, blackboard)
+        state = blackboard.get('state')
+        return len(state.aliens) == 1
 
 strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True), IsInvasionImminent(), IsAlienTooClose(),
               SetTracer()]

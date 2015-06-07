@@ -57,6 +57,10 @@ class Application(Frame):
         action = search_best_action(State.from_game_state(self.game_state), 5)
         print 'Best action: %s' % action
 
+    def print_best_candidate(self):
+        candidate = search_best_candidate(State.from_game_state(self.game_state), 5)
+        print 'Best candidate: %s' % candidate
+
     def print_bot(self, bot):
         action = bot.get_action(self.game_state)
         print 'Action: %s' % action
@@ -156,6 +160,7 @@ class Application(Frame):
         state_menu.add_command(label="Print Predict 10 States", command=self.predict_states10)
         state_menu.add_command(label="Print Playing Field", command=self.print_playing_field)
         state_menu.add_command(label="Print Best Action", command=self.print_best_action)
+        state_menu.add_command(label="Print Best Candidate", command=self.print_best_candidate)
         menu.add_cascade(label='State', menu=state_menu)
 
         bot_menu = Menu(menu, tearoff=0)
