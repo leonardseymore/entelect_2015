@@ -4,26 +4,28 @@ import random
 
 
 class State:
-    def __init__(self, player_number_real, round_number, round_limit, kills, lives, respawn_timer, missile_limit,
-                 wave_size, ship, alien_factory, missile_controller, aliens_delta_x, aliens, shields, missiles, bullets,
-                 enemy_has_alien_factory, enemy_has_spare_lives):
-        self.playing_field = [[None for x in range(PLAYING_FIELD_WIDTH)] for y in range(PLAYING_FIELD_HEIGHT)]
+    def __init__(self):
+        self.playing_field = [None] * (PLAYING_FIELD_WIDTH * PLAYING_FIELD_HEIGHT)
         self.width = PLAYING_FIELD_WIDTH
         self.height = PLAYING_FIELD_HEIGHT
 
-        self.player_number_real = player_number_real
-        self.round_number = round_number
-        self.round_limit = round_limit
-        self.kills = kills
+        self.player_number_real = None
+        self.round_number = None
+        self.round_limit = None
+        self.kills = None
         self.extremity_kills = 0
         self.front_line_kills = 0
-        self.lives = lives
-        self.respawn_timer = respawn_timer
+        self.lives = None
+        self.respawn_timer = None
         self.missile_limit = 1
-        self.wave_size = wave_size
-        self.aliens_delta_x = aliens_delta_x
-        self.enemy_has_alien_factory = enemy_has_alien_factory
-        self.enemy_has_spare_lives = enemy_has_spare_lives
+        self.wave_size = None
+        self.aliens_delta_x = None
+        self.enemy_has_alien_factory = None
+        self.enemy_has_spare_lives = None
+
+        self.ship = None
+        self.alien_factory = None
+        self.missile_controller = None
 
         self.shields = []
         self.missiles = []
@@ -32,70 +34,65 @@ class State:
         self.tracers = []
         self.tracer_bullets = []
         self.tracer_hits = []
-
-        self.ship = ship
-        if ship:
-            self.ship.state = self
-            self.ship.add()
-        self.alien_factory = alien_factory
-        if alien_factory:
-            self.alien_factory.state = self
-            self.alien_factory.add()
-        self.missile_controller = missile_controller
-        if missile_controller:
-            self.missile_controller.state = self
-            self.missile_controller.add()
-
-        for shield in shields:
-            shield.state = self
-            shield.add()
-        for missile in missiles:
-            missile.state = self
-            missile.add()
-        for bullet in bullets:
-            bullet.state = self
-            bullet.add()
-        for alien in aliens:
-            alien.state = self
-            alien.add()
-
-        self.alien_bbox = self.calculate_alien_bbox()
+        #
+        # self.ship = ship
+        # if ship:
+        #     self.ship.state = self
+        #     self.ship.add()
+        # self.alien_factory = alien_factory
+        # if alien_factory:
+        #     self.alien_factory.state = self
+        #     self.alien_factory.add()
+        # self.missile_controller = missile_controller
+        # if missile_controller:
+        #     self.missile_controller.state = self
+        #     self.missile_controller.add()
+        #
+        # for shield in shields:
+        #     shield.state = self
+        #     shield.add()
+        # for missile in missiles:
+        #     missile.state = self
+        #     missile.add()
+        # for bullet in bullets:
+        #     bullet.state = self
+        #     bullet.add()
+        # for alien in aliens:
+        #     alien.state = self
+        #     alien.add()
+        #
+        # self.alien_bbox = self.calculate_alien_bbox()
 
     @staticmethod
     def from_game_state(game_state):
+        state = State()
         offset_x = 1
         offset_y = 12
-        round_number = game_state['RoundNumber']
-        round_limit = game_state['RoundLimit']
+        state.round_number = game_state['RoundNumber']
+        state.round_limit = game_state['RoundLimit']
         you = game_state['Players'][0]
-        player_number_real = you['PlayerNumberReal']
+        state.player_number_real = you['PlayerNumberReal']
         enemy = game_state['Players'][1]
-        kills = you['Kills']
-        enemy_has_spare_lives = enemy['Lives'] > 0
-        lives = you['Lives']
-        respawn_timer = you['RespawnTimer']
-        missile_limit = you['MissileLimit']
-        wave_size = enemy['AlienWaveSize']
+        state.kills = you['Kills']
+        state.enemy_has_spare_lives = enemy['Lives'] > 0
+        state.lives = you['Lives']
+        state.respawn_timer = you['RespawnTimer']
+        state.missile_limit = you['MissileLimit']
+        state.wave_size = enemy['AlienWaveSize']
         your_ship = you['Ship']
-        ship = None
         if your_ship:
-            ship = Ship(None, your_ship['X'] - offset_x, your_ship['Y'] - offset_y, 1)
+            Ship(state, your_ship['X'] - offset_x, your_ship['Y'] - offset_y, 1).add()
         your_alien_factory = you['AlienFactory']
-        alien_factory = None
+        state.alien_factory = None
         if your_alien_factory:
-            alien_factory = AlienFactory(None, your_alien_factory['X'] - offset_x, your_alien_factory['Y'] - offset_y, 1)
-        enemy_has_alien_factory = enemy['AlienFactory'] is None
+            AlienFactory(state, your_alien_factory['X'] - offset_x, your_alien_factory['Y'] - offset_y, 1).add()
+        state.enemy_has_alien_factory = enemy['AlienFactory'] is None
         your_missile_controller = you['MissileController']
-        missile_controller = None
         if your_missile_controller:
-            missile_controller = MissileController(None, your_missile_controller['X'] - offset_x, your_missile_controller['Y'] - offset_y, 1)
+            MissileController(state, your_missile_controller['X'] - offset_x, your_missile_controller['Y'] - offset_y, 1).add()
         alien_man = enemy['AlienManager']
-        aliens_delta_x = alien_man['DeltaX']
+        state.aliens_delta_x = alien_man['DeltaX']
         game_map = game_state['Map']
-        shields = []
-        bullets = []
-        missiles = []
-        aliens = []
         your_field_end_x = 18
         your_field_end_y = 25
         for row_index in reversed(range(offset_y, your_field_end_y)):
@@ -103,21 +100,18 @@ class State:
                 cell = game_map['Rows'][row_index][column_index]
                 if not cell:
                     continue
-
                 x = cell['X'] - offset_x
                 y = cell['Y'] - offset_y
                 if cell['Type'] == SHIELD:
-                    shields.append(Shield(None, x, y, 1))
+                    Shield(state, x, y, 1).add()
                 elif cell['Type'] == BULLET:
-                    shields.append(Bullet(None, x, y, 2))
+                    Bullet(state, x, y, 2).add()
                 elif cell['Type'] == ALIEN:
-                    alien = Alien(None, x, y, 2, cell['Id'])
-                    aliens.append(alien)
+                    Alien(state, x, y, 2, cell['Id']).add()
                 elif cell['Type'] == MISSILE:
-                    missiles.append(Missile(None, x, y, cell['PlayerNumber']))
-        return State(player_number_real, round_number, round_limit, kills, lives, respawn_timer, missile_limit, wave_size,
-                     ship, alien_factory, missile_controller, aliens_delta_x, aliens, shields, missiles, bullets,
-                     enemy_has_alien_factory, enemy_has_spare_lives)
+                    Missile(state, x, y, cell['PlayerNumber']).add()
+        state.update_bbox()
+        return state
 
     def in_bounds(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
@@ -136,7 +130,7 @@ class State:
 
     def get_entity(self, x, y):
         if self.in_bounds(x, y):
-            return self.playing_field[y][x]
+            return self.playing_field[PLAYING_FIELD_WIDTH * y + x]
         return None
 
     def add_entity(self, entity):
@@ -167,10 +161,10 @@ class State:
                 tracer_bullet = self.get_tracer_bullet(x, y)
                 if tracer_bullet:
                     entity.handle_collision(tracer_bullet)
-                self.playing_field[y][x] = entity
+                self.playing_field[PLAYING_FIELD_WIDTH * y + x] = entity
             elif action == 'remove':
                 if self.in_bounds(x, y):
-                    self.playing_field[y][x] = None
+                    self.playing_field[PLAYING_FIELD_WIDTH * y + x] = None
         return True
 
     def check_open(self, target_x, target_y, width):
@@ -402,6 +396,8 @@ class State:
         for alien in trigger_happy:
             alien.shoot_odds = 0.666 / len(trigger_happy)
 
+    # def __deepcopy__(self, memo):
+    #     pass
 
     def clone(self):
         return copy.deepcopy(self)
@@ -415,7 +411,7 @@ class State:
         for y in range(0, PLAYING_FIELD_HEIGHT):
             text += '+'
             for x in range(0, PLAYING_FIELD_WIDTH):
-                entity = playing_field[y][x]
+                entity = playing_field[PLAYING_FIELD_WIDTH * y + x]
                 symbol = ' '
                 if entity:
                     symbol = entity.symbol
@@ -465,6 +461,9 @@ class Shield(Entity):
     def __init__(self, state, x, y, player_number):
         Entity.__init__(self, state, x, y, SHIELD, SHIELD_SYMBOL, 1, player_number)
 
+    def add(self):
+        if Entity.add(self):
+            self.state.shields.append(self)
 
 class Alien(Entity):
     def __init__(self, state, x, y, player_number, alien_id=None):

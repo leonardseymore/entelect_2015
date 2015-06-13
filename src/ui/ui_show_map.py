@@ -3,7 +3,7 @@ from ui.widgets import *
 from ai.entelect import *
 from ai.strategy import *
 from ai.domain import *
-from bots.bot import *
+from ai.bot import *
 
 # scale up the renderer
 RENDER_SCALE_FACTOR = 32
@@ -164,7 +164,8 @@ class Application(Frame):
         menu.add_cascade(label='State', menu=state_menu)
 
         bot_menu = Menu(menu, tearoff=0)
-        for bot in all_bots:
+        for bot_key in BOTS:
+            bot = BOTS[bot_key]
             bot_menu.add_command(label=bot.name, command=lambda b=bot: self.print_bot(b))
         menu.add_cascade(label='Bots', menu=bot_menu)
 
