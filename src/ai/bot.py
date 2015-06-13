@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from ai.domain import *
 from ai.strategy import *
+import random
 
 
 class Bot:
@@ -10,6 +11,13 @@ class Bot:
     @abstractmethod
     def get_action(self, game_state):
         pass
+
+
+class BotRandom(Bot):
+    def get_action(self, game_state):
+        state = State.from_game_state(game_state)
+        return random.choice(state.get_available_actions())
+
 
 class BotHaywired(Bot):
     def get_action(self, game_state):
@@ -82,4 +90,4 @@ class BotHaywired(Bot):
             action = NOTHING
         return action
 
-all_bots = [BotHaywired()]
+BOTS = {'haywired': BotHaywired(), 'random': BotRandom()}

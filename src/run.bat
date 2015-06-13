@@ -1,1 +1,1 @@
-python main.py %1
+python -m ai.main haywired %1

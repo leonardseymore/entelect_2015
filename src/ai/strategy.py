@@ -1,6 +1,5 @@
 from ai.entelect import *
-from ai.treesearch import *
-
+import ai.search
 
 
 #
@@ -46,13 +45,14 @@ class Blackboard():
 # BEHAVIOR
 #
 
+
 # a task is an abstract node in a behavior tree
 class Task():
     def __init__(self, *children):
         self.children = children
 
     # abstract method to be implemented
-    def run(self, blackboard=None):
+    def run(self, blackboard):
         if DEBUG:
             print self
         return
@@ -118,11 +118,13 @@ class Inverter(Decorator):
     def __str__(self):
         return '~'
 
+
 class AlwaysTrue(Decorator):
     def run(self, blackboard=None):
         Task.run(self, blackboard)
         self.child.run(blackboard)
         return True
+
 
 # inject blackboard into child task
 class BlackboardManager(Decorator):
@@ -131,6 +133,7 @@ class BlackboardManager(Decorator):
         new_blackboard = Blackboard(blackboard)
         return self.child.run(new_blackboard)
 
+
 # domain specific
 class HasAlienFactory(Task):
     def run(self, blackboard):
@@ -138,11 +141,13 @@ class HasAlienFactory(Task):
         state = blackboard.get('state')
         return state.alien_factory is not None
 
+
 class HasMissileController(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.missile_controller is not None
+
 
 class HasSpareLives(Task):
     def run(self, blackboard):
@@ -150,17 +155,20 @@ class HasSpareLives(Task):
         state = blackboard.get('state')
         return state.lives > 0
 
+
 class HasShip(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.ship is not None
 
+
 class FirstWaveKilled(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.kills >= 3
+
 
 # this is only true at the beginning of the game
 class SetSafestBuildingLocation(Task):
@@ -181,11 +189,13 @@ class SetSafestBuildingLocation(Task):
             return True
         return False
 
+
 class AtLocation(Task):
     def run(self, blackboard):
         state = blackboard.get('state')
         loc = blackboard.get('loc')
         return state.ship.x == loc
+
 
 class SetLocation(Task):
     def __init__(self, loc, *children):
@@ -195,6 +205,7 @@ class SetLocation(Task):
     def run(self, blackboard):
         blackboard.set('loc', self.loc)
         return True
+
 
 class MoveToLocation(Task):
     def __init__(self, loc=None, *children):
@@ -218,6 +229,7 @@ class MoveToLocation(Task):
     def __str__(self):
         return 'MoveToLocation(%s)' % self.loc
 
+
 class IsMoveDangerous(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
@@ -225,12 +237,13 @@ class IsMoveDangerous(Task):
         next_state = state.clone()
         action = blackboard.get('action')
         next_state.update(action)
-        for i in range(0, 3): # predict i gonna move into bad situation
+        for i in range(0, 3):  # predict i gonna move into bad situation
             if not next_state.ship or next_state.lives < state.lives:
                 print 'Dangerous action %s' % action
                 return True
             next_state.update(NOTHING)
         return False
+
 
 class SetAction(Task):
     def __init__(self, action, *children):
@@ -242,17 +255,20 @@ class SetAction(Task):
         blackboard.set('action', self.action)
         return True
 
+
 class HasMissile(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         return len(state.missiles) < state.missile_limit
 
+
 class IsStartingRound(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.round_number == 0
+
 
 class Kill(Task):
     def run(self, blackboard=None):
@@ -273,12 +289,13 @@ class CanKill(Task):
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(SHOOT)
-        for i in range(0, 10): # predict missile up to spawn row
+        for i in range(0, 10):  # predict missile up to spawn row
             next_state.update(NOTHING)
             if next_state.kills > state.kills + len(state.missiles):
                 blackboard.set('kill_cost', i)
                 return True
         return False
+
 
 class CanShootBullet(Task):
     def __init__(self, dist=3, *children):
@@ -295,30 +312,20 @@ class CanShootBullet(Task):
                 return True
         return False
 
+
 class KillExtremity(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(SHOOT)
-        for i in range(0, 10): # predict missile up to spawn row
+        for i in range(0, 10):  # predict missile up to spawn row
             next_state.update(NOTHING)
             if next_state.extremity_kills > state.extremity_kills + len(state.missiles):
                 blackboard.set('kill_cost', i)
                 return True
         return False
 
-class KillFrontLine(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
-        state = blackboard.get('state')
-        next_state = state.clone()
-        next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
-        for i in range(0, 20):
-            for tracer_hit in next_state.tracer_hits:
-                pass
-            next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
-        return False
 
 class AtRound(Task):
     def __init__(self, round_number, *children):
@@ -333,6 +340,7 @@ class AtRound(Task):
     def __str__(self):
         return 'AtRound(%s)' % self.round_number
 
+
 class WaitTillRound(Task):
     def __init__(self, round_number, *children):
         Task.__init__(self, *children)
@@ -345,6 +353,7 @@ class WaitTillRound(Task):
 
     def __str__(self):
         return 'WaitTillRound(%s)' % self.round_number
+
 
 class SetTracer(Task):
     def __init__(self, *children):
@@ -366,7 +375,7 @@ class SetTracer(Task):
             return False
 
         # only choose to shoot 100% odd aliens
-        candidates = filter(lambda t: t.reach_dest_odds == 1.0, next_state.tracer_hits)
+        candidates = filter(lambda tr: tr.reach_dest_odds == 1.0, next_state.tracer_hits)
         if len(candidates) == 0:
             print 'No tracer candidates found'
             return False
@@ -376,18 +385,16 @@ class SetTracer(Task):
             print '%s' % candidate
         print state.ship
 
-
-
         tracer_hit = candidates[0]
         if not tracer_hit:
             return False
         blackboard.set('tracer', tracer_hit)
         return True
 
+
 class KillTracerNoWait(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
-        state = blackboard.get('state')
         if not SetTracer().run(blackboard):
             return False
         tracer = blackboard.get('tracer')
@@ -401,10 +408,10 @@ class KillTracerNoWait(Task):
             SetAction(SHOOT)
         ).run(blackboard)
 
+
 class KillTracer(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
-        state = blackboard.get('state')
         if not SetTracer().run(blackboard):
             return False
         tracer = blackboard.get('tracer')
@@ -418,11 +425,13 @@ class KillTracer(Task):
         ).run(blackboard)
         return True
 
+
 class IsInvasionImminent(Task):
     def run(self, blackboard):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         return state.alien_bbox['bottom'] > 7
+
 
 class SetMoveToFrontLineAvg(Task):
     def run(self, blackboard):
@@ -432,7 +441,7 @@ class SetMoveToFrontLineAvg(Task):
         count = 0
         next_state = state.clone()
         next_state.update(SHOOT)
-        for i in range(0, 10): # predict missile up to spawn row
+        for i in range(0, 10):  # predict missile up to spawn row
             next_state.update(NOTHING)
             for alien in next_state.aliens:
                 if alien.at_front_line:
@@ -448,36 +457,12 @@ class InDanger(Task):
         Task.run(self, blackboard)
         state = blackboard.get('state')
         next_state = state.clone()
-        for i in range(0, 4): # predict if bullet or missile gonna kill me
+        for i in range(0, 4):  # predict if bullet or missile gonna kill me
             if next_state.lives < state.lives:
                 return True
             next_state.update(NOTHING)
         return False
 
-class AvoidDanger(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
-        state = blackboard.get('state')
-
-        best_option = None
-        best_option_cost = -1
-        for option in [NOTHING, MOVE_LEFT, MOVE_RIGHT, SHOOT]:
-            next_state = state.clone()
-            next_state.update(option)
-            option_cost = 0
-            for i in range(0, 3): # predict if bullet or missile gonna kill me if i move left
-                if next_state.lives < state.lives:
-                    continue
-                option_cost += 1
-            if DEBUG:
-                print 'i %d option_cost %d' % (i, option_cost)
-            if best_option is None or best_option_cost > option_cost:
-                best_option = option
-                best_option_cost = option_cost
-        if DEBUG:
-            print 'Avoid danger by: %s' % best_option
-        blackboard.set('action', best_option)
-        return True
 
 class SearchBestAction(Task):
     def __init__(self, max_depth=3, include_tracers=False, include_loc=True, *children):
@@ -492,7 +477,7 @@ class SearchBestAction(Task):
         loc = None
         if self.include_loc:
             loc = blackboard.get('loc')
-        action = search_best_action(state, self.max_depth, self.include_tracers, loc)
+        action = ai.search.TreeSearchBestAction().search(state, self.max_depth, self.include_tracers, loc)
         if action:
             blackboard.set('action', action)
             return True
@@ -501,6 +486,7 @@ class SearchBestAction(Task):
 
     def __str__(self):
         return 'SearchBestAction(include_tracers=%s, max_depth=%s)' % (self.include_tracers, self.max_depth)
+
 
 class IsAlienTooClose(Task):
     def run(self, blackboard):
@@ -517,12 +503,13 @@ class IsAlienTooClose(Task):
             return True
 
         for x in range(next_state.ship.x - 1, next_state.ship.x + next_state.ship.width + 1):
-            for y in [next_state.ship.y -1, next_state.ship.y - 2]:
+            for y in [next_state.ship.y - 1, next_state.ship.y - 2]:
                 entity = next_state.get_entity(x, y)
                 if entity and entity.entity_type == ALIEN:
                     print 'Alien too close!', entity
                     return True
         return False
+
 
 class IsSoleSurvivor(Task):
     def run(self, blackboard):
@@ -530,5 +517,5 @@ class IsSoleSurvivor(Task):
         state = blackboard.get('state')
         return len(state.aliens) == 1
 
-strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True), IsInvasionImminent(), IsAlienTooClose(),
-              SetTracer()]
+strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True),
+              IsInvasionImminent(), IsAlienTooClose(), SetTracer()]

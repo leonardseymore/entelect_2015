@@ -2,6 +2,7 @@ from ai.entelect import *
 import copy
 import random
 
+
 class State:
     def __init__(self, player_number_real, round_number, round_limit, kills, lives, respawn_timer, missile_limit,
                  wave_size, ship, alien_factory, missile_controller, aliens_delta_x, aliens, shields, missiles, bullets,
@@ -532,6 +533,7 @@ class Alien(Entity):
                 if entity:
                     entity.destroy()
 
+
 class Bullet(Entity):
     def __init__(self, state, x, y, player_number):
         Entity.__init__(self, state, x, y, BULLET, BULLET_SYMBOL, 1, player_number)
@@ -557,6 +559,7 @@ class Bullet(Entity):
         Entity.destroy(self)
         if self in self.state.bullets:
             self.state.bullets.remove(self)
+
 
 class TracerBullet(Entity):
     def __init__(self, state, x, y, player_number, shoot_odds):
@@ -637,6 +640,7 @@ class Tracer(Entity):
     def __str__(self):
         return "%s@%d:%d - starting_round=%s, starting_x=%d, reach_dest_odds=%s, energy=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.reach_dest_odds, self.energy)
 
+
 class Missile(Entity):
     def __init__(self, state, x, y, player_number):
         Entity.__init__(self, state, x, y, MISSILE, MISSILE_PLAYER1_SYMBOL if player_number == 1 else MISSILE_PLAYER2_SYMBOL, 1, player_number)
@@ -650,7 +654,6 @@ class Missile(Entity):
         self.destroy()
 
     def handle_collision(self, other):
-        print self, other
         Entity.handle_collision(self, other)
         if other.entity_type == ALIEN and self.player_number != other.player_number:
             self.state.kills += 1
