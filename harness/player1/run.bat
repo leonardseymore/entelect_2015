@@ -1,1 +1,1 @@
-python -m ai.main random %1 
+python -m ai.main haywired %1 

@@ -1,5 +1,6 @@
 from ai.entelect import *
 import ai.search
+import logging
 
 
 #
@@ -38,7 +39,7 @@ class Blackboard():
 
         return tree
 
-    def __str__(self):
+    def __repr__(self):
         return '%s' % self.get_obj()
 
 #
@@ -50,14 +51,14 @@ class Blackboard():
 class Task():
     def __init__(self, *children):
         self.children = children
+        self.logger = logging.getLogger('strategy.%s' % self.__class__.__name__)
 
     # abstract method to be implemented
     def run(self, blackboard):
-        if DEBUG:
-            print self
+        self.logger.debug(self)
         return
 
-    def __str__(self):
+    def __repr__(self):
         return self.__class__.__name__
 
 
@@ -70,7 +71,7 @@ class Selector(Task):
                 return True
         return False
 
-    def __str__(self):
+    def __repr__(self):
         return '?'
 
 
@@ -83,7 +84,7 @@ class Sequence(Task):
                 return False
         return True
 
-    def __str__(self):
+    def __repr__(self):
         return '->'
 
 
@@ -115,7 +116,7 @@ class Inverter(Decorator):
         Task.run(self, blackboard)
         return not self.child.run(blackboard)
 
-    def __str__(self):
+    def __repr__(self):
         return '~'
 
 
@@ -226,7 +227,7 @@ class MoveToLocation(Task):
             return True
         return False
 
-    def __str__(self):
+    def __repr__(self):
         return 'MoveToLocation(%s)' % self.loc
 
 
@@ -239,7 +240,7 @@ class IsMoveDangerous(Task):
         next_state.update(action)
         for i in range(0, 3):  # predict i gonna move into bad situation
             if not next_state.ship or next_state.lives < state.lives:
-                print 'Dangerous action %s' % action
+                self.logger.debug('Dangerous action %s', action)
                 return True
             next_state.update(NOTHING)
         return False
@@ -337,7 +338,7 @@ class AtRound(Task):
         state = blackboard.get('state')
         return state.round_number == self.round_number
 
-    def __str__(self):
+    def __repr__(self):
         return 'AtRound(%s)' % self.round_number
 
 
@@ -351,7 +352,7 @@ class WaitTillRound(Task):
         state = blackboard.get('state')
         return state.round_number >= self.round_number
 
-    def __str__(self):
+    def __repr__(self):
         return 'WaitTillRound(%s)' % self.round_number
 
 
@@ -365,25 +366,24 @@ class SetTracer(Task):
         next_state = state.clone()
         for i in range(0, 10):
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
-            print next_state
+            self.logger.debug(next_state)
 
         for t in next_state.tracer_hits:
-            print '%s' % t
+            self.logger.debug('%s', t)
 
         if len(next_state.tracer_hits) == 0:
-            print 'No tracer hits found'
+            self.logger.debug('No tracer hits found')
             return False
 
         # only choose to shoot 100% odd aliens
         candidates = filter(lambda tr: tr.reach_dest_odds == 1.0, next_state.tracer_hits)
         if len(candidates) == 0:
-            print 'No tracer candidates found'
+            self.logger.debug('No tracer candidates found')
             return False
-        print 'CANDIDATES'
         candidates = sorted(candidates, key=lambda c: (abs(state.ship.x - t.starting_x) + t.energy))
         for candidate in candidates:
-            print '%s' % candidate
-        print state.ship
+            self.logger.debug('Candidate %s', candidate)
+        self.logger.debug('Ship %s', state.ship)
 
         tracer_hit = candidates[0]
         if not tracer_hit:
@@ -484,7 +484,7 @@ class SearchBestAction(Task):
         else:
             return False
 
-    def __str__(self):
+    def __repr__(self):
         return 'SearchBestAction(include_tracers=%s, max_depth=%s)' % (self.include_tracers, self.max_depth)
 
 
@@ -506,7 +506,7 @@ class IsAlienTooClose(Task):
             for y in [next_state.ship.y - 1, next_state.ship.y - 2]:
                 entity = next_state.get_entity(x, y)
                 if entity and entity.entity_type == ALIEN:
-                    print 'Alien too close!', entity
+                    self.logger.debug('Alien too close! %s', entity)
                     return True
         return False
 

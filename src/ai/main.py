@@ -5,6 +5,7 @@ import logging
 import logging.config
 import StringIO
 import sys
+import time
 import yaml
 
 module_logger = logging.getLogger('main')
@@ -34,8 +35,8 @@ class Main:
         return s.getvalue()
 
     def run(self):
-        if self.config['logging']:
-            logging.config.fileConfig('logging.conf')
+        start = time.time()
+        logging.config.fileConfig('logging.conf')
         module_logger.debug('Using configuration: %s', self.config)
 
         if self.config['profile']:
@@ -46,11 +47,13 @@ class Main:
         if self.bot:
             bot = BOTS[self.bot]
         action = bot.get_action(game_state)
-        print 'Bot: %s, Round: %d, Action:%s' % (bot.name, game_state['RoundNumber'], action)
-        write_move(action)
 
+        write_move(action)
         if self.config['profile']:
             print self.stop_profiler()
+        end = time.time()
+        print 'Bot: %s, Round: %d, Action:%s in %.3f seconds' % \
+              (bot.name, game_state['RoundNumber'], action, time.time() - start)
 
 if __name__ == "__main__":
     Main(sys.argv[1:]).run()
