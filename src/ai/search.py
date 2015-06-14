@@ -22,6 +22,7 @@ class TreeSearchBestAction:
         result -= state.alien_bbox['bottom']
         if state.ship:
             if include_tracers:
+                print 'SHOT', state.ship.get_shot_odds
                 if state.ship.get_shot_odds > 0:
                     result -= 200
             result += 100
@@ -47,7 +48,7 @@ class TreeSearchBestAction:
             new_state.update(action, include_tracers, starting_round)
             actions.append(action)
 
-            self.logger.debug('%s\n%s %s\n%s', '-' * 19, self.evaluate(new_state, include_tracers, loc),
+            self.logger.debug('\n%s %s\n%s', self.evaluate(new_state, include_tracers, loc),
                               ' -> '.join(actions), new_state)
             current_score, current_action = self.search_recurse(new_state, starting_round, max_depth, include_tracers,
                                                                 current_depth + 1, actions, loc)

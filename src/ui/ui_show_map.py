@@ -4,6 +4,8 @@ from ai.entelect import *
 from ai.strategy import *
 from ai.domain import *
 from ai.bot import *
+import logging
+import logging.config
 
 # scale up the renderer
 RENDER_SCALE_FACTOR = 32
@@ -68,8 +70,9 @@ class Application(Frame):
     def print_strategy(self, strategy):
         blackboard = Blackboard()
         blackboard.set('state', State.from_game_state(self.game_state))
-        result = strategy.run(blackboard)
-        print 'Result: %s, Blackboard: %s' % (result, blackboard)
+        flow = []
+        result = strategy.run(blackboard, flow)
+        print 'Result: %s, Flow: %s' % (result, ' '.join(str(f) for f in flow))
 
     # file dialog to load game state file
     def load_state_file(self, filename):
@@ -301,6 +304,8 @@ class LayerLabels(LayerCellBase):
         if not symbol == WALL_SYMBOL:
             label = canvas.create_text(left + RENDER_SCALE_FACTOR / 2, top + RENDER_SCALE_FACTOR / 2, text=symbol, state=DISABLED)
             self.labels.append(label)
+
+logging.config.fileConfig('logging.conf')
 
 # boostrap application
 root = Tk()

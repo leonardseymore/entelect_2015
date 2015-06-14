@@ -27,6 +27,8 @@ class State:
         self.alien_factory = None
         self.missile_controller = None
 
+        self.alien_bbox = None
+
         self.shields = []
         self.missiles = []
         self.bullets = []
@@ -34,34 +36,7 @@ class State:
         self.tracers = []
         self.tracer_bullets = []
         self.tracer_hits = []
-        #
-        # self.ship = ship
-        # if ship:
-        #     self.ship.state = self
-        #     self.ship.add()
-        # self.alien_factory = alien_factory
-        # if alien_factory:
-        #     self.alien_factory.state = self
-        #     self.alien_factory.add()
-        # self.missile_controller = missile_controller
-        # if missile_controller:
-        #     self.missile_controller.state = self
-        #     self.missile_controller.add()
-        #
-        # for shield in shields:
-        #     shield.state = self
-        #     shield.add()
-        # for missile in missiles:
-        #     missile.state = self
-        #     missile.add()
-        # for bullet in bullets:
-        #     bullet.state = self
-        #     bullet.add()
-        # for alien in aliens:
-        #     alien.state = self
-        #     alien.add()
-        #
-        # self.alien_bbox = self.calculate_alien_bbox()
+
 
     @staticmethod
     def from_game_state(game_state):
@@ -83,7 +58,6 @@ class State:
         if your_ship:
             Ship(state, your_ship['X'] - offset_x, your_ship['Y'] - offset_y, 1).add()
         your_alien_factory = you['AlienFactory']
-        state.alien_factory = None
         if your_alien_factory:
             AlienFactory(state, your_alien_factory['X'] - offset_x, your_alien_factory['Y'] - offset_y, 1).add()
         state.enemy_has_alien_factory = enemy['AlienFactory'] is None
@@ -320,8 +294,7 @@ class State:
                 if entity and entity.entity_type == SHIELD:
                     continue
                 if abs(self.ship.x + 1 - x) < self.round_number - tracer_starting_round:
-                    tracer = Tracer(self, x, y, 1, self.round_number, x)
-                    tracer.add()
+                    Tracer(self, x, y, 1, self.round_number, x).add()
 
         # Update aliens, executing their move & shoot orders
         for alien in self.aliens[:]:
@@ -345,7 +318,7 @@ class State:
             return self.shoot_at_random()
 
     def shoot_at_player(self):
-        front_line = filter(lambda alien: alien.at_front_line, self.aliens)
+        front_line = filter(lambda a: a.at_front_line, self.aliens)
         closest_alien = None
         closest_distance = 100
         target_x = PLAYING_FIELD_WIDTH / 2
@@ -372,10 +345,10 @@ class State:
             return None
         second_line_y = self.alien_bbox['bottom'] - 2
         aliens = []
-        front_line = filter(lambda alien: alien.at_front_line, self.aliens)
+        front_line = filter(lambda a: a.at_front_line, self.aliens)
         for alien in front_line:
             aliens.append(alien)
-        second_line = filter(lambda alien: alien.y == second_line_y, self.aliens)
+        second_line = filter(lambda a: a.y == second_line_y, self.aliens)
         for alien in second_line:
             entity_in_front = self.get_entity(alien.x, alien.y + 2)
             if entity_in_front is None or entity_in_front.entity_type != ALIEN:
@@ -411,7 +384,7 @@ class State:
         for y in range(0, PLAYING_FIELD_HEIGHT):
             text += '+'
             for x in range(0, PLAYING_FIELD_WIDTH):
-                entity = playing_field[PLAYING_FIELD_WIDTH * y + x]
+                entity = self.get_entity(x, y)
                 symbol = ' '
                 if entity:
                     symbol = entity.symbol
@@ -487,8 +460,7 @@ class Alien(Entity):
         self.behind_shield = behind_shield
 
         if self.shoot_odds > 0:
-            tracer_bullet = TracerBullet(self.state, self.x, self.y + 1, 2, self.shoot_odds)
-            tracer_bullet.add()
+            TracerBullet(self.state, self.x, self.y + 1, 2, self.shoot_odds).add()
 
     def add(self):
         if Entity.add(self):
@@ -547,8 +519,6 @@ class Bullet(Entity):
 
     def handle_collision(self, other):
         Entity.handle_collision(self, other)
-        if other.entity_type == TRACER_BULLET:
-            other.reach_dest_odds = 0.0
 
     def add(self):
         if Entity.add(self):
@@ -578,13 +548,12 @@ class TracerBullet(Entity):
 
     def handle_collision(self, other):
         other.get_shot_odds += self.shoot_odds
-        if other.entity_type == TRACER:
-            other.reach_dest_odds -= self.shoot_odds
-        elif (other.entity_type == MISSILE or other.entity_type == BULLET) and other.player_number != self.player_number:
-            other.reach_dest_odds = 0.0
 
     def add(self):
         self.state.tracer_bullets.append(self)
+        entity = self.state.get_entity(self.x, self.y)
+        if entity:
+            entity.get_shot_odds += self.shoot_odds
 
     def destroy(self):
         if self in self.state.tracer_bullets:
@@ -599,7 +568,6 @@ class Tracer(Entity):
         self.delta_y = -1 if player_number == 1 else 1
         self.starting_round = starting_round
         self.starting_x = starting_x
-        self.reach_dest_odds = 1.0
         self.energy = 0
         self.alien = None
 
@@ -616,9 +584,9 @@ class Tracer(Entity):
             self.state.tracer_hits.append(self)
             self.alien = other
         elif other.entity_type == BULLET:
-            self.reach_dest_odds = 0.0
+            self.get_shot_odds = 0.0
         elif other.entity_type == TRACER_BULLET:
-            self.reach_dest_odds -= other.shoot_odds
+            self.get_shot_odds += other.shoot_odds
         else:
             self.destroy()
 
@@ -637,7 +605,7 @@ class Tracer(Entity):
         return self.starting_x == other.starting_x and self.starting_round == other.starting_round
 
     def __str__(self):
-        return "%s@%d:%d - starting_round=%s, starting_x=%d, reach_dest_odds=%s, energy=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.reach_dest_odds, self.energy)
+        return "%s@%d:%d - starting_round=%s, starting_x=%d, energy=%s, get_shot_odds=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.energy, self.get_shot_odds)
 
 
 class Missile(Entity):

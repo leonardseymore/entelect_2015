@@ -54,8 +54,8 @@ class Task():
         self.logger = logging.getLogger('strategy.%s' % self.__class__.__name__)
 
     # abstract method to be implemented
-    def run(self, blackboard):
-        self.logger.debug(self)
+    def run(self, blackboard, flow):
+        flow.append(self)
         return
 
     def __repr__(self):
@@ -64,10 +64,10 @@ class Task():
 
 # selector runs children until a child evals to true
 class Selector(Task):
-    def run(self, blackboard=None):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         for c in self.children:
-            if c.run(blackboard):
+            if c.run(blackboard, flow):
                 return True
         return False
 
@@ -77,10 +77,10 @@ class Selector(Task):
 
 # sequence runs children until a child evals to false
 class Sequence(Task):
-    def run(self, blackboard=None):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         for c in self.children:
-            if not c.run(blackboard):
+            if not c.run(blackboard, flow):
                 return False
         return True
 
@@ -102,8 +102,8 @@ class Limit(Decorator):
         self.run_limit = run_limit
         self.run_so_far = 0
 
-    def run(self, blackboard=None):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         if self.run_so_far >= self.run_limit:
             return False
         self.run_so_far += 1
@@ -112,69 +112,69 @@ class Limit(Decorator):
 
 # flip the return value of task
 class Inverter(Decorator):
-    def run(self, blackboard=None):
-        Task.run(self, blackboard)
-        return not self.child.run(blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        return not self.child.run(blackboard, flow)
 
     def __repr__(self):
         return '~'
 
 
 class AlwaysTrue(Decorator):
-    def run(self, blackboard=None):
-        Task.run(self, blackboard)
-        self.child.run(blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        self.child.run(blackboard, flow)
         return True
 
 
 # inject blackboard into child task
 class BlackboardManager(Decorator):
-    def run(self, blackboard=None):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         new_blackboard = Blackboard(blackboard)
         return self.child.run(new_blackboard)
 
 
 # domain specific
 class HasAlienFactory(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.alien_factory is not None
 
 
 class HasMissileController(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.missile_controller is not None
 
 
 class HasSpareLives(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.lives > 0
 
 
 class HasShip(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.ship is not None
 
 
 class FirstWaveKilled(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.kills >= 3
 
 
 # this is only true at the beginning of the game
 class SetSafestBuildingLocation(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         if state.player_number_real == 2:
             safe_locs = [1, PLAYING_FIELD_WIDTH - 4]
@@ -192,7 +192,7 @@ class SetSafestBuildingLocation(Task):
 
 
 class AtLocation(Task):
-    def run(self, blackboard):
+    def run(self, blackboard, flow):
         state = blackboard.get('state')
         loc = blackboard.get('loc')
         return state.ship.x == loc
@@ -203,7 +203,7 @@ class SetLocation(Task):
         Task.__init__(self, *children)
         self.loc = loc
 
-    def run(self, blackboard):
+    def run(self, blackboard, flow):
         blackboard.set('loc', self.loc)
         return True
 
@@ -213,8 +213,8 @@ class MoveToLocation(Task):
         Task.__init__(self, *children)
         self.loc = loc
 
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         loc = self.loc
         if not loc:
@@ -232,14 +232,14 @@ class MoveToLocation(Task):
 
 
 class IsMoveDangerous(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
         action = blackboard.get('action')
         next_state.update(action)
         for i in range(0, 3):  # predict i gonna move into bad situation
-            if not next_state.ship or next_state.lives < state.lives:
+            if not next_state.ship or next_state.lives < state.lives or next_state.ship.get_shot_odds > 0.0:
                 self.logger.debug('Dangerous action %s', action)
                 return True
             next_state.update(NOTHING)
@@ -251,29 +251,29 @@ class SetAction(Task):
         Task.__init__(self, *children)
         self.action = action
 
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         blackboard.set('action', self.action)
         return True
 
 
 class HasMissile(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return len(state.missiles) < state.missile_limit
 
 
 class IsStartingRound(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.round_number == 0
 
 
 class Kill(Task):
-    def run(self, blackboard=None):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         return Sequence(
             Selector(
                 IsStartingRound(),
@@ -285,8 +285,8 @@ class Kill(Task):
 
 
 class CanKill(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(SHOOT)
@@ -303,8 +303,8 @@ class CanShootBullet(Task):
         Task.__init__(self, *children)
         self.dist = dist
 
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         x = state.ship.x + 1
         for y in range(state.ship.y - self.dist, state.ship.y):
@@ -315,8 +315,8 @@ class CanShootBullet(Task):
 
 
 class KillExtremity(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(SHOOT)
@@ -333,8 +333,8 @@ class AtRound(Task):
         Task.__init__(self, *children)
         self.round_number = round_number
 
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.round_number == self.round_number
 
@@ -347,8 +347,8 @@ class WaitTillRound(Task):
         Task.__init__(self, *children)
         self.round_number = round_number
 
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.round_number >= self.round_number
 
@@ -360,13 +360,13 @@ class SetTracer(Task):
     def __init__(self, *children):
         Task.__init__(self, *children)
 
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
-        for i in range(0, 10):
+        for i in range(0, 12):
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
-            self.logger.debug(next_state)
+            self.logger.debug('Next state\n%s', next_state)
 
         for t in next_state.tracer_hits:
             self.logger.debug('%s', t)
@@ -376,7 +376,7 @@ class SetTracer(Task):
             return False
 
         # only choose to shoot 100% odd aliens
-        candidates = filter(lambda tr: tr.reach_dest_odds == 1.0, next_state.tracer_hits)
+        candidates = filter(lambda tr: tr.get_shot_odds == 0.0, next_state.tracer_hits)
         if len(candidates) == 0:
             self.logger.debug('No tracer candidates found')
             return False
@@ -393,9 +393,9 @@ class SetTracer(Task):
 
 
 class KillTracerNoWait(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
-        if not SetTracer().run(blackboard):
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        if not SetTracer().run(blackboard, flow):
             return False
         tracer = blackboard.get('tracer')
         loc = tracer.starting_x - 1
@@ -406,13 +406,13 @@ class KillTracerNoWait(Task):
             AtLocation(),
             AtRound(tracer.starting_round - 1),
             SetAction(SHOOT)
-        ).run(blackboard)
+        ).run(blackboard, flow)
 
 
 class KillTracer(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
-        if not SetTracer().run(blackboard):
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        if not SetTracer().run(blackboard, flow):
             return False
         tracer = blackboard.get('tracer')
         loc = tracer.starting_x - 1
@@ -422,20 +422,20 @@ class KillTracer(Task):
             WaitTillRound(tracer.starting_round - 1),
             HasMissile(),
             SetAction(SHOOT)
-        ).run(blackboard)
+        ).run(blackboard, flow)
         return True
 
 
 class IsInvasionImminent(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return state.alien_bbox['bottom'] > 7
 
 
 class SetMoveToFrontLineAvg(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         total = 0
         count = 0
@@ -453,14 +453,17 @@ class SetMoveToFrontLineAvg(Task):
 
 
 class InDanger(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
         for i in range(0, 4):  # predict if bullet or missile gonna kill me
-            if next_state.lives < state.lives:
+            print next_state
+            if next_state.lives < state.lives or next_state.ship.get_shot_odds > 0.0:
+                print 'AKSJDH'
                 return True
             next_state.update(NOTHING)
+
         return False
 
 
@@ -471,8 +474,8 @@ class SearchBestAction(Task):
         self.include_tracers = include_tracers
         self.include_loc = include_loc
 
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         loc = None
         if self.include_loc:
@@ -482,6 +485,7 @@ class SearchBestAction(Task):
             blackboard.set('action', action)
             return True
         else:
+            print 'BEST ACTION', action
             return False
 
     def __repr__(self):
@@ -489,8 +493,8 @@ class SearchBestAction(Task):
 
 
 class IsAlienTooClose(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(NOTHING)
@@ -512,10 +516,10 @@ class IsAlienTooClose(Task):
 
 
 class IsSoleSurvivor(Task):
-    def run(self, blackboard):
-        Task.run(self, blackboard)
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return len(state.aliens) == 1
 
 strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True),
-              IsInvasionImminent(), IsAlienTooClose(), SetTracer()]
+              IsInvasionImminent(), IsAlienTooClose(), SetTracer(), IsMoveDangerous()]

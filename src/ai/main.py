@@ -51,7 +51,6 @@ class Main:
         write_move(action)
         if self.config['profile']:
             print self.stop_profiler()
-        end = time.time()
         print 'Bot: %s, Round: %d, Action:%s in %.3f seconds' % \
               (bot.name, game_state['RoundNumber'], action, time.time() - start)
 
