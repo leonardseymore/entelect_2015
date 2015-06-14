@@ -9,21 +9,22 @@ class Bot:
         self.name = self.__class__.__name__
         self.logger = logging.getLogger('bot.%s' % self.name)
 
-    @abstractmethod
     def get_action(self, game_state):
+        state = State.from_game_state(game_state)
+        return self.get_action_from_state(state)
+
+    @abstractmethod
+    def get_action_from_state(self, state):
         pass
 
 
 class BotRandom(Bot):
-    def get_action(self, game_state):
-        state = State.from_game_state(game_state)
+    def get_action_from_state(self, state):
         return random.choice(state.get_available_actions())
 
 
 class BotHaywired(Bot):
-    def get_action(self, game_state):
-        state = State.from_game_state(game_state)
-
+    def get_action_from_state(self, state):
         blackboard = Blackboard()
         blackboard.set('state', state)
 

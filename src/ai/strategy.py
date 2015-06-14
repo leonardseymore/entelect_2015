@@ -1,6 +1,6 @@
 from ai.entelect import *
-import ai.search
 import logging
+import sys
 
 
 #
@@ -410,11 +410,18 @@ class KillTracerNoWait(Task):
 
 
 class KillTracer(Task):
+    def __init__(self, tracer=None, *children):
+        Task.__init__(self, *children)
+        self.tracer = tracer
+
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
-        if not SetTracer().run(blackboard, flow):
-            return False
-        tracer = blackboard.get('tracer')
+        if not self.tracer:
+            if not SetTracer().run(blackboard, flow):
+                return False
+            tracer = blackboard.get('tracer')
+        else:
+            tracer = self.tracer
         loc = tracer.starting_x - 1
         blackboard.set('loc', loc)
         Sequence(
@@ -458,9 +465,7 @@ class InDanger(Task):
         state = blackboard.get('state')
         next_state = state.clone()
         for i in range(0, 4):  # predict if bullet or missile gonna kill me
-            print next_state
             if next_state.lives < state.lives or next_state.ship.get_shot_odds > 0.0:
-                print 'AKSJDH'
                 return True
             next_state.update(NOTHING)
 
@@ -480,12 +485,11 @@ class SearchBestAction(Task):
         loc = None
         if self.include_loc:
             loc = blackboard.get('loc')
-        action = ai.search.TreeSearchBestAction().search(state, self.max_depth, self.include_tracers, loc)
+        action = TREE_SEARCH.search(state, self.max_depth, self.include_tracers, loc)
         if action:
             blackboard.set('action', action)
             return True
         else:
-            print 'BEST ACTION', action
             return False
 
     def __repr__(self):
@@ -523,3 +527,146 @@ class IsSoleSurvivor(Task):
 
 strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True),
               IsInvasionImminent(), IsAlienTooClose(), SetTracer(), IsMoveDangerous()]
+
+class TreeSearchBestAction:
+    def __init__(self):
+        self.logger = logging.getLogger('search.TreeSearchBestAction')
+
+    @staticmethod
+    def evaluate(state, include_tracers, loc):
+        result = 0
+        result += state.lives * 5
+        result += state.kills * 2
+        if state.missile_controller:
+            result += 10
+        if state.alien_factory:
+            result += 10
+        result -= len(state.missiles)
+        result -= state.alien_bbox['bottom']
+        if state.ship:
+            if include_tracers:
+                if state.ship.get_shot_odds > 0:
+                    result -= 200
+            result += 100
+            if state.ship.x > 3 or state.ship.x < 11:
+                result += 1000
+            if loc:
+                result -= abs(state.ship.x - loc)
+        return result
+
+    def search(self, state, max_depth, include_tracers=False, loc=None):
+        self.logger.debug('Starting state %s\n%s', self.evaluate(state, include_tracers, loc), state)
+        return self.search_recurse(state, state.round_number, max_depth, include_tracers, 0, [], loc)[1]
+
+    def search_recurse(self, state, starting_round, max_depth, include_tracers, current_depth, actions, loc):
+        if state.lives < 0 or current_depth == max_depth:
+            return self.evaluate(state, include_tracers, loc), None
+
+        best_action = None
+        best_score = -sys.maxint
+
+        for i, action in enumerate(state.get_available_evade_actions()):
+            new_state = state.clone()
+            new_state.update(action, include_tracers, starting_round)
+            actions.append(action)
+
+            self.logger.debug('\n%s %s\n%s', self.evaluate(new_state, include_tracers, loc),
+                              ' -> '.join(actions), new_state)
+            current_score, current_action = self.search_recurse(new_state, starting_round, max_depth, include_tracers,
+                                                                current_depth + 1, actions, loc)
+            actions.pop()
+
+            if not new_state.ship:
+                return best_score, None
+
+            if current_score > best_score:
+                best_score = current_score
+                best_action = action
+
+        self.logger.debug('Best tree search action: depth=%s score=%s action=%s',
+                          current_depth + 1, best_score, best_action)
+        return best_score, best_action
+
+
+class MctsBestAction:
+    def __init__(self):
+        self.logger = logging.getLogger('search.MctsBestAction')
+
+    def search(self, state): # TODO: timeout?
+        self.simulate(state)
+
+    def simulate(self, state):
+        next_state = state.clone()
+
+        while next_state.lives >= 0 and next_state.round_number < next_state.round_limit:
+            action = self.get_action(next_state, None)
+            next_state.update(action) #TODO: sim bullets?
+
+    def get_action(self, state, tracer):
+        blackboard = Blackboard()
+        blackboard.set('state', state)
+
+        def build(build_action):
+            build_behavior = Sequence(
+                SetSafestBuildingLocation(),
+                Selector(
+                    Sequence(
+                        Inverter(AtLocation()),
+                        Inverter(MoveToLocation())
+                    ),
+                    SetAction(build_action)
+                )
+            )
+            return build_behavior
+
+        behavior = Selector(
+            Sequence(
+                Inverter(HasShip()),
+                SetAction(NOTHING)
+            ),
+            Sequence(
+                InDanger(),
+                SearchBestAction(4, True)
+            ),
+            Sequence(
+                Selector(
+                    Sequence(
+                        HasSpareLives(),
+                        Selector(
+                            Sequence(
+                                # Inverter(IsSoleSurvivor()),
+                                KillTracerNoWait()
+                            ),
+                            Sequence(
+                                Inverter(HasMissileController()),
+                                build(BUILD_MISSILE_CONTROLLER)
+                            ),
+                            Sequence(
+                                Inverter(HasAlienFactory()),
+                                build(BUILD_ALIEN_FACTORY)
+                            )
+                        )
+                    ),
+                    Sequence(
+                        KillTracer(),
+                    ),
+                ),
+                Sequence(
+                    IsMoveDangerous(),
+                    SearchBestAction(4)
+                )
+            )
+        )
+
+        flow = []
+        behavior.run(blackboard, flow)
+        action = blackboard.get('action')
+        self.logger.debug('Flow: %s' % ' '.join(str(f) for f in flow))
+
+        if not action:
+            action = NOTHING
+        return action
+
+TREE_SEARCH = TreeSearchBestAction()
+MCTS_SEARCH = MctsBestAction()
+SEARCH = {'tree': TREE_SEARCH, 'mcts': MCTS_SEARCH}

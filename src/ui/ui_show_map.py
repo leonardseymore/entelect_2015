@@ -56,12 +56,12 @@ class Application(Frame):
         print State.from_game_state(self.game_state)
 
     def print_best_action(self):
-        action = search_best_action(State.from_game_state(self.game_state), 5)
+        action = TREE_SEARCH.search(State.from_game_state(self.game_state), 5)
         print 'Best action: %s' % action
 
-    def print_best_candidate(self):
-        candidate = search_best_candidate(State.from_game_state(self.game_state), 5)
-        print 'Best candidate: %s' % candidate
+    def print_mcts(self):
+        candidate = MCTS_SEARCH.search(State.from_game_state(self.game_state))
+        print 'Mcts: %s' % candidate
 
     def print_bot(self, bot):
         action = bot.get_action(self.game_state)
@@ -163,7 +163,7 @@ class Application(Frame):
         state_menu.add_command(label="Print Predict 10 States", command=self.predict_states10)
         state_menu.add_command(label="Print Playing Field", command=self.print_playing_field)
         state_menu.add_command(label="Print Best Action", command=self.print_best_action)
-        state_menu.add_command(label="Print Best Candidate", command=self.print_best_candidate)
+        state_menu.add_command(label="Print MCTS", command=self.print_mcts)
         menu.add_cascade(label='State', menu=state_menu)
 
         bot_menu = Menu(menu, tearoff=0)
