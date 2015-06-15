@@ -108,6 +108,11 @@ class State:
     def add_entity(self, entity):
         return self.traverse_map('add', entity, entity.x, entity.y)
 
+    def add_entity_unsafe(self, entity):
+        if entity:
+            for x in range(entity.x, entity.x + entity.entity_behavior.width):
+                self.playing_field[PLAYING_FIELD_WIDTH * entity.y + x] = entity
+
     def remove_entity(self, entity):
         self.traverse_map('remove', entity, entity.x, entity.y)
 
@@ -378,11 +383,16 @@ class State:
         state.bullets = copy.deepcopy(self.bullets)
         state.missiles = copy.deepcopy(self.missiles)
         state.aliens = copy.deepcopy(self.aliens)
+        state.tracers = copy.deepcopy(self.tracers)
+        state.tracer_bullets = copy.deepcopy(self.tracer_bullets)
 
         state.playing_field = [None] * (PLAYING_FIELD_WIDTH * PLAYING_FIELD_HEIGHT)
-        state.ship.add(state)
-        state.missile_controller.add(state)
-        state.alien_factory.add(state)
+        state.add_entity_unsafe(state.ship)
+        state.add_entity_unsafe(state.missile_controller)
+        state.add_entity_unsafe(state.alien_factory)
+
+        for entity in state.shields + state.bullets + state.missiles + state.aliens + state.tracers:
+            state.add_entity_unsafe(entity)
 
         state.update_bbox()
         return state
@@ -432,8 +442,8 @@ class EntityBehavior:
         if other.entity_behavior.entity_type == TRACER_BULLET:
             entity.get_shot_odds += other.shoot_odds
             return
-        self.destroy(state, entity)
-        self.destroy(state, other)
+        entity.destroy(state)
+        other.destroy(state)
 
     def __str__(self):
         return self.__class__.__name__
@@ -549,6 +559,7 @@ class TracerBulletBehavior(EntityBehavior):
             other.get_shot_odds += entity.shoot_odds
 
     def destroy(self, state, entity):
+        EntityBehavior.destroy(self, state, entity)
         if entity in state.tracer_bullets:
             state.tracer_bullets.remove(entity)
 TRACER_BULLET_BEHAVIOR = TracerBulletBehavior()
@@ -582,6 +593,7 @@ class TracerBehavior(EntityBehavior):
             state.tracers.append(entity)
 
     def destroy(self, state, entity):
+        EntityBehavior.destroy(self, state, entity)
         if entity in state.tracers:
             state.tracers.remove(entity)
 TRACER_BEHAVIOR = TracerBehavior()

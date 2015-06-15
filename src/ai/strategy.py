@@ -467,7 +467,7 @@ class InDanger(Task):
         for i in range(0, 4):  # predict if bullet or missile gonna kill me
             if next_state.lives < state.lives or next_state.ship.get_shot_odds > 0.0:
                 return True
-            next_state.update(NOTHING)
+            next_state.update(NOTHING, True, state.round_number)
 
         return False
 
