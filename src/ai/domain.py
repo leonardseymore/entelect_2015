@@ -2,6 +2,15 @@ from ai.entelect import *
 import copy
 import random
 
+class Box:
+    __slots__ = ['top', 'right', 'bottom', 'left']
+
+    def __init__(self):
+        self.top = -1
+        self.right = -1
+        self.bottom = -1
+        self.left = -1
+
 
 class State:
     def __init__(self):
@@ -67,8 +76,8 @@ class State:
         game_map = game_state['Map']
         your_field_end_x = 18
         your_field_end_y = 25
-        for row_index in reversed(range(offset_y, your_field_end_y)):
-            for column_index in reversed(range(offset_x, your_field_end_x)):
+        for row_index in reversed(xrange(offset_y, your_field_end_y)):
+            for column_index in reversed(xrange(offset_x, your_field_end_x)):
                 cell = game_map['Rows'][row_index][column_index]
                 if not cell:
                     continue
@@ -86,7 +95,7 @@ class State:
         return state
 
     def in_bounds(self, x, y):
-        return 0 <= x < self.width and 0 <= y < self.height
+        return 0 <= y < PLAYING_FIELD_HEIGHT and 0 <= x < PLAYING_FIELD_WIDTH
 
     def is_tracer_bullet_x(self, x):
         for tracer_bullet in self.tracer_bullets:
@@ -110,7 +119,7 @@ class State:
 
     def add_entity_unsafe(self, entity):
         if entity:
-            for x in range(entity.x, entity.x + entity.entity_behavior.width):
+            for x in xrange(entity.x, entity.x + entity.entity_behavior.width):
                 self.playing_field[PLAYING_FIELD_WIDTH * entity.y + x] = entity
 
     def remove_entity(self, entity):
@@ -127,7 +136,7 @@ class State:
         if not in_bounds and not action == 'remove':
             entity.handle_out_of_bounds(self, target_y >= self.height)
             return False
-        for x in range(target_x, target_x + entity.entity_behavior.width):
+        for x in xrange(target_x, target_x + entity.entity_behavior.width):
             y = target_y
             if action == 'add':
                 existing_entity = self.get_entity(x, y)
@@ -145,7 +154,7 @@ class State:
         return True
 
     def check_open(self, target_x, target_y, width):
-        for x in range(target_x, target_x + width):
+        for x in xrange(target_x, target_x + width):
             y = target_y
             if not self.in_bounds(x, y) or self.get_entity(x, y):
                 return False
@@ -198,27 +207,21 @@ class State:
         return actions
 
     def calculate_alien_bbox(self):
-        bbox = {'top': -1, 'right': -1, 'bottom': -1, 'left': -1,
-                'right_weight': 0, 'bottom_weight': 0, 'left_weight': 0}
+        bbox = Box()
         for alien in self.aliens:
             x = alien.x
             y = alien.y
-            if bbox['top'] == -1 or y < bbox['top']:
-                bbox['top'] = y
-            if bbox['bottom'] == -1 or y > bbox['bottom']:
-                bbox['bottom'] = y
-            if bbox['left'] == -1 or x < bbox['left']:
-                bbox['left'] = x
-            if bbox['right'] == -1 or x > bbox['right']:
-                bbox['right'] = x
+            if bbox.top == -1 or y < bbox.top:
+                bbox.top = y
+            if bbox.bottom == -1 or y > bbox.bottom:
+                bbox.bottom = y
+            if bbox.left == -1 or x < bbox.left:
+                bbox.left = x
+            if bbox.right == -1 or x > bbox.right:
+                bbox.right = x
 
         for alien in self.aliens:
-            if alien.x == bbox['left']:
-                bbox['left_weight'] += 1
-            if alien.x == bbox['right']:
-                bbox['right_weight'] += 1
-            if alien.y == bbox['bottom']:
-                bbox['bottom_weight'] += 1
+            if alien.y == bbox.bottom:
                 alien.at_front_line = True
             else:
                 alien.at_front_line = False
@@ -235,8 +238,8 @@ class State:
 
         self.update_bbox()
         # Update the alien commander to spawn new aliens and give aliens orders
-        if len(self.aliens) == 0 or self.alien_bbox['top'] == 3:
-            for i in range(0, self.wave_size):
+        if len(self.aliens) == 0 or self.alien_bbox.top == 3:
+            for i in xrange(0, self.wave_size):
                 if self.aliens_delta_x > 0:
                     Alien((i * 3), 1, 2).add(self)
                 else:
@@ -246,12 +249,12 @@ class State:
         delta_x = self.aliens_delta_x
         delta_y = 0
         if self.aliens_delta_x == -1:
-            if self.alien_bbox['left'] == 0:
+            if self.alien_bbox.left == 0:
                 delta_x = 0
                 delta_y = 1
                 self.aliens_delta_x = 1
         if self.aliens_delta_x == 1:
-            if self.alien_bbox['right'] == self.width - 1:
+            if self.alien_bbox.right == self.width - 1:
                 delta_x = 0
                 delta_y = 1
                 self.aliens_delta_x = -1
@@ -282,7 +285,7 @@ class State:
             tracer.update(self)
 
         if add_tracers and self.ship:
-            for x in range(1, PLAYING_FIELD_WIDTH - 2):
+            for x in xrange(1, PLAYING_FIELD_WIDTH - 2):
                 y = PLAYING_FIELD_HEIGHT - 3
                 entity = self.get_entity(x, y)
                 if entity and entity.entity_behavior.entity_type == SHIELD:
@@ -337,7 +340,7 @@ class State:
     def trigger_happy_aliens(self):
         if len(self.aliens) == 0:
             return None
-        second_line_y = self.alien_bbox['bottom'] - 2
+        second_line_y = self.alien_bbox.bottom - 2
         aliens = []
         front_line = filter(lambda a: a.at_front_line, self.aliens)
         for alien in front_line:
@@ -405,9 +408,9 @@ class State:
 
     def __str__(self):
         text = '+%03d/%d+++++++:)%d+\n' % (self.round_number, self.round_limit, self.lives)
-        for y in range(0, PLAYING_FIELD_HEIGHT):
+        for y in xrange(0, PLAYING_FIELD_HEIGHT):
             text += '+'
-            for x in range(0, PLAYING_FIELD_WIDTH):
+            for x in xrange(0, PLAYING_FIELD_WIDTH):
                 entity = self.get_entity(x, y)
                 symbol = ' '
                 if entity:
@@ -464,7 +467,7 @@ class AlienBehavior(EntityBehavior):
     def update(self, state, alien):
         state.move_entity(alien, alien.x + alien.delta_x, alien.y + alien.delta_y)
         behind_shield = False
-        for y in range(2, 5):
+        for y in xrange(2, 5):
             entity = state.get_entity(alien.x, PLAYING_FIELD_HEIGHT - y)
             if entity and entity.entity_behavior.entity_type == SHIELD:
                 behind_shield = True
@@ -503,8 +506,8 @@ class AlienBehavior(EntityBehavior):
             self.explode(state, entity)
 
     def explode(self, state, entity):
-        for x in range(entity.x - 1 + entity.delta_x, entity.x + 2 + entity.delta_y):
-            for y in range(entity.y - 1 + entity.delta_x, entity.y + 2 + entity.delta_y):
+        for x in xrange(entity.x - 1 + entity.delta_x, entity.x + 2 + entity.delta_y):
+            for y in xrange(entity.y - 1 + entity.delta_x, entity.y + 2 + entity.delta_y):
                 if entity.x == x and entity.y == y:
                     continue
                 other = state.get_entity(x, y)
@@ -759,6 +762,7 @@ class TracerBullet(Entity):
         Entity.__init__(self, x, y, player_number, TRACER_BULLET_BEHAVIOR)
         self.delta_y = -1 if player_number == 1 else 1
         self.shoot_odds = shoot_odds
+        self.energy = PLAYING_FIELD_HEIGHT - y - 3
 
     def update(self, state):
         self.entity_behavior.update(state, self)
@@ -767,7 +771,7 @@ class TracerBullet(Entity):
         return TracerBullet(self.x, self.y, self.player_number, self.shoot_odds)
 
     def __str__(self):
-        return "%s@%d:%d - shoot_odds=%s" % (self.__class__.__name__, self.x, self.y, self.shoot_odds)
+        return "%s@%d:%d - shoot_odds=%s, energy=%d" % (self.__class__.__name__, self.x, self.y, self.shoot_odds, self.energy)
 
 class Tracer(Entity):
     def __init__(self, x, y, player_number, starting_round, starting_x):

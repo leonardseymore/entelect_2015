@@ -48,7 +48,7 @@ class BotHaywired(Bot):
             ),
             Sequence(
                 InDanger(),
-                SearchBestAction(4, True)
+                SearchBestAction(4)
             ),
             Sequence(
                 Selector(

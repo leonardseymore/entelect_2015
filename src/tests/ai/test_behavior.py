@@ -82,7 +82,7 @@ class BehaviorTestCase(unittest.TestCase):
         run_limit = 5
         child = TaskSucceed()
         limit = Limit(child, run_limit)
-        for i in range(0, 10):
+        for i in xrange(0, 10):
             result = limit.run()
             if i < run_limit:
                 self.assertTrue(result)

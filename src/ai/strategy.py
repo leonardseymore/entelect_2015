@@ -237,12 +237,12 @@ class IsMoveDangerous(Task):
         state = blackboard.get('state')
         next_state = state.clone()
         action = blackboard.get('action')
-        next_state.update(action)
-        for i in range(0, 3):  # predict i gonna move into bad situation
+        next_state.update(action, True, state.round_number)
+        for i in xrange(0, 3):  # predict i gonna move into bad situation
             if not next_state.ship or next_state.lives < state.lives or next_state.ship.get_shot_odds > 0.0:
                 self.logger.debug('Dangerous action %s', action)
                 return True
-            next_state.update(NOTHING)
+            next_state.update(NOTHING, True, state.round_number)
         return False
 
 
@@ -290,7 +290,7 @@ class CanKill(Task):
         state = blackboard.get('state')
         next_state = state.clone()
         next_state.update(SHOOT)
-        for i in range(0, 10):  # predict missile up to spawn row
+        for i in xrange(0, 10):  # predict missile up to spawn row
             next_state.update(NOTHING)
             if next_state.kills > state.kills + len(state.missiles):
                 blackboard.set('kill_cost', i)
@@ -307,23 +307,9 @@ class CanShootBullet(Task):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         x = state.ship.x + 1
-        for y in range(state.ship.y - self.dist, state.ship.y):
+        for y in xrange(state.ship.y - self.dist, state.ship.y):
             entity = state.get_entity(x, y)
             if entity and entity.entity_type == BULLET:
-                return True
-        return False
-
-
-class KillExtremity(Task):
-    def run(self, blackboard, flow):
-        Task.run(self, blackboard, flow)
-        state = blackboard.get('state')
-        next_state = state.clone()
-        next_state.update(SHOOT)
-        for i in range(0, 10):  # predict missile up to spawn row
-            next_state.update(NOTHING)
-            if next_state.extremity_kills > state.extremity_kills + len(state.missiles):
-                blackboard.set('kill_cost', i)
                 return True
         return False
 
@@ -364,9 +350,14 @@ class SetTracer(Task):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
-        for i in range(0, 12):
+        candidates = []
+        for i in xrange(0, 12):
             next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
             self.logger.debug('Next state\n%s', next_state)
+            # only choose to shoot 100% odd aliens
+            candidates = filter(lambda tr: tr.get_shot_odds == 0.0, next_state.tracer_hits)
+            if len(candidates) > 5:
+                break
 
         for t in next_state.tracer_hits:
             self.logger.debug('%s', t)
@@ -375,8 +366,7 @@ class SetTracer(Task):
             self.logger.debug('No tracer hits found')
             return False
 
-        # only choose to shoot 100% odd aliens
-        candidates = filter(lambda tr: tr.get_shot_odds == 0.0, next_state.tracer_hits)
+
         if len(candidates) == 0:
             self.logger.debug('No tracer candidates found')
             return False
@@ -437,26 +427,7 @@ class IsInvasionImminent(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        return state.alien_bbox['bottom'] > 7
-
-
-class SetMoveToFrontLineAvg(Task):
-    def run(self, blackboard, flow):
-        Task.run(self, blackboard, flow)
-        state = blackboard.get('state')
-        total = 0
-        count = 0
-        next_state = state.clone()
-        next_state.update(SHOOT)
-        for i in range(0, 10):  # predict missile up to spawn row
-            next_state.update(NOTHING)
-            for alien in next_state.aliens:
-                if alien.at_front_line:
-                    total += alien.x
-                    count += 1
-        avg = total / count
-        blackboard.set('loc', avg - 1)
-        return True
+        return state.alien_bbox.bottom > 7
 
 
 class InDanger(Task):
@@ -464,8 +435,8 @@ class InDanger(Task):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
-        for i in range(0, 4):  # predict if bullet or missile gonna kill me
-            if next_state.lives < state.lives or next_state.ship.get_shot_odds > 0.0:
+        for i in xrange(0, 4):  # predict if bullet or missile gonna kill me
+            if next_state.lives < state.lives:
                 return True
             next_state.update(NOTHING, True, state.round_number)
 
@@ -510,7 +481,7 @@ class IsAlienTooClose(Task):
         if not next_state.ship:
             return True
 
-        for x in range(next_state.ship.x - 1, next_state.ship.x + next_state.ship.width + 1):
+        for x in xrange(next_state.ship.x - 1, next_state.ship.x + next_state.ship.width + 1):
             for y in [next_state.ship.y - 1, next_state.ship.y - 2]:
                 entity = next_state.get_entity(x, y)
                 if entity and entity.entity_type == ALIEN:
@@ -542,7 +513,7 @@ class TreeSearchBestAction:
         if state.alien_factory:
             result += 10
         result -= len(state.missiles)
-        result -= state.alien_bbox['bottom']
+        result -= state.alien_bbox.bottom
         if state.ship:
             if include_tracers:
                 if state.ship.get_shot_odds > 0:
