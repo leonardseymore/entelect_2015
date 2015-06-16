@@ -237,12 +237,12 @@ class IsMoveDangerous(Task):
         state = blackboard.get('state')
         next_state = state.clone()
         action = blackboard.get('action')
-        next_state.update(action, True, state.round_number)
+        next_state.update(action, add_bullet_tracers=True)
         for i in xrange(0, 3):  # predict i gonna move into bad situation
-            if not next_state.ship or next_state.lives < state.lives or next_state.ship.get_shot_odds > 0.0:
+            if not next_state.ship or next_state.lives < state.lives or next_state.ship.is_hit_by_lethal_tracer():
                 self.logger.debug('Dangerous action %s', action)
                 return True
-            next_state.update(NOTHING, True, state.round_number)
+            next_state.update(NOTHING, add_bullet_tracers=True)
         return False
 
 
@@ -352,10 +352,10 @@ class SetTracer(Task):
         next_state = state.clone()
         candidates = []
         for i in xrange(0, 12):
-            next_state.update(NOTHING, add_tracers=True, tracer_starting_round=state.round_number)
+            next_state.update(NOTHING, True, state.round_number, True)
             self.logger.debug('Next state\n%s', next_state)
             # only choose to shoot 100% odd aliens
-            candidates = filter(lambda tr: tr.get_shot_odds == 0.0, next_state.tracer_hits)
+            candidates = filter(lambda tr: not tr.tracer_bullet_hit, next_state.tracer_hits)
             if len(candidates) > 5:
                 break
 
@@ -438,7 +438,7 @@ class InDanger(Task):
         for i in xrange(0, 4):  # predict if bullet or missile gonna kill me
             if next_state.lives < state.lives:
                 return True
-            next_state.update(NOTHING, True, state.round_number)
+            next_state.update(NOTHING, True, state.round_number, True)
 
         return False
 
@@ -497,7 +497,8 @@ class IsSoleSurvivor(Task):
         return len(state.aliens) == 1
 
 strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True),
-              IsInvasionImminent(), IsAlienTooClose(), SetTracer(), IsMoveDangerous()]
+              IsInvasionImminent(), IsAlienTooClose(), SetTracer(), IsMoveDangerous(),
+              Sequence(SetAction(MOVE_LEFT), IsMoveDangerous())]
 
 class TreeSearchBestAction:
     def __init__(self):
@@ -516,8 +517,8 @@ class TreeSearchBestAction:
         result -= state.alien_bbox.bottom
         if state.ship:
             if include_tracers:
-                if state.ship.get_shot_odds > 0:
-                    result -= 200
+                if state.ship.is_hit_by_lethal_tracer():
+                    result -= 500
             result += 100
             if state.ship.x > 3 or state.ship.x < 11:
                 result += 1000
@@ -538,7 +539,7 @@ class TreeSearchBestAction:
 
         for i, action in enumerate(state.get_available_evade_actions()):
             new_state = state.clone()
-            new_state.update(action, include_tracers, starting_round)
+            new_state.update(action, include_tracers, starting_round, include_tracers)
             actions.append(action)
 
             self.logger.debug('\n%s %s\n%s', self.evaluate(new_state, include_tracers, loc),
@@ -624,7 +625,7 @@ class MctsBestAction:
                 ),
                 Sequence(
                     IsMoveDangerous(),
-                    SearchBestAction(4)
+                    SearchBestAction(4, True)
                 )
             )
         )

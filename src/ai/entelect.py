@@ -201,7 +201,7 @@ def print_predicted_states(state, limit=200):
     print state
     next_state = state.clone()
     while limit > 0 and next_state.lives >= 0 and next_state.round_number < state.round_limit:
-        next_state.update(NOTHING, True, state.round_number)
+        next_state.update(NOTHING, True, state.round_number, True)
         print next_state
         next_state = next_state.clone()
         limit -= 1

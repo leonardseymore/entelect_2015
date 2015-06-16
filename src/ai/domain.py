@@ -94,7 +94,12 @@ class State:
         state.update_bbox()
         return state
 
-    def in_bounds(self, x, y):
+    @staticmethod
+    def in_bounds(x, y, width=1):
+        return 0 <= y < PLAYING_FIELD_HEIGHT and 0 <= x < PLAYING_FIELD_WIDTH and x + width - 1 < PLAYING_FIELD_WIDTH
+
+    @staticmethod
+    def in_bounds_hv(x, y):
         return 0 <= y < PLAYING_FIELD_HEIGHT and 0 <= x < PLAYING_FIELD_WIDTH
 
     def is_tracer_bullet_x(self, x):
@@ -110,7 +115,7 @@ class State:
         return None
 
     def get_entity(self, x, y):
-        if self.in_bounds(x, y):
+        if self.in_bounds_hv(x, y):
             return self.playing_field[PLAYING_FIELD_WIDTH * y + x]
         return None
 
@@ -132,7 +137,7 @@ class State:
             entity.y = y
 
     def traverse_map(self, action, entity, target_x, target_y):
-        in_bounds = self.in_bounds(target_x, target_y) and self.in_bounds(target_x + entity.entity_behavior.width - 1, target_y)
+        in_bounds = self.in_bounds(target_x, target_y, entity.entity_behavior.width)
         if not in_bounds and not action == 'remove':
             entity.handle_out_of_bounds(self, target_y >= self.height)
             return False
@@ -149,14 +154,16 @@ class State:
                     entity.handle_collision(self, tracer_bullet)
                 self.playing_field[PLAYING_FIELD_WIDTH * y + x] = entity
             elif action == 'remove':
-                if self.in_bounds(x, y):
+                if self.in_bounds_hv(x, y):
                     self.playing_field[PLAYING_FIELD_WIDTH * y + x] = None
         return True
 
     def check_open(self, target_x, target_y, width):
+        if not self.in_bounds(target_x, target_y, width):
+            return False
         for x in xrange(target_x, target_x + width):
             y = target_y
-            if not self.in_bounds(x, y) or self.get_entity(x, y):
+            if self.get_entity(x, y):
                 return False
         return True
 
@@ -172,10 +179,10 @@ class State:
         assert self.missile_limit <= 2
         if len(self.missiles) < self.missile_limit:
             actions.append(SHOOT)
-        if self.in_bounds(ship.x - 1, ship.y):
+        if self.in_bounds(ship.x - 1, ship.y, ship.entity_behavior.width):
             if not next_state.get_entity(ship.x - 1, ship.y):
                 actions.append(MOVE_LEFT)
-        if self.in_bounds(ship.x + ship.entity_behavior.width, ship.y):
+        if self.in_bounds(ship.x + 1, ship.y, ship.entity_behavior.width):
             if not next_state.get_entity(ship.x + ship.entity_behavior.width, ship.y):
                 actions.append(MOVE_RIGHT)
         if self.lives > 0:
@@ -198,10 +205,10 @@ class State:
         actions = [NOTHING]
         if len(self.missiles) < self.missile_limit:
             actions.append(SHOOT)
-        if self.in_bounds(ship.x - 1, ship.y):
+        if self.in_bounds(ship.x - 1, ship.y, ship.entity_behavior.width):
             if not next_state.get_entity(ship.x - 1, ship.y):
                 actions.append(MOVE_LEFT)
-        if self.in_bounds(ship.x + ship.entity_behavior.width, ship.y):
+        if self.in_bounds(ship.x + 1, ship.y, ship.entity_behavior.width):
             if not next_state.get_entity(ship.x + ship.entity_behavior.width, ship.y):
                 actions.append(MOVE_RIGHT)
         return actions
@@ -231,7 +238,7 @@ class State:
     def update_bbox(self):
         self.alien_bbox = self.calculate_alien_bbox()
 
-    def update(self, action, add_tracers=False, tracer_starting_round=0):
+    def update(self, action, add_tracers=False, tracer_starting_round=0, add_bullet_tracers=False):
         self.round_number += 1
         if self.round_number == 40:
             self.wave_size += 1
@@ -262,7 +269,7 @@ class State:
             alien.delta_x = delta_x
             alien.delta_y = delta_y
 
-        if add_tracers:
+        if add_bullet_tracers:
             if len(self.aliens) > 0:
                 if self.round_number % 6 == 0:
                     self.set_alien_shoot_odds()
@@ -440,10 +447,9 @@ class EntityBehavior:
 
     def handle_collision(self, state, entity, other):
         if other.entity_behavior.entity_type == TRACER:
-            # other.destroy() # TODO: is this right?
             return
         if other.entity_behavior.entity_type == TRACER_BULLET:
-            entity.get_shot_odds += other.shoot_odds
+            entity.tracer_bullet_hit = other
             return
         entity.destroy(state)
         other.destroy(state)
@@ -553,13 +559,13 @@ class TracerBulletBehavior(EntityBehavior):
         state.destroy(state, entity)
 
     def handle_collision(self, state, entity, other):
-        other.get_shot_odds += entity.shoot_odds
+        other.tracer_bullet_hit = entity
 
     def add(self, state, entity):
         state.tracer_bullets.append(entity)
         other = state.get_entity(entity.x, entity.y)
         if other:
-            other.get_shot_odds += entity.shoot_odds
+            entity.handle_collision(state, other)
 
     def destroy(self, state, entity):
         EntityBehavior.destroy(self, state, entity)
@@ -581,13 +587,12 @@ class TracerBehavior(EntityBehavior):
 
     def handle_collision(self, state, entity, other):
         if other.entity_behavior.entity_type == ALIEN:
-            entity.energy = PLAYING_FIELD_HEIGHT - 3 - other.y
             state.tracer_hits.append(entity)
             entity.alien = other
-        elif other.entity_behavior.entity_type == BULLET:
-            entity.get_shot_odds = 0.0
+        # elif other.entity_behavior.entity_type == BULLET:
+        #     entity.get_shot_odds = 0.0
         elif other.entity_behavior.entity_type == TRACER_BULLET:
-            entity.get_shot_odds += other.shoot_odds
+            entity.tracer_bullet_hit = other
         else:
             self.destroy(state, entity)
 
@@ -698,7 +703,10 @@ class Entity:
         self.y = y
         self.entity_behavior = entity_behavior
         self.player_number = player_number
-        self.get_shot_odds = 0.0
+        self.tracer_bullet_hit = None
+
+    def is_hit_by_lethal_tracer(self):
+        return self.tracer_bullet_hit and self.tracer_bullet_hit.energy < 1
 
     def destroy(self, state):
         self.entity_behavior.destroy(state, self)
@@ -762,7 +770,7 @@ class TracerBullet(Entity):
         Entity.__init__(self, x, y, player_number, TRACER_BULLET_BEHAVIOR)
         self.delta_y = -1 if player_number == 1 else 1
         self.shoot_odds = shoot_odds
-        self.energy = PLAYING_FIELD_HEIGHT - y - 3
+        self.energy = PLAYING_FIELD_HEIGHT - y - 2
 
     def update(self, state):
         self.entity_behavior.update(state, self)
@@ -798,7 +806,7 @@ class Tracer(Entity):
         return self.starting_x == other.starting_x and self.starting_round == other.starting_round
 
     def __str__(self):
-        return "%s@%d:%d - starting_round=%s, starting_x=%d, energy=%s, get_shot_odds=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.energy, self.get_shot_odds)
+        return "%s@%d:%d - starting_round=%s, starting_x=%d, tracer_bullet_hit=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.tracer_bullet_hit)
 
 
 class Missile(Entity):
