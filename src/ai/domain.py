@@ -615,6 +615,7 @@ class MissileBehavior(EntityBehavior):
     def update(self, state, entity):
         state.move_entity(entity, entity.x, entity.y + self.delta_y)
 
+    # TODO: a missile does not get destroyed when it exits the top of the playing field
     def handle_out_of_bounds(self, state, entity, bottom):
         EntityBehavior.handle_out_of_bounds(self, state, entity, bottom)
         self.destroy(state, entity)
@@ -673,12 +674,13 @@ class MissileControllerBehavior(EntityBehavior):
 
     def add(self, state, entity):
         if EntityBehavior.add(self, state, entity):
-            state.missile_limit += 1
+            # TODO: can we assume constant limit of 2?
+            state.missile_limit = 2
             state.missile_controller = entity
 
     def destroy(self, state, entity):
         EntityBehavior.destroy(self, state, entity)
-        state.missile_limit -= 1
+        state.missile_limit = 1
         state.missile_controller = None
 MISSILE_CONTROLLER_BEHAVIOR = MissileControllerBehavior()
 
