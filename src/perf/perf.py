@@ -19,15 +19,20 @@ state = State.from_game_state(game_state)
 # time = timeit.timeit('state.clone()', number=repeat, setup="from __main__ import state")
 # print '~%.06fs/clone' % (time/repeat)
 #
-# tree_search = TREE_SEARCH
-# repeat = 10
-# time = timeit.timeit('tree_search.search(state, 4)', number=repeat, setup='from __main__ import state, tree_search')
-# print '~%.06fs/tree_search' % (time/repeat)
+tree_search = TREE_SEARCH
+repeat = 1
+time = timeit.timeit('tree_search.search(state, 6)', number=repeat, setup='from __main__ import state, tree_search')
+print '~%.06fs/tree_search' % (time/repeat)
 
-mcts = MCTS_SEARCH
-repeat = 10
-time = timeit.timeit('mcts.search(state)', number=repeat, setup='from __main__ import state, mcts')
-print '~%.06fs/mcts' % (time/repeat)
+# mcts = MCTS_SEARCH
+# repeat = 10
+# time = timeit.timeit('mcts.search(state)', number=repeat, setup='from __main__ import state, mcts')
+# print '~%.06fs/mcts' % (time/repeat)
+
+
+# repeat = 200
+# time = timeit.timeit('state.update("Nothing")', number=repeat, setup="from __main__ import state")
+# print '~%.06fs/update' % (time/repeat)
 
 profiler.disable()
 s = StringIO.StringIO()

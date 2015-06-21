@@ -519,9 +519,9 @@ class TreeSearchBestAction:
             if include_tracers:
                 if state.ship.is_hit_by_lethal_tracer():
                     result -= 500
-            result += 100
-            if state.ship.x > 3 or state.ship.x < 11:
-                result += 1000
+            result += 1000
+            # if state.ship.x > 3 or state.ship.x < 11:
+            #     result += 1000
             if loc:
                 result -= abs(state.ship.x - loc)
         return result

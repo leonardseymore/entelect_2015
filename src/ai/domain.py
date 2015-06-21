@@ -44,6 +44,9 @@ class State:
         self.tracer_bullets = []
         self.tracer_hits = []
 
+        self.available_actions = None
+        self.available_evade_actions = None
+
 
     @staticmethod
     def from_game_state(game_state):
@@ -168,6 +171,9 @@ class State:
         return True
 
     def get_available_actions(self):
+        if self.available_actions:
+            return self.available_actions
+
         ship = self.ship
         if not self.ship:
             return [NOTHING]
@@ -192,9 +198,15 @@ class State:
                 actions.append(BUILD_MISSILE_CONTROLLER)
             actions.append(BUILD_SHIELD)
         actions.append(NOTHING)
+
+        self.available_actions = actions
+
         return actions
 
     def get_available_evade_actions(self):
+        if self.available_evade_actions:
+            return self.available_evade_actions
+
         ship = self.ship
         if not self.ship:
             return [NOTHING]
@@ -211,6 +223,9 @@ class State:
         if self.in_bounds(ship.x + 1, ship.y, ship.entity_behavior.width):
             if not next_state.get_entity(ship.x + ship.entity_behavior.width, ship.y):
                 actions.append(MOVE_RIGHT)
+
+        self.available_evade_actions = actions
+
         return actions
 
     def calculate_alien_bbox(self):
@@ -239,6 +254,9 @@ class State:
         self.alien_bbox = self.calculate_alien_bbox()
 
     def update(self, action, add_tracers=False, tracer_starting_round=0, add_bullet_tracers=False):
+        self.available_actions = None
+        self.available_evade_actions = None
+
         self.round_number += 1
         if self.round_number == 40:
             self.wave_size += 1
@@ -403,6 +421,9 @@ class State:
 
         for entity in state.shields + state.bullets + state.missiles + state.aliens + state.tracers:
             state.add_entity_unsafe(entity)
+
+        state.available_actions = self.available_actions
+        state.available_evade_actions = self.available_evade_actions
 
         state.update_bbox()
         return state
