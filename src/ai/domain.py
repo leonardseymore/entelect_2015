@@ -472,12 +472,6 @@ class AlienBehavior(EntityBehavior):
 
     def update(self, state, alien):
         state.move_entity(alien, alien.x + alien.delta_x, alien.y + alien.delta_y)
-        behind_shield = False
-        for y in xrange(2, 5):
-            entity = state.get_entity(alien.x, PLAYING_FIELD_HEIGHT - y)
-            if entity and entity.entity_behavior.entity_type == SHIELD:
-                behind_shield = True
-        alien.behind_shield = behind_shield
 
         if alien.shoot_odds > 0:
             TracerBullet(alien.x, alien.y + 1, 2, alien.shoot_odds).add(state)
@@ -738,7 +732,6 @@ class Alien(Entity):
         self.delta_x = -1
         self.at_front_line = False
         self.shoot_odds = 0
-        self.behind_shield = False
 
     def update(self, state):
         self.entity_behavior.update(state, self)
@@ -752,7 +745,6 @@ class Alien(Entity):
         clone.delta_x = self.delta_x
         clone.at_front_line = self.at_front_line
         clone.shoot_odds = self.shoot_odds
-        clone.behind_shield = self.behind_shield
         return clone
 
 class Bullet(Entity):
