@@ -495,7 +495,10 @@ class AlienBehavior(EntityBehavior):
         state.move_entity(alien, alien.x + alien.delta_x, alien.y + alien.delta_y)
 
         if alien.shoot_odds > 0:
-            TracerBullet(alien.x, alien.y + 1, 2, alien.shoot_odds).add(state)
+            if alien.y > PLAYING_FIELD_HEIGHT - 5:
+                Bullet(alien.x, alien.y + 1, 2).add(state)
+            else:
+                TracerBullet(alien.x, alien.y + 1, 2, alien.shoot_odds).add(state)
 
     def add(self, state, entity):
         if EntityBehavior.add(self, state, entity):
@@ -723,7 +726,7 @@ class Entity:
         self.tracer_bullet_hit = None
 
     def is_hit_by_lethal_tracer(self):
-        return self.tracer_bullet_hit and self.tracer_bullet_hit.energy < 1
+        return self.tracer_bullet_hit and self.tracer_bullet_hit.energy < 2
 
     def destroy(self, state):
         self.entity_behavior.destroy(state, self)
@@ -842,7 +845,9 @@ class Ship(Entity):
         self.entity_behavior.perform_action(state, self, action)
 
     def __deepcopy__(self, memo):
-        return Ship(self.x, self.y, self.player_number)
+        clone = Ship(self.x, self.y, self.player_number)
+        clone.tracer_bullet_hit = self.tracer_bullet_hit
+        return clone
 
 class MissileController(Entity):
     def __init__(self, x, y, player_number):

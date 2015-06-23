@@ -48,7 +48,11 @@ class BotHaywired(Bot):
             ),
             Sequence(
                 InDanger(),
-                SearchBestAction(4)
+                SearchBestAction(4, True)
+            ),
+            Sequence(
+                CanKill(),
+                Kill()
             ),
             Sequence(
                 Selector(
@@ -56,7 +60,6 @@ class BotHaywired(Bot):
                         HasSpareLives(),
                         Selector(
                             Sequence(
-                                # Inverter(IsSoleSurvivor()),
                                 KillTracerNoWait()
                             ),
                             Sequence(
@@ -75,7 +78,7 @@ class BotHaywired(Bot):
                 ),
                 Sequence(
                     IsMoveDangerous(),
-                    SearchBestAction(4)
+                    SearchBestAction(4, True)
                 )
             )
         )

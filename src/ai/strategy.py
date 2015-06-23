@@ -281,7 +281,7 @@ class Kill(Task):
             ),
             HasMissile(),
             SetAction(SHOOT)
-        ).run(blackboard)
+        ).run(blackboard, flow)
 
 
 class CanKill(Task):
@@ -356,8 +356,8 @@ class SetTracer(Task):
             self.logger.debug('Next state\n%s', next_state)
             # only choose to shoot 100% odd aliens
             candidates = filter(lambda tr: not tr.tracer_bullet_hit, next_state.tracer_hits)
-            if len(candidates) > 5:
-                break
+            # if len(candidates) > 5:
+            #     break
 
         for t in next_state.tracer_hits:
             self.logger.debug('%s', t)
@@ -370,7 +370,8 @@ class SetTracer(Task):
         if len(candidates) == 0:
             self.logger.debug('No tracer candidates found')
             return False
-        candidates = sorted(candidates, key=lambda c: (abs(state.ship.x - t.starting_x) + t.energy))
+
+        candidates = sorted(candidates, key=lambda c: -c.alien.y)
         for candidate in candidates:
             self.logger.debug('Candidate %s', candidate)
         self.logger.debug('Ship %s', state.ship)
@@ -539,7 +540,7 @@ class TreeSearchBestAction:
 
         for i, action in enumerate(state.get_available_evade_actions()):
             new_state = state.clone()
-            new_state.update(action, include_tracers, starting_round, include_tracers)
+            new_state.update(action, add_bullet_tracers=True)
             actions.append(action)
 
             self.logger.debug('\n%s %s\n%s', self.evaluate(new_state, include_tracers, loc),
