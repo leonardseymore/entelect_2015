@@ -371,7 +371,7 @@ class SetTracer(Task):
             self.logger.debug('No tracer candidates found')
             return False
 
-        candidates = sorted(candidates, key=lambda c: -c.alien.y)
+        # candidates = sorted(candidates, key=lambda c: -c.alien.y)
         for candidate in candidates:
             self.logger.debug('Candidate %s', candidate)
         self.logger.debug('Ship %s', state.ship)
@@ -549,8 +549,9 @@ class TreeSearchBestAction:
                                                                 current_depth + 1, actions, loc)
             actions.pop()
 
-            if not new_state.ship:
-                return best_score, None
+            # if not new_state.ship:
+            #     print 'NO FUCKING SHIP POES'
+            #     return best_score, None
 
             if current_score > best_score:
                 best_score = current_score

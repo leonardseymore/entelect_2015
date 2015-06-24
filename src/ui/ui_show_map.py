@@ -7,6 +7,9 @@ from ai.bot import *
 import logging
 import logging.config
 
+import pydevd
+pydevd.settrace('localhost', port=12345, stdoutToServer=True, stderrToServer=True)
+
 # scale up the renderer
 RENDER_SCALE_FACTOR = 32
 

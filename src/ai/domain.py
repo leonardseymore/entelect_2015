@@ -530,11 +530,13 @@ class AlienBehavior(EntityBehavior):
             self.explode(state, entity)
 
     def explode(self, state, entity):
-        for x in xrange(entity.x - 1 + entity.delta_x, entity.x + 2 + entity.delta_y):
-            for y in xrange(entity.y - 1 + entity.delta_x, entity.y + 2 + entity.delta_y):
-                if entity.x == x and entity.y == y:
+        print 'EXPODE', entity
+        for x in xrange(entity.x - 1 + entity.delta_x, entity.x + 2 + entity.delta_x):
+            for y in xrange(entity.y - 1 + entity.delta_y, entity.y + 2 + entity.delta_y):
+                if entity.x + entity.delta_x == x and entity.y + entity.delta_y == y:
                     continue
                 other = state.get_entity(x, y)
+                print x, y
                 if other:
                     other.destroy(state)
 ALIEN_BEHAVIOR = AlienBehavior()

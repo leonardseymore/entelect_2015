@@ -50,10 +50,10 @@ class BotHaywired(Bot):
                 InDanger(),
                 SearchBestAction(4, True)
             ),
-            Sequence(
-                CanKill(),
-                Kill()
-            ),
+            # Sequence(
+            #     CanKill(),
+            #     Kill()
+            # ),
             Sequence(
                 Selector(
                     Sequence(
