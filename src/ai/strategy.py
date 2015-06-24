@@ -353,6 +353,8 @@ class SetTracer(Task):
         candidates = []
         for i in xrange(0, 12):
             next_state.update(NOTHING, True, state.round_number, True)
+            if not next_state.ship:
+                break
             self.logger.debug('Next state\n%s', next_state)
             # only choose to shoot 100% odd aliens
             candidates = filter(lambda tr: not tr.tracer_bullet_hit, next_state.tracer_hits)
@@ -371,7 +373,7 @@ class SetTracer(Task):
             self.logger.debug('No tracer candidates found')
             return False
 
-        # candidates = sorted(candidates, key=lambda c: -c.alien.y)
+        # candidates = sorted(candidates, key=lambda c: c.alien.y)
         for candidate in candidates:
             self.logger.debug('Candidate %s', candidate)
         self.logger.debug('Ship %s', state.ship)
