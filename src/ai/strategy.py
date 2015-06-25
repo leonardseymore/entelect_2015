@@ -357,7 +357,8 @@ class SetTracer(Task):
                 break
             self.logger.debug('Next state\n%s', next_state)
             # only choose to shoot 100% odd aliens
-            candidates = filter(lambda tr: not tr.tracer_bullet_hit, next_state.tracer_hits)
+            candidates = next_state.tracer_hits
+            # candidates = filter(lambda tr: not tr.tracer_bullet_hit, next_state.tracer_hits)
             # if len(candidates) > 5:
             #     break
 
