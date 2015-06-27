@@ -13,10 +13,12 @@ module_logger = logging.getLogger('main')
 
 class Main:
     def __init__(self, argv):
-
         self.bot = None
         if len(argv) > 0:
             self.bot = argv[0]
+            if len(argv) > 1:
+                self.state_file = os.path.join(argv[1], 'state.json')
+                print self.state_file
         self.profiler = None
 
         with open('bot.yml', 'r') as config_file:
@@ -42,7 +44,7 @@ class Main:
         if self.config['profile']:
             self.start_profiler()
 
-        game_state = load_state()
+        game_state = load_state(self.state_file)
         bot = BotHaywired()
         if self.bot:
             bot = BOTS[self.bot]
