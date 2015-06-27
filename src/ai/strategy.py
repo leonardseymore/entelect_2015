@@ -524,8 +524,6 @@ class TreeSearchBestAction:
                 if state.ship.is_hit_by_lethal_tracer():
                     result -= 500
             result += 1000
-            # if state.ship.x > 3 or state.ship.x < 11:
-            #     result += 1000
             if loc:
                 result -= abs(state.ship.x - loc)
         return result
@@ -552,9 +550,8 @@ class TreeSearchBestAction:
                                                                 current_depth + 1, actions, loc)
             actions.pop()
 
-            # if not new_state.ship:
-            #     print 'NO FUCKING SHIP POES'
-            #     return best_score, None
+            if not new_state.ship:
+                return best_score, None
 
             if current_score > best_score:
                 best_score = current_score
@@ -564,86 +561,5 @@ class TreeSearchBestAction:
                           current_depth + 1, best_score, best_action)
         return best_score, best_action
 
-
-class MctsBestAction:
-    def __init__(self):
-        self.logger = logging.getLogger('search.MctsBestAction')
-
-    def search(self, state): # TODO: timeout?
-        self.simulate(state)
-
-    def simulate(self, state):
-        next_state = state.clone()
-
-        while next_state.lives >= 0 and next_state.round_number < next_state.round_limit:
-            action = self.get_action(next_state, None)
-            next_state.update(action) #TODO: sim bullets?
-
-    def get_action(self, state, tracer):
-        blackboard = Blackboard()
-        blackboard.set('state', state)
-
-        def build(build_action):
-            build_behavior = Sequence(
-                SetSafestBuildingLocation(),
-                Selector(
-                    Sequence(
-                        Inverter(AtLocation()),
-                        Inverter(MoveToLocation())
-                    ),
-                    SetAction(build_action)
-                )
-            )
-            return build_behavior
-
-        behavior = Selector(
-            Sequence(
-                Inverter(HasShip()),
-                SetAction(NOTHING)
-            ),
-            Sequence(
-                InDanger(),
-                SearchBestAction(4, True)
-            ),
-            Sequence(
-                Selector(
-                    Sequence(
-                        HasSpareLives(),
-                        Selector(
-                            Sequence(
-                                # Inverter(IsSoleSurvivor()),
-                                KillTracerNoWait()
-                            ),
-                            Sequence(
-                                Inverter(HasMissileController()),
-                                build(BUILD_MISSILE_CONTROLLER)
-                            ),
-                            Sequence(
-                                Inverter(HasAlienFactory()),
-                                build(BUILD_ALIEN_FACTORY)
-                            )
-                        )
-                    ),
-                    Sequence(
-                        KillTracer(),
-                    ),
-                ),
-                Sequence(
-                    IsMoveDangerous(),
-                    SearchBestAction(4, True)
-                )
-            )
-        )
-
-        flow = []
-        behavior.run(blackboard, flow)
-        action = blackboard.get('action')
-        self.logger.debug('Flow: %s' % ' '.join(str(f) for f in flow))
-
-        if not action:
-            action = NOTHING
-        return action
-
 TREE_SEARCH = TreeSearchBestAction()
-MCTS_SEARCH = MctsBestAction()
-SEARCH = {'tree': TREE_SEARCH, 'mcts': MCTS_SEARCH}
+SEARCH = {'tree': TREE_SEARCH}
