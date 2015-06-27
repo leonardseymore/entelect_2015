@@ -43,6 +43,10 @@ class BotHaywired(Bot):
 
         behavior = Selector(
             Sequence(
+                IsStartingRound(),
+                SetAction(SHOOT)
+            ),
+            Sequence(
                 Inverter(HasShip()),
                 SetAction(NOTHING)
             ),
@@ -50,10 +54,6 @@ class BotHaywired(Bot):
                 InDanger(),
                 SearchBestAction(4, True)
             ),
-            # Sequence(
-            #     CanKill(),
-            #     Kill()
-            # ),
             Sequence(
                 Selector(
                     Sequence(
