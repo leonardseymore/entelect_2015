@@ -309,6 +309,10 @@ class State:
         for tracer in self.tracers[:]:
             tracer.update(self)
 
+        # Update aliens, executing their move & shoot orders
+        for alien in self.aliens[:]:
+            alien.update(self)
+
         if add_tracers and self.ship:
             for x in xrange(1, PLAYING_FIELD_WIDTH - 2):
                 y = PLAYING_FIELD_HEIGHT - 3
@@ -317,10 +321,6 @@ class State:
                     continue
                 if abs(self.ship.x + 1 - x) < self.round_number - tracer_starting_round:
                     Tracer(x, y, 1, self.round_number, x).add(self)
-
-        # Update aliens, executing their move & shoot orders
-        for alien in self.aliens[:]:
-            alien.update(self)
 
         # Update ships, executing their orders
         if self.ship:
@@ -716,9 +716,15 @@ class AlienFactoryBehavior(EntityBehavior):
         state.alien_factory = None
 ALIEN_FACTORY_BEHAVIOR = AlienFactoryBehavior()
 
+next_id = 0
+def id_gen():
+    global next_id
+    next_id += 1
+    return next_id
 
 class Entity:
     def __init__(self, x, y, player_number, entity_behavior):
+        self.id = id_gen()
         self.x = x
         self.y = y
         self.entity_behavior = entity_behavior
@@ -741,7 +747,7 @@ class Entity:
         self.entity_behavior.handle_collision(state, self, other)
 
     def __str__(self):
-        return "%s@%d:%d" % (self.__class__.__name__, self.x, self.y)
+        return "%s[%d]@%d:%d" % (self.__class__.__name__, self.id, self.x, self.y)
 
 
 class Shield(Entity):
@@ -824,7 +830,7 @@ class Tracer(Entity):
         return self.starting_x == other.starting_x and self.starting_round == other.starting_round
 
     def __str__(self):
-        return "%s@%d:%d - starting_round=%s, starting_x=%d, tracer_bullet_hit=%s" % (self.__class__.__name__, self.x, self.y, self.starting_round, self.starting_x, self.tracer_bullet_hit)
+        return "%s[%d]@%d:%d - starting_round=%s, starting_x=%d, tracer_bullet_hit=%s" % (self.__class__.__name__, self.id, self.x, self.y, self.starting_round, self.starting_x, self.tracer_bullet_hit)
 
 
 class Missile(Entity):

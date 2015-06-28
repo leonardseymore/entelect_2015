@@ -358,7 +358,7 @@ class SetTracer(Task):
             self.logger.debug('Next state\n%s', next_state)
             # only choose to shoot 100% odd aliens
             candidates = next_state.tracer_hits
-            # candidates = filter(lambda tr: not tr.tracer_bullet_hit, next_state.tracer_hits)
+            #
             # if len(candidates) > 5:
             #     break
 
@@ -369,7 +369,7 @@ class SetTracer(Task):
             self.logger.debug('No tracer hits found')
             return False
 
-
+        candidates = filter(lambda tr: False if tr.tracer_bullet_hit and tr.tracer_bullet_hit.shoot_odds == 1.0 else True, next_state.tracer_hits)
         if len(candidates) == 0:
             self.logger.debug('No tracer candidates found')
             return False
@@ -380,6 +380,7 @@ class SetTracer(Task):
         self.logger.debug('Ship %s', state.ship)
 
         tracer_hit = candidates[0]
+        self.logger.debug('Best candidate %s', tracer_hit)
         if not tracer_hit:
             return False
         blackboard.set('tracer', tracer_hit)
