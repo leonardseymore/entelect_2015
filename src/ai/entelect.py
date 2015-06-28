@@ -178,7 +178,9 @@ def load_harness_replay_states(filename, replaytype='file'):
     os.path.walk(directory, walk_harness_replay_dir, state_files)
     states = []
     for state_file in state_files:
-        states.append(load_state(state_file))
+        game_state = load_state(state_file)
+        game_state['_state_file'] = state_file
+        states.append(game_state)
     return states
 
 def save_obj(key, value):

@@ -49,6 +49,11 @@ class Application(Frame):
             save_obj('ui_last_statefile', filename)
             self.load_state_file(filename)
 
+    def mark_state_file(self):
+        if self.game_state:
+            self.game_state_file = self.game_state['_state_file']
+            save_obj('ui_last_statefile', self.game_state['_state_file'])
+
     def predict_states(self):
         print_predicted_states(State.from_game_state(self.game_state))
 
@@ -61,10 +66,6 @@ class Application(Frame):
     def print_best_action(self):
         action = TREE_SEARCH.search(State.from_game_state(self.game_state), 5)
         print 'Best action: %s' % action
-
-    def print_mcts(self):
-        candidate = MCTS_SEARCH.search(State.from_game_state(self.game_state))
-        print 'Mcts: %s' % candidate
 
     def print_bot(self, bot):
         action = bot.get_action(self.game_state)
@@ -154,6 +155,7 @@ class Application(Frame):
 
         file_menu = Menu(menu, tearoff=0)
         file_menu.add_command(label="Load State File", command=self.open_state_file)
+        file_menu.add_command(label="Mark State File", command=self.mark_state_file)
 
         file_menu.add_command(label="Exit", command=self.master.quit)
         menu.add_cascade(label='File', menu=file_menu)
@@ -166,7 +168,6 @@ class Application(Frame):
         state_menu.add_command(label="Print Predict 10 States", command=self.predict_states10)
         state_menu.add_command(label="Print Playing Field", command=self.print_playing_field)
         state_menu.add_command(label="Print Best Action", command=self.print_best_action)
-        state_menu.add_command(label="Print MCTS", command=self.print_mcts)
         menu.add_cascade(label='State', menu=state_menu)
 
         bot_menu = Menu(menu, tearoff=0)
