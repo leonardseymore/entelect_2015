@@ -140,35 +140,35 @@ class HasAlienFactory(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        return state.alien_factory is not None
+        return state.your_alien_factory() is not None
 
 
 class HasMissileController(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        return state.missile_controller is not None
+        return state.your_missile_controller() is not None
 
 
 class HasSpareLives(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        return state.lives > 0
+        return state.your_lives() > 0
 
 
 class HasShip(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        return state.ship is not None
+        return state.your_ship() is not None
 
 
 class FirstWaveKilled(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        return state.kills >= 3
+        return state.your_kills() >= 3
 
 
 # this is only true at the beginning of the game
@@ -195,7 +195,7 @@ class AtLocation(Task):
     def run(self, blackboard, flow):
         state = blackboard.get('state')
         loc = blackboard.get('loc')
-        return state.ship.x == loc
+        return state.your_ship().x == loc
 
 
 class SetLocation(Task):
@@ -219,9 +219,9 @@ class MoveToLocation(Task):
         loc = self.loc
         if not loc:
             loc = blackboard.get('loc')
-        if loc < state.ship.x:
+        if loc < state.your_ship().x:
             blackboard.set('action', MOVE_LEFT)
-        elif loc > state.ship.x:
+        elif loc > state.your_ship().x:
             blackboard.set('action', MOVE_RIGHT)
         else:
             return True
@@ -239,7 +239,7 @@ class IsMoveDangerous(Task):
         action = blackboard.get('action')
         next_state.update(action, add_bullet_tracers=True)
         for i in xrange(0, 3):  # predict i gonna move into bad situation
-            if not next_state.ship or next_state.lives < state.lives or next_state.ship.is_hit_by_lethal_tracer():
+            if not next_state.your_ship() or next_state.your_lives() < state.your_lives() or next_state.your_ship().is_hit_by_lethal_tracer():
                 self.logger.debug('Dangerous action %s', action)
                 return True
             next_state.update(NOTHING, add_bullet_tracers=True)
@@ -261,7 +261,7 @@ class HasMissile(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        return len(state.missiles) < state.missile_limit
+        return len(state.your_missiles()) < state.your_missile_limit()
 
 
 class IsStartingRound(Task):
@@ -292,7 +292,7 @@ class CanKill(Task):
         next_state.update(SHOOT)
         for i in xrange(0, 10):  # predict missile up to spawn row
             next_state.update(NOTHING)
-            if next_state.kills > state.kills + len(state.missiles):
+            if next_state.your_kills() > state.your_kills() + len(state.your_missiles()):
                 blackboard.set('kill_cost', i)
                 return True
         return False
@@ -306,8 +306,8 @@ class CanShootBullet(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        x = state.ship.x + 1
-        for y in xrange(state.ship.y - self.dist, state.ship.y):
+        x = state.your_ship().x + 1
+        for y in xrange(state.your_ship().y - self.dist, state.your_ship().y):
             entity = state.get_entity(x, y)
             if entity and entity.entity_type == BULLET:
                 return True
@@ -353,7 +353,7 @@ class SetTracer(Task):
         candidates = []
         for i in xrange(0, 12):
             next_state.update(NOTHING, True, state.round_number, True)
-            if not next_state.ship:
+            if not next_state.your_ship():
                 break
             self.logger.debug('Next state\n%s', next_state)
             # only choose to shoot 100% odd aliens
@@ -377,7 +377,7 @@ class SetTracer(Task):
         # candidates = sorted(candidates, key=lambda c: c.alien.y)
         for candidate in candidates:
             self.logger.debug('Candidate %s', candidate)
-        self.logger.debug('Ship %s', state.ship)
+        self.logger.debug('Ship %s', state.your_ship())
 
         tracer_hit = candidates[0]
         self.logger.debug('Best candidate %s', tracer_hit)
@@ -441,7 +441,7 @@ class InDanger(Task):
         state = blackboard.get('state')
         next_state = state.clone()
         for i in xrange(0, 4):  # predict if bullet or missile gonna kill me
-            if next_state.lives < state.lives:
+            if next_state.your_lives() < state.your_lives():
                 return True
             next_state.update(NOTHING, True, state.round_number, True)
 
@@ -483,11 +483,11 @@ class IsAlienTooClose(Task):
         #    x  AAA       #
         # XXX         MMM #
         ###################
-        if not next_state.ship:
+        if not next_state.your_ship():
             return True
 
-        for x in xrange(next_state.ship.x - 1, next_state.ship.x + next_state.ship.width + 1):
-            for y in [next_state.ship.y - 1, next_state.ship.y - 2]:
+        for x in xrange(next_state.your_ship().x - 1, next_state.your_ship().x + next_state.your_ship().width + 1):
+            for y in [next_state.your_ship().y - 1, next_state.your_ship().y - 2]:
                 entity = next_state.get_entity(x, y)
                 if entity and entity.entity_type == ALIEN:
                     self.logger.debug('Alien too close! %s', entity)
@@ -512,21 +512,20 @@ class TreeSearchBestAction:
     @staticmethod
     def evaluate(state, include_tracers, loc):
         result = 0
-        result += state.lives * 5
-        result += state.kills * 2
-        if state.missile_controller:
+        result += state.your_lives() * 5
+        result += state.your_kills() * 2
+        if state.your_missile_controller():
             result += 10
-        if state.alien_factory:
+        if state.your_alien_factory():
             result += 10
-        result -= len(state.missiles)
-        result -= state.alien_bbox.bottom
-        if state.ship:
+        result -= len(state.your_missiles())
+        if state.your_ship():
             if include_tracers:
-                if state.ship.is_hit_by_lethal_tracer():
+                if state.your_ship().is_hit_by_lethal_tracer():
                     result -= 500
             result += 1000
             if loc:
-                result -= abs(state.ship.x - loc)
+                result -= abs(state.your_ship().x - loc)
         return result
 
     def search(self, state, max_depth, include_tracers=False, loc=None):
@@ -534,7 +533,7 @@ class TreeSearchBestAction:
         return self.search_recurse(state, state.round_number, max_depth, include_tracers, 0, [], loc)[1]
 
     def search_recurse(self, state, starting_round, max_depth, include_tracers, current_depth, actions, loc):
-        if state.lives < 0 or current_depth == max_depth:
+        if state.your_lives() < 0 or current_depth == max_depth:
             return self.evaluate(state, include_tracers, loc), None
 
         best_action = None
@@ -551,7 +550,7 @@ class TreeSearchBestAction:
                                                                 current_depth + 1, actions, loc)
             actions.pop()
 
-            if not new_state.ship:
+            if not new_state.your_ship():
                 return best_score, None
 
             if current_score > best_score:

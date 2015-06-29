@@ -53,9 +53,9 @@ TRACER_BULLET_SYMBOL = '%'
 MAP_WIDTH = 19
 MAP_HEIGHT = 25
 
-PLAYING_FIELD_HEIGHT = 12
+PLAYING_FIELD_HEIGHT = 23
 PLAYING_FIELD_WIDTH = 17
-YOUR_PLAYING_START = (1,12)
+YOUR_PLAYING_START = (1,1)
 YOUR_PLAYING_END = (17,25)
 
 MAP_TOP = 1
@@ -75,6 +75,9 @@ ENEMY_SHIELD_FRONT = 5
 INITIAL_LIVES = 3
 INITIAL_ALIEN_WAVE_SIZE = 3
 TIME_WAVE_SIZE_INCREASE = 40
+
+YOU = 1
+ENEMY = 2
 
 REPLAY_DIR='C:/Users/leonard/entelect/harness/Replays/'
 
@@ -202,7 +205,7 @@ def remove_obj(key):
 def print_predicted_states(state, limit=200):
     print state
     next_state = state.clone()
-    while limit > 0 and next_state.lives >= 0 and next_state.round_number < state.round_limit:
+    while limit > 0 and next_state.your_lives() >= 0 and next_state.round_number < state.round_limit:
         next_state.update(NOTHING, True, state.round_number, True)
         print next_state
         next_state = next_state.clone()
