@@ -120,7 +120,8 @@ class Player:
         if self.respawn_timer > 0:
             self.respawn_timer -= 1
             if self.respawn_timer <= 0:
-                Ship(PLAYING_FIELD_WIDTH / 2 - 1, PLAYING_FIELD_HEIGHT - 2, self.player_number).add(state)
+                y = PLAYING_FIELD_HEIGHT - 2 if self.player_number == YOU else 1
+                Ship(PLAYING_FIELD_WIDTH / 2 - 1, y, self.player_number).add(state)
 
 class State:
     def __init__(self):
@@ -690,7 +691,7 @@ class TracerBehavior(EntityBehavior):
         self.destroy(state, entity)
 
     def handle_collision(self, state, entity, other):
-        if other.entity_behavior.entity_type == ALIEN:
+        if other.entity_behavior.entity_type == ALIEN and other.player_number != entity.player_number:
             state.tracer_hits.append(entity)
             entity.alien = other
         # elif other.entity_behavior.entity_type == BULLET:
