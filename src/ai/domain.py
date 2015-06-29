@@ -146,6 +146,7 @@ class State:
     @staticmethod
     def from_game_state(game_state):
         state = State()
+        state.player_number_real = game_state['Players'][0]['PlayerNumberReal']
         offset_x = 1
         offset_y = 1
         state.round_number = game_state['RoundNumber']
