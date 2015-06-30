@@ -343,75 +343,59 @@ class WaitTillRound(Task):
 
 
 class SetTracer(Task):
-    def __init__(self, *children):
+    def __init__(self, target_alien=None, *children):
         Task.__init__(self, *children)
+        self.target_alien = target_alien
 
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         next_state = state.clone()
-        candidates = []
-        for i in xrange(0, 12):
-            next_state.update(NOTHING, True, state.round_number, True)
-            if not next_state.your_ship():
-                break
-            self.logger.debug('Next state\n%s', next_state)
-            # only choose to shoot 100% odd aliens
-            candidates = next_state.tracer_hits
-            #
-            # if len(candidates) > 5:
-            #     break
 
-        for t in next_state.tracer_hits:
-            self.logger.debug('%s', t)
+        target = None
+        if self.target_alien:
+            self.logger.debug('Searching for tracer to target alien %s', self.target_alien)
+            while next_state.round_number < next_state.round_limit:
+                next_state.update(NOTHING, True, state.round_number, True)
+                self.logger.debug('Next state\n%s', next_state)
+                alien_tracer = filter(lambda tr: tr.alien == self.target_alien, next_state.tracer_hits)
+                if len(alien_tracer) > 0:
+                    self.logger.debug('Found alien tracer alien=%s, tracers=%s', self.target_alien, alien_tracer)
+                    target = alien_tracer[0]
+                    break
+        else:
+            for i in xrange(0, 12):
+                next_state.update(NOTHING, True, state.round_number, True)
+                self.logger.debug('Next state\n%s', next_state)
+                candidates = filter(lambda tr: False if tr.tracer_bullet_hit and tr.tracer_bullet_hit.shoot_odds == 1.0 else True, next_state.tracer_hits)
+                if len(candidates) > 0:
+                    target = candidates[0]
 
-        if len(next_state.tracer_hits) == 0:
-            self.logger.debug('No tracer hits found')
+        self.logger.debug('Target tracer %s', target)
+        if not target:
+            self.logger.debug('No tracer found %s', target)
             return False
-
-        candidates = filter(lambda tr: False if tr.tracer_bullet_hit and tr.tracer_bullet_hit.shoot_odds == 1.0 else True, next_state.tracer_hits)
-        if len(candidates) == 0:
-            self.logger.debug('No tracer candidates found')
-            return False
-
-        # candidates = sorted(candidates, key=lambda c: c.alien.y)
-        for candidate in candidates:
-            self.logger.debug('Candidate %s', candidate)
-        self.logger.debug('Ship %s', state.your_ship())
-
-        tracer_hit = candidates[0]
-        self.logger.debug('Best candidate %s', tracer_hit)
-        if not tracer_hit:
-            return False
-        blackboard.set('tracer', tracer_hit)
+        blackboard.set('tracer', target)
         return True
 
 
-class KillTracerNoWait(Task):
-    def run(self, blackboard, flow):
-        Task.run(self, blackboard, flow)
-        if not SetTracer().run(blackboard, flow):
-            return False
-        tracer = blackboard.get('tracer')
-        loc = tracer.starting_x - 1
-        blackboard.set('loc', loc)
-        return Sequence(
-            HasMissile(),
-            SetLocation(loc),
-            AtLocation(),
-            AtRound(tracer.starting_round - 1),
-            SetAction(SHOOT)
-        ).run(blackboard, flow)
-
-
 class KillTracer(Task):
-    def __init__(self, tracer=None, *children):
+    def __init__(self, tracer=None, high_risk_alien=False, wait=True, *children):
         Task.__init__(self, *children)
         self.tracer = tracer
+        self.high_risk_alien = high_risk_alien
+        self.wait = wait
 
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
-        if not self.tracer:
+
+        if self.high_risk_alien:
+            high_risk_aliens = blackboard.get('high_risk_aliens')
+            highest_risk_alien = high_risk_aliens[0]
+            if not SetTracer(target_alien=highest_risk_alien).run(blackboard, flow):
+                return False
+            tracer = blackboard.get('tracer')
+        elif not self.tracer:
             if not SetTracer().run(blackboard, flow):
                 return False
             tracer = blackboard.get('tracer')
@@ -419,13 +403,26 @@ class KillTracer(Task):
             tracer = self.tracer
         loc = tracer.starting_x - 1
         blackboard.set('loc', loc)
-        Sequence(
-            MoveToLocation(loc),
-            WaitTillRound(tracer.starting_round - 1),
-            HasMissile(),
-            SetAction(SHOOT)
-        ).run(blackboard, flow)
-        return True
+
+        if self.wait:
+            Sequence(
+                MoveToLocation(loc),
+                WaitTillRound(tracer.starting_round - 1),
+                HasMissile(),
+                SetAction(SHOOT)
+            ).run(blackboard, flow)
+            return True
+        else:
+            return Sequence(
+                SetLocation(loc),
+                AtLocation(),
+                AtRound(tracer.starting_round - 1),
+                HasMissile(),
+                SetAction(SHOOT)
+            ).run(blackboard, flow)
+
+    def __repr__(self):
+        return 'KillTracer(HR=%s)' % self.high_risk_alien
 
 
 class IsInvasionImminent(Task):
@@ -500,6 +497,36 @@ class IsSoleSurvivor(Task):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
         return len(state.aliens) == 1
+
+class TMinusLt(Task):
+    def __init__(self, t_minus, *children):
+        Task.__init__(self, *children)
+        self.t_minus = t_minus
+
+    def run(self, blackboard, flow):
+        return blackboard.get('t_minus') <= self.t_minus
+
+
+class SetHighRiskAliens(Task):
+    def __init__(self, dist=5, *children):
+        Task.__init__(self, *children)
+        self.dist = dist
+
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        state = blackboard.get('state')
+        next_state = state.clone()
+        while next_state.your_ship():
+            next_state.update(NOTHING)
+            enemy_aliens = next_state.enemy_aliens()
+            high_risk_aliens = filter(lambda a: a.y > PLAYING_FIELD_HEIGHT - self.dist, enemy_aliens)
+            if len(high_risk_aliens) > 0:
+                blackboard.set('high_risk_aliens', high_risk_aliens)
+                blackboard.set('t_minus', next_state.round_number - state.round_number)
+                self.logger.debug('High risk aliens %s in T-%s', high_risk_aliens, next_state.round_number - state.round_number)
+                return True
+        self.logger.debug('No high risk aliens could be found %s', high_risk_aliens)
+        return False
 
 strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True),
               IsInvasionImminent(), IsAlienTooClose(), SetTracer(), IsMoveDangerous(),

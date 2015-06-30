@@ -211,6 +211,9 @@ class State:
     def your_missile_limit(self):
         return self.players[YOU].missile_limit
 
+    def enemy_aliens(self):
+        return self.players[ENEMY].aliens
+
     def is_tracer_bullet_x(self, x):
         for tracer_bullet in self.tracer_bullets:
             if tracer_bullet.x == x:
@@ -838,6 +841,8 @@ class Entity:
     def __repr__(self):
         return "%s[%d]@%d:%d" % (self.__class__.__name__, self.id, self.x, self.y)
 
+    def __eq__(self, other):
+        return self.id == other.id
 
 class Shield(Entity):
     def __init__(self, x, y, player_number):
@@ -860,6 +865,7 @@ class Alien(Entity):
 
     def __deepcopy__(self, memo):
         clone = Alien(self.x, self.y, self.player_number)
+        clone.id = self.id
         clone.delta_y = self.delta_y
         clone.delta_x = self.delta_x
         clone.at_front_line = self.at_front_line
@@ -875,7 +881,9 @@ class Bullet(Entity):
         self.entity_behavior.update(state, self)
 
     def __deepcopy__(self, memo):
-        return Bullet(self.x, self.y, self.player_number)
+        clone = Bullet(self.x, self.y, self.player_number)
+        clone.id = self.id
+        return clone
 
 
 class TracerBullet(Entity):
@@ -889,7 +897,9 @@ class TracerBullet(Entity):
         self.entity_behavior.update(state, self)
 
     def __deepcopy__(self, memo):
-        return TracerBullet(self.x, self.y, self.player_number, self.shoot_odds)
+        clone = TracerBullet(self.x, self.y, self.player_number, self.shoot_odds)
+        clone.id = self.id
+        return clone
 
     def __repr__(self):
         return "%s@%d:%d - shoot_odds=%s, energy=%d" % (self.__class__.__name__, self.x, self.y, self.shoot_odds, self.energy)
@@ -908,6 +918,7 @@ class Tracer(Entity):
 
     def __deepcopy__(self, memo):
         clone = Tracer(self.x, self.y, self.player_number, self.starting_round, self.starting_x)
+        clone.id = self.id
         clone.energy = self.energy
         clone.alien = self.alien
         return clone
@@ -919,7 +930,7 @@ class Tracer(Entity):
         return self.starting_x == other.starting_x and self.starting_round == other.starting_round
 
     def __repr__(self):
-        return "%s[%d]@%d:%d - starting_round=%s, starting_x=%d, tracer_bullet_hit=%s" % (self.__class__.__name__, self.id, self.x, self.y, self.starting_round, self.starting_x, self.tracer_bullet_hit)
+        return "%s[%d]@%d:%d - starting_round=%s, starting_x=%d, tracer_bullet_hit=%s, alien=%s" % (self.__class__.__name__, self.id, self.x, self.y, self.starting_round, self.starting_x, self.tracer_bullet_hit, self.alien)
 
 
 class Missile(Entity):
@@ -930,7 +941,9 @@ class Missile(Entity):
         self.entity_behavior.update(state, self)
 
     def __deepcopy__(self, memo):
-        return Missile(self.x, self.y, self.player_number)
+        clone = Missile(self.x, self.y, self.player_number)
+        clone.id = self.id
+        return clone
 
 class Ship(Entity):
     def __init__(self, x, y, player_number):
@@ -941,6 +954,7 @@ class Ship(Entity):
 
     def __deepcopy__(self, memo):
         clone = Ship(self.x, self.y, self.player_number)
+        clone.id = self.id
         clone.tracer_bullet_hit = self.tracer_bullet_hit
         return clone
 
@@ -949,11 +963,15 @@ class MissileController(Entity):
         Entity.__init__(self, x, y, player_number, MISSILE_CONTROLLER_BEHAVIOR)
 
     def __deepcopy__(self, memo):
-        return MissileController(self.x, self.y, self.player_number)
+        clone = MissileController(self.x, self.y, self.player_number)
+        clone.id = self.id
+        return clone
 
 class AlienFactory(Entity):
     def __init__(self, x, y, player_number):
         Entity.__init__(self, x, y, player_number, ALIEN_FACTORY_BEHAVIOR)
 
     def __deepcopy__(self, memo):
-        return AlienFactory(self.x, self.y, self.player_number)
+        clone = AlienFactory(self.x, self.y, self.player_number)
+        clone.id = self.id
+        return clone

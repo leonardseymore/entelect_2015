@@ -60,7 +60,7 @@ class BotHaywired(Bot):
                         HasSpareLives(),
                         Selector(
                             Sequence(
-                                KillTracerNoWait()
+                                KillTracer(wait=False)
                             ),
                             Sequence(
                                 Inverter(HasMissileController()),
@@ -73,8 +73,15 @@ class BotHaywired(Bot):
                         )
                     ),
                     Sequence(
-                        KillTracer(),
+                        SetHighRiskAliens(),
+                        Selector(
+                            Sequence(
+                                TMinusLt(15),
+                                KillTracer(high_risk_alien=True, wait=False)
+                            ),
+                        )
                     ),
+                    KillTracer()
                 ),
                 Sequence(
                     IsMoveDangerous(),
