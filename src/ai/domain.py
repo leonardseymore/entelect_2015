@@ -283,16 +283,16 @@ class State:
         if self.available_actions:
             return self.available_actions
 
-        ship = self.ship
-        if not self.ship:
+        ship = self.your_ship()
+        if not ship:
             return [NOTHING]
 
         next_state = self.clone()
         next_state.update(NOTHING)
 
         actions = []
-        assert self.missile_limit <= 2
-        if len(self.missiles) < self.missile_limit:
+        assert self.your_missile_limit() <= 2
+        if len(self.your_missiles()) < self.your_missile_limit():
             actions.append(SHOOT)
         if self.in_bounds(ship.x - 1, ship.y, ship.entity_behavior.width):
             if not next_state.get_entity(ship.x - 1, ship.y):
@@ -300,10 +300,10 @@ class State:
         if self.in_bounds(ship.x + 1, ship.y, ship.entity_behavior.width):
             if not next_state.get_entity(ship.x + ship.entity_behavior.width, ship.y):
                 actions.append(MOVE_RIGHT)
-        if self.lives > 0:
-            if not self.alien_factory:
+        if self.your_lives() > 0:
+            if not self.your_alien_factory():
                 actions.append(BUILD_ALIEN_FACTORY)
-            if not self.missile_controller:
+            if not self.your_missile_controller():
                 actions.append(BUILD_MISSILE_CONTROLLER)
             actions.append(BUILD_SHIELD)
         actions.append(NOTHING)
