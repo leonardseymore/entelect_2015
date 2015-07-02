@@ -58,6 +58,7 @@ class BotHaywired(Bot):
                 Selector(
                     Sequence(
                         HasSpareLives(),
+                        Inverter(HasAllBuildings()),
                         Selector(
                             Sequence(
                                 KillTracer(wait=False)
@@ -70,15 +71,6 @@ class BotHaywired(Bot):
                                 Inverter(HasAlienFactory()),
                                 build(BUILD_ALIEN_FACTORY)
                             )
-                        )
-                    ),
-                    Sequence(
-                        SetHighRiskAliens(),
-                        Selector(
-                            Sequence(
-                                TMinusLt(15),
-                                KillTracer(high_risk_alien=True, wait=False)
-                            ),
                         )
                     ),
                     KillTracer()

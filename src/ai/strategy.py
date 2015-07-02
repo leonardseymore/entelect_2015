@@ -149,6 +149,63 @@ class HasMissileController(Task):
         state = blackboard.get('state')
         return state.your_missile_controller() is not None
 
+class IsEarlyGame(Task):
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        state = blackboard.get('state')
+        return state.round_number < 40
+
+
+class EnemyHasAlienFactory(Task):
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        state = blackboard.get('state')
+        return state.enemy_alien_factory() is not None
+
+
+class KillEnemyAlienFactory(Task):
+    def __init__(self, limit=22, *children):
+        Task.__init__(self, *children)
+        self.limit = limit
+
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        state = blackboard.get('state')
+        next_state = state.clone()
+
+        target = None
+        while not target and self.limit > 0 and next_state.round_number < next_state.round_limit:
+            af = next_state.enemy_alien_factory()
+            if not af:
+                break
+
+            next_state.update(NOTHING, True, state.round_number, True)
+            self.logger.debug('Next state\n%s', next_state)
+            if len(next_state.tracer_alien_factory_hits) > 0:
+                target = next_state.tracer_alien_factory_hits[0]
+                self.logger.debug('Hit enemy alien factory %s', target)
+                break
+
+            # candidates = filter(lambda tr: af.x <= tr.target.x < af.x + af.entity_behavior.width, next_state.tracer_shield_hits)
+            # if len(candidates) > 0:
+            #     self.logger.debug('Hit shield hits %s', candidates)
+            #     target = candidates[0]
+            self.limit -= 1
+
+        self.logger.debug('Target tracer %s', target)
+        if not target:
+            self.logger.debug('No tracer found')
+            return False
+        blackboard.set('tracer', target)
+        return True
+
+
+class HasAllBuildings(Task):
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        state = blackboard.get('state')
+        return state.your_missile_controller() is not None and state.your_alien_factory() is not None
+
 
 class HasSpareLives(Task):
     def run(self, blackboard, flow):
@@ -270,6 +327,15 @@ class IsStartingRound(Task):
         state = blackboard.get('state')
         return state.round_number == 0
 
+class IsRoundNumber(Task):
+    def __init__(self, round_number, *children):
+        Task.__init__(self, *children)
+        self.round_number = round_number
+
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        state = blackboard.get('state')
+        return state.round_number == self.round_number
 
 class Kill(Task):
     def run(self, blackboard, flow):
@@ -357,17 +423,20 @@ class SetTracer(Task):
             self.logger.debug('Searching for tracer to target alien %s', self.target_alien)
             while next_state.round_number < next_state.round_limit:
                 next_state.update(NOTHING, True, state.round_number, True)
-                self.logger.debug('Next state\n%s', next_state)
-                alien_tracer = filter(lambda tr: tr.alien == self.target_alien, next_state.tracer_hits)
+                # self.logger.debug('Next state\n%s', next_state)
+                alien_tracer = filter(lambda tr: tr.target == self.target_alien, next_state.tracer_hits)
                 if len(alien_tracer) > 0:
                     self.logger.debug('Found alien tracer alien=%s, tracers=%s', self.target_alien, alien_tracer)
                     target = alien_tracer[0]
                     break
+            if not target:
+                self.logger.debug('No tracer to target alien found %s', self.target_alien)
         else:
             for i in xrange(0, 12):
                 next_state.update(NOTHING, True, state.round_number, True)
                 self.logger.debug('Next state\n%s', next_state)
                 candidates = filter(lambda tr: False if tr.tracer_bullet_hit and tr.tracer_bullet_hit.shoot_odds == 1.0 else True, next_state.tracer_hits)
+                # candidates = filter(lambda tr: tr.alien.y >= next_state.enemy_alien_bbox().bottom - 3,candidates)
                 if len(candidates) > 0:
                     target = candidates[0]
 
@@ -380,11 +449,12 @@ class SetTracer(Task):
 
 
 class KillTracer(Task):
-    def __init__(self, tracer=None, high_risk_alien=False, wait=True, *children):
+    def __init__(self, tracer=None, high_risk_alien=False, wait=True, from_blackboard=False, *children):
         Task.__init__(self, *children)
         self.tracer = tracer
         self.high_risk_alien = high_risk_alien
         self.wait = wait
+        self.from_blackboard = from_blackboard
 
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
@@ -394,6 +464,8 @@ class KillTracer(Task):
             highest_risk_alien = high_risk_aliens[0]
             if not SetTracer(target_alien=highest_risk_alien).run(blackboard, flow):
                 return False
+            tracer = blackboard.get('tracer')
+        elif self.from_blackboard:
             tracer = blackboard.get('tracer')
         elif not self.tracer:
             if not SetTracer().run(blackboard, flow):
@@ -496,7 +568,7 @@ class IsSoleSurvivor(Task):
     def run(self, blackboard, flow):
         Task.run(self, blackboard, flow)
         state = blackboard.get('state')
-        return len(state.aliens) == 1
+        return len(state.enemy_aliens()) == 1
 
 class TMinusLt(Task):
     def __init__(self, t_minus, *children):
@@ -528,6 +600,38 @@ class SetHighRiskAliens(Task):
         self.logger.debug('No high risk aliens could be found %s', high_risk_aliens)
         return False
 
+class SetHighRiskExplodingAliens(Task):
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        state = blackboard.get('state')
+        next_state = state.clone()
+        while len(next_state.enemy_exploding_aliens()) == len(state.enemy_exploding_aliens()):
+            next_state.update(NOTHING)
+        enemy_aliens = next_state.enemy_exploding_aliens()
+        # high_risk_aliens = sorted(enemy_aliens, key=lambda a: (-next_state.enemy_aliens_delta_x() * a.x, a.y))
+        high_risk_aliens = enemy_aliens
+        if len(high_risk_aliens) > 0:
+            blackboard.set('high_risk_aliens', high_risk_aliens)
+            self.logger.debug('High risk exploding aliens %s', high_risk_aliens)
+            return True
+        return False
+
+class SetHighRiskSpawnAliens(Task):
+    def run(self, blackboard, flow):
+        Task.run(self, blackboard, flow)
+        state = blackboard.get('state')
+        next_state = state.clone()
+        while len(next_state.enemy_aliens()) == len(state.enemy_aliens()):
+            next_state.update(NOTHING)
+        print next_state
+        enemy_aliens = next_state.enemy_aliens()
+        high_risk_aliens = sorted(enemy_aliens, key=lambda a: (-next_state.enemy_aliens_delta_x() * a.x, a.y))
+        if len(high_risk_aliens) > 0:
+            blackboard.set('high_risk_aliens', [high_risk_aliens[0]])
+            self.logger.debug('High risk spawn aliens %s', high_risk_aliens)
+            return True
+        return False
+
 strategies = [InDanger(), SearchBestAction(4), SearchBestAction(4, True), SearchBestAction(1, True),
               IsInvasionImminent(), IsAlienTooClose(), SetTracer(), IsMoveDangerous(),
               Sequence(SetAction(MOVE_LEFT), IsMoveDangerous())]
@@ -541,6 +645,7 @@ class TreeSearchBestAction:
         result = 0
         result += state.your_lives() * 5
         result += state.your_kills() * 2
+        result -= state.enemy_alien_bbox().bottom
         if state.your_missile_controller():
             result += 10
         if state.your_alien_factory():

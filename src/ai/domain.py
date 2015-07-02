@@ -32,6 +32,7 @@ class Player:
         self.missiles = []
         self.bullets = []
         self.aliens = []
+        self.exploding_aliens = []
 
     @staticmethod
     def from_game_state(game_state, state, player_number, offset_x, offset_y):
@@ -76,6 +77,7 @@ class Player:
         player.bullets = copy.deepcopy(self.bullets)
         player.missiles = copy.deepcopy(self.missiles)
         player.aliens = copy.deepcopy(self.aliens)
+        player.exploding_aliens = copy.deepcopy(self.exploding_aliens)
         player.update_bbox()
         return player
 
@@ -138,6 +140,8 @@ class State:
         self.tracers = []
         self.tracer_bullets = []
         self.tracer_hits = []
+        self.tracer_shield_hits = []
+        self.tracer_alien_factory_hits = []
 
         self.available_actions = None
         self.available_evade_actions = None
@@ -213,6 +217,18 @@ class State:
 
     def enemy_aliens(self):
         return self.players[ENEMY].aliens
+
+    def enemy_aliens_delta_x(self):
+        return self.players[ENEMY].aliens_delta_x
+
+    def enemy_alien_bbox(self):
+        return self.players[ENEMY].alien_bbox
+
+    def enemy_exploding_aliens(self):
+        return self.players[ENEMY].exploding_aliens
+
+    def enemy_alien_factory(self):
+        return self.players[ENEMY].alien_factory
 
     def is_tracer_bullet_x(self, x):
         for tracer_bullet in self.tracer_bullets:
@@ -502,6 +518,9 @@ class State:
         state.available_evade_actions = self.available_evade_actions
         state.tracers = copy.deepcopy(self.tracers)
         state.tracer_bullets = copy.deepcopy(self.tracer_bullets)
+        state.tracer_hits = copy.deepcopy(self.tracer_hits)
+        state.tracer_shield_hits = copy.deepcopy(self.tracer_shield_hits)
+        state.tracer_alien_factory_hits = copy.deepcopy(self.tracer_alien_factory_hits)
 
         state.playing_field = [None] * (PLAYING_FIELD_WIDTH * PLAYING_FIELD_HEIGHT)
 
@@ -573,6 +592,13 @@ class ShieldBehavior(EntityBehavior):
     def __init__(self):
         EntityBehavior.__init__(self, SHIELD, SHIELD_SYMBOL, 1)
 
+    def handle_collision(self, state, entity, other):
+        EntityBehavior.handle_collision(self, state, entity, other)
+        if other.entity_behavior.entity_type == TRACER and entity.player_number != other.player_number:
+            other.energy = PLAYING_FIELD_HEIGHT - 3 - entity.y
+            other.shield = entity
+            state.tracer_shield_hits.append(other)
+
     def add(self, state, entity):
         if EntityBehavior.add(self, state, entity):
             state.players[entity.player_number].shields.append(entity)
@@ -614,13 +640,14 @@ class AlienBehavior(EntityBehavior):
             state.players[other.player_number].kills += 1
         elif other.entity_behavior.entity_type == TRACER and entity.player_number != other.player_number:
             other.energy = PLAYING_FIELD_HEIGHT - 3 - entity.y
-            other.alien = entity
+            other.target = entity
             state.tracer_hits.append(other)
         elif other.entity_behavior.entity_type == SHIELD:
             self.explode(state, entity)
         state.update_bbox(entity.player_number)
 
     def explode(self, state, entity):
+        state.players[entity.player_number].exploding_aliens.append(entity)
         for x in xrange(entity.x - 1 + entity.delta_x, entity.x + 2 + entity.delta_x):
             for y in xrange(entity.y - 1 + entity.delta_y, entity.y + 2 + entity.delta_y):
                 if entity.x + entity.delta_x == x and entity.y + entity.delta_y == y:
@@ -697,9 +724,13 @@ class TracerBehavior(EntityBehavior):
     def handle_collision(self, state, entity, other):
         if other.entity_behavior.entity_type == ALIEN and other.player_number != entity.player_number:
             state.tracer_hits.append(entity)
-            entity.alien = other
-        # elif other.entity_behavior.entity_type == BULLET:
-        #     entity.get_shot_odds = 0.0
+            entity.target = other
+        if other.entity_behavior.entity_type == SHIELD and other.player_number != entity.player_number:
+            state.tracer_shield_hits.append(entity)
+            entity.target = other
+        if other.entity_behavior.entity_type == ALIEN_FACTORY and other.player_number != entity.player_number:
+            state.tracer_alien_factory_hits.append(entity)
+            entity.target = other
         elif other.entity_behavior.entity_type == TRACER_BULLET:
             entity.tracer_bullet_hit = other
         else:
@@ -802,6 +833,13 @@ class AlienFactoryBehavior(EntityBehavior):
     def add(self, state, entity):
         if EntityBehavior.add(self, state, entity):
             state.players[entity.player_number].alien_factory = entity
+
+    def handle_collision(self, state, entity, other):
+        EntityBehavior.handle_collision(self, state, entity, other)
+        if other.entity_behavior.entity_type == TRACER and entity.player_number != other.player_number:
+            other.energy = PLAYING_FIELD_HEIGHT - 3 - entity.y
+            other.target = entity
+            state.tracer_alien_factory_hits.append(other)
 
     def destroy(self, state, entity):
         EntityBehavior.destroy(self, state, entity)
@@ -911,7 +949,7 @@ class Tracer(Entity):
         self.starting_round = starting_round
         self.starting_x = starting_x
         self.energy = 0
-        self.alien = None
+        self.target = None
 
     def update(self, state):
         self.entity_behavior.update(state, self)
@@ -920,7 +958,7 @@ class Tracer(Entity):
         clone = Tracer(self.x, self.y, self.player_number, self.starting_round, self.starting_x)
         clone.id = self.id
         clone.energy = self.energy
-        clone.alien = self.alien
+        clone.target = self.target
         return clone
 
     def __repr__(self):
@@ -930,7 +968,7 @@ class Tracer(Entity):
         return self.starting_x == other.starting_x and self.starting_round == other.starting_round
 
     def __repr__(self):
-        return "%s[%d]@%d:%d - starting_round=%s, starting_x=%d, tracer_bullet_hit=%s, alien=%s" % (self.__class__.__name__, self.id, self.x, self.y, self.starting_round, self.starting_x, self.tracer_bullet_hit, self.alien)
+        return "%s[%d]@%d:%d - starting_round=%s, starting_x=%d, tracer_bullet_hit=%s, target=%s" % (self.__class__.__name__, self.id, self.x, self.y, self.starting_round, self.starting_x, self.tracer_bullet_hit, self.target)
 
 
 class Missile(Entity):
