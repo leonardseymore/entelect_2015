@@ -13,9 +13,6 @@ The high level strategy:
 - Shoot as many aliens as possible
 - Build buildings as fast as possible in safe locations
 
-This is a very defensive bot, its representation of the world only includes the lower part of the level which
-it refers to as the playing field.  It only considers entities within its playing field.
-
 A behavior tree is used to control the high level strategy:
 1) If starting round then shoot
 2) If no ship then do nothing

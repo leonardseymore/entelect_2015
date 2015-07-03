@@ -94,8 +94,7 @@ class BotHaywired(Bot):
 class BotVex(BotHaywired):
     def get_action_from_state(self, state):
         if random.random() < 0.2:
-            if len(state.missiles) < state.missile_limit:
-                return random.choice(state.get_available_actions())
+            return random.choice(state.get_available_actions())
 
         return BotHaywired.get_action_from_state(self, state)
 
